@@ -1,4 +1,10 @@
+import React from 'react';
 
 export default function DashboardAthlete() {
-  return <h1>Welcome Athlete!</h1>;
+  return (
+    <div>
+      <h1>Athlete Dashboard</h1>
+      <p>Welcome, athlete! Here you can manage your profile, view events, and check your schedule.</p>
+    </div>
+  );
 }
