@@ -1,13 +1,12 @@
 
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import TeamList from "../components/teams/TeamList";
+import { Container, Typography } from "@mui/material";
 
-export default function TeamsPage() {
-  const navigate = useNavigate();
+export default function TeamPage() {
   return (
-    <div>
-      <h2>TeamsPage</h2>
-      <p>List view coming soon...</p>
-    </div>
+    <Container>
+      <Typography variant="h4" sx={{ mt: 2, mb: 2 }}>Teams</Typography>
+      <TeamList />
+    </Container>
   );
 }

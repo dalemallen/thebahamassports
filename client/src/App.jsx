@@ -129,13 +129,13 @@ export default function App() {
 
         {/* Teams */}
         <Route path="/teams" element={<TeamsList />} />
-        <Route path="/teams/:teamId" element={<TeamDetails />} />
+        <Route path="/teams/teamId" element={<TeamDetails />} />
         <Route path="/teams/:teamId/players" element={<TeamPlayers />} />
         <Route path="/teams/:teamId/player/:playerId" element={<PlayerDetails />} />
 
         {/* Players */}
         <Route path="/players" element={<PlayersList />} />
-        <Route path="/players/:playerId" element={<PlayerDetails />} />
+        <Route path="/players/:id" element={<PlayerDetails />} />
 
         {/* Events */}
         <Route path="/events" element={<EventLists />} />
@@ -143,7 +143,6 @@ export default function App() {
         <Route path="/events/:eventId/teams" element={<EventTeams />} />
         <Route path="/events/:eventId/results" element={<EventResults />} />
       </Routes>
-
 
     </Suspense>
   );
