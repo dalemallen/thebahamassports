@@ -7,6 +7,7 @@ import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { RoleProvider } from './context/RoleContext';
 import { ProfileProvider } from './context/ProfileContext';
+import { SportsProvider } from './context/SportsContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Auth0Provider
@@ -21,7 +22,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <AuthProvider>
         <RoleProvider>
           <ProfileProvider>
-            <App />
+            <SportsProvider>
+              <App />
+               </SportsProvider>
           </ProfileProvider>
         </RoleProvider>
       </AuthProvider>
