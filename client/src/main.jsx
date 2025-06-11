@@ -2,7 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Auth0Provider } from '@auth0/auth0-react';
 import { BrowserRouter } from 'react-router-dom';
+
 import App from './App';
+import { AuthProvider } from './context/AuthContext';
+import { RoleProvider } from './context/RoleContext';
+import { ProfileProvider } from './context/ProfileContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Auth0Provider
@@ -14,7 +18,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     }}
   >
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <RoleProvider>
+          <ProfileProvider>
+            <App />
+          </ProfileProvider>
+        </RoleProvider>
+      </AuthProvider>
     </BrowserRouter>
   </Auth0Provider>
 );
