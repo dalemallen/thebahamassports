@@ -1,4 +1,4 @@
-import TournamentList from "../components/tournaments/TournamentList";
+import TournamentList from "../../components/tournaments/TournamentList";
 
 export default function TournamentsPage() {
   return (

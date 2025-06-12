@@ -1,4 +1,4 @@
-import PlayersList from "../components/players/PlayersList";
+import PlayersList from "../../components/players/PlayersList";
 
 export default function PlayersPage() {
   return (
