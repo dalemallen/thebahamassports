@@ -4,7 +4,7 @@ import { createContext, useContext, useState } from "react";
 const SportsContext = createContext();
 
 export const SportsProvider = ({ children }) => {
-  const [sport, setSport] = useState("rugby"); // default sport
+  const [sport, setSport] = useState("all sports"); // default sport
   return (
     <SportsContext.Provider value={{ sport, setSport }}>
       {children}

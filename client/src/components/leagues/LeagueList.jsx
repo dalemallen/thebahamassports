@@ -5,6 +5,7 @@ import { useSport } from "../../context/SportsContext";
 
 export default function LeagueList() {
   const [leagues, setLeagues] = useState([]);
+  console.log('leagues: ', leagues);
   const { sport } = useSport();
   const navigate = useNavigate();
 

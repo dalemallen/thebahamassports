@@ -1,75 +1,71 @@
 import express from "express";
-import db from "../db/index.js";
+import pool from '../db/index.js';
 
 const router = express.Router();
 
 // GET all teams
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const { sport, federation } = req.query;
-
-    let query = `
-      SELECT t.id, t.name, t.logo_url, f.name AS federation_name, s.name AS sport_name
-      FROM teams t
-      LEFT JOIN federations f ON t.federation_id = f.id
-      LEFT JOIN sports s ON t.sport_id = s.id
-    `;
-    const conditions = [];
-    const values = [];
-
-    if (sport) {
-      values.push(sport);
-      conditions.push(`s.name ILIKE $${values.length}`);
-    }
-
-    if (federation) {
-      values.push(federation);
-      conditions.push(`f.name ILIKE $${values.length}`);
-    }
-
-    if (conditions.length > 0) {
-      query += ` WHERE ` + conditions.join(" AND ");
-    }
-
-    query += ` ORDER BY t.name ASC`;
-
-    const result = await db.query(query, values);
+    const result = await pool.query('SELECT * FROM teams WHERE deleted_at IS NULL');
     res.json(result.rows);
   } catch (err) {
-    console.error("Error fetching teams:", err);
-    res.status(500).json({ error: "Failed to fetch teams" });
+    console.error('Error fetching teams:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// GET single team details
+// GET single team details with players
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
+
   try {
-    const result = await db.query(
-      `
+    // Get the team with federation and sport
+    const teamQuery = `
       SELECT 
         t.id,
         t.name,
         t.logo_url,
+        t.league_id,
+        t.bracket_id,
         f.name AS federation_name,
         s.name AS sport_name
       FROM teams t
       LEFT JOIN federations f ON t.federation_id = f.id
       LEFT JOIN sports s ON t.sport_id = s.id
       WHERE t.id = $1
-      `,
-      [id]
-    );
+    `;
+    const teamResult = await pool.query(teamQuery, [id]);
 
-    if (result.rows.length === 0) {
+    if (teamResult.rows.length === 0) {
       return res.status(404).json({ error: "Team not found" });
     }
 
-    res.json(result.rows[0]);
+    // Get the players for that team
+    const playerQuery = `
+      SELECT 
+        id, 
+        first_name, 
+        last_name, 
+        position, 
+        jersey_number,
+        is_captain,
+        is_mvp
+      FROM players 
+      WHERE team_id = $1
+    `;
+    const playersResult = await pool.query(playerQuery, [id]);
+
+    const team = {
+      ...teamResult.rows[0],
+      players: playersResult.rows,
+    };
+
+    res.json(team);
   } catch (err) {
     console.error("Error fetching team:", err);
-    res.status(500).json({ error: "Failed to fetch team" });
+    res.status(500).json({ error: "Failed to fetch team", details: err.message });
   }
 });
+
 
 export default router;

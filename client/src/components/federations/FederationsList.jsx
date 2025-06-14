@@ -4,13 +4,14 @@ import {
   Grid,
   Card,
   CardContent,
-  CardMedia,
   Typography,
   Container,
   Skeleton,
+  Avatar,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import EmojiFlagsIcon from "@mui/icons-material/EmojiFlags";
 
 export default function FederationsList() {
   const [federations, setFederations] = useState([]);
@@ -18,12 +19,13 @@ export default function FederationsList() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("/api/federations")
-      .then(res => {
+    axios
+      .get("/api/federations")
+      .then((res) => {
         setFederations(res.data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         setLoading(false);
       });
@@ -37,29 +39,44 @@ export default function FederationsList() {
 
       <Grid container spacing={3}>
         {(loading ? Array.from(new Array(4)) : federations).map((fed, index) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={fed?.id || index}>
+          <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={fed?.id || index}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
               <Card
-                sx={{ cursor: "pointer", height: "100%" }}
-                onClick={() => navigate(`/federations/${fed.id}`)}
+                sx={{
+                  cursor: "pointer",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  textAlign: "center",
+                  p: 2,
+                }}
+                onClick={() => !loading && navigate(`/federations/${fed.id}`)}
               >
                 {loading ? (
-                  <Skeleton variant="rectangular" height={140} />
-                ) : (
-                  <CardMedia
-                    component="img"
-                    height="140"
-                    image={fed.logo_url || "/placeholder.png"}
+                  <Skeleton variant="circular" width={100} height={100} />
+                ) : fed.logo_url ? (
+                  <Avatar
+                    src={fed.logo_url}
                     alt={fed.name}
-                    sx={{ objectFit: "contain", p: 1 }}
+                    sx={{ width: 100, height: 100, mb: 1 }}
+                    variant="rounded"
                   />
+                ) : (
+                  <Avatar
+                    sx={{ width: 100, height: 100, bgcolor: "primary.main", mb: 1 }}
+                    variant="rounded"
+                  >
+                    <EmojiFlagsIcon sx={{ fontSize: 40, color: "#fff" }} />
+                  </Avatar>
                 )}
 
-                <CardContent>
+                <CardContent sx={{ p: 1 }}>
                   {loading ? (
                     <Skeleton width="80%" />
                   ) : (

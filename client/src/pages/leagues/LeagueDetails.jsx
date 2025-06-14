@@ -3,14 +3,14 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function LeagueDetails() {
-  const { id } = useParams();
+  const { leagueId } = useParams();
   const [league, setLeague] = useState(null);
 
   useEffect(() => {
-    axios.get(`/api/leagues/${id}`)
+    axios.get(`/api/leagues/${leagueId}`)
       .then(res => setLeague(res.data))
       .catch(() => setLeague(null));
-  }, [id]);
+  }, [leagueId]);
 
   if (!league) return <div>Loading...</div>;
 

@@ -2,6 +2,7 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import { useEffect, Suspense, lazy } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import PageLoader from "./components/PageLoader.jsx";
+
 // Lazy load all pages and components
 const Home = lazy(() => import("./pages/home/Home.jsx"));
 const RedirectHandler = lazy(() => import("./components/auth/RedirectHandler.jsx"));
@@ -36,7 +37,7 @@ const DashboardParent = lazy(() => import("./pages/dashboard/DashboardParent.jsx
 const DashboardSponsor = lazy(() => import("./pages/dashboard/DashboardSponsor.jsx"));
 const DashboardScout = lazy(() => import("./pages/dashboard/DashboardScout.jsx"));
 const Headers = lazy(() => import("./components/common/Header.jsx"));
-
+const Footer = lazy(() => import("./components/common/Footer.jsx"));
 export default function App() {
   return (
 
@@ -118,25 +119,25 @@ export default function App() {
 
        {/* Public Leagues & Tournaments Routes */}
         <Route path="/leagues" element={<LeaguesPage />} />
-        <Route path="/leagues/:id" element={<LeagueDetails />} />
+        <Route path="/leagues/:leagueId" element={<LeagueDetails />} />
 
         <Route path="/tournaments" element={<TournamentsPage />} />
-        <Route path="/tournaments/:id" element={<TournamentDetails />} />
+        <Route path="/tournaments/:tournamentId" element={<TournamentDetails />} />
 
 
         {/* Federations */}
         <Route path="/federations" element={<FederationsList />} />
-        <Route path="/federations/:id" element={<FederationDetails />} />
+        <Route path="/federations/:federationId" element={<FederationDetails />} />
 
         {/* Teams */}
         <Route path="/teams" element={<TeamsPage />} />
-        <Route path="/teams/teamId" element={<TeamDetails />} />
+        <Route path="/teams/:teamId" element={<TeamDetails />} />
         <Route path="/teams/:teamId/players" element={<TeamPlayers />} />
         <Route path="/teams/:teamId/player/:playerId" element={<PlayerDetails />} />
 
         {/* Players */}
         <Route path="/players" element={<PlayersList />} />
-        <Route path="/players/:id" element={<PlayerDetails />} />
+        <Route path="/players/:playerId" element={<PlayerDetails />} />
 
         {/* Events */}
         <Route path="/events" element={<EventLists />} />
@@ -144,7 +145,7 @@ export default function App() {
         <Route path="/events/:eventId/teams" element={<EventTeams />} />
         <Route path="/events/:eventId/results" element={<EventResults />} />
       </Routes>
-
+<Footer/>
     </Suspense>
   );
 }

@@ -3,14 +3,14 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function TournamentDetails() {
-  const { id } = useParams();
+  const { tournamentId } = useParams();
   const [tournament, setTournament] = useState(null);
 
   useEffect(() => {
-    axios.get(`/api/tournaments/${id}`)
+    axios.get(`/api/tournaments/${tournamentId}`)
       .then(res => setTournament(res.data))
       .catch(() => setTournament(null));
-  }, [id]);
+  }, [tournamentId]);
 
   if (!tournament) return <div>Loading...</div>;
 

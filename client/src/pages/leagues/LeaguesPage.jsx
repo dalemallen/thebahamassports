@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSport } from "../../context/SportsContext";
 import axios from "axios";
+import LeagueList from "../../components/leagues/LeagueList";
 
 export default function LeaguesPage() {
   const { sport } = useSport();
@@ -72,6 +73,7 @@ function LeagueCard({ league }) {
           </tbody>
         </table>
       </section>
+      <LeagueList />
     </div>
   );
 }

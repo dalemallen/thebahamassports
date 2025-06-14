@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const { sport } = req.query;
-    const result = await pool.query('SELECT * FROM tournaments WHERE sport = $1', [sport]);
+    const result = await pool.query('SELECT * FROM tournaments');
     res.json(result.rows);
   } catch (err) {
     console.error(err);
