@@ -67,11 +67,13 @@ export default function Footer() {
         ) : (
           <Grid container spacing={4}>
             {Object.entries(desktopLinks).map(([section, links]) => (
-              <Grid item xs={6} sm={4} md={2.4} key={section}>
+              <Grid  size={{ xs:6, sm:4, md:2 }} key={section}>
                 <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom>
                   {section}
                 </Typography>
+             
                 {links.map((label, idx) => (
+
                   <Link
                     href={`/sports/${label.toLowerCase().replace(/ /g, "-")}`}
                     key={idx}
@@ -82,7 +84,9 @@ export default function Footer() {
                   >
                     {label}
                   </Link>
+               
                 ))}
+       
               </Grid>
             ))}
           </Grid>

@@ -33,6 +33,7 @@ dist-ssr
 /server/.env
 /server/.env.local
 /server/dist/
+/server/inspectSchema.js
 
 /*.log
 .DS_Store

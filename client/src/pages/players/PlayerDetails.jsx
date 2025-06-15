@@ -81,28 +81,28 @@ export default function PlayerDetails() {
 
       <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
         <Grid container spacing={2}>
-          <Grid item xs={6}>
+          <Grid item size={{ xs:6 }}>
             <Typography variant="body1"><strong>Height:</strong> {height_cm ? `${height_cm} cm` : "—"}</Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item size={{ xs:6 }}>
             <Typography variant="body1"><strong>Weight:</strong> {weight_kg ? `${weight_kg} kg` : "—"}</Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item size={{ xs:6 }}>
             <Typography variant="body1"><strong>Birthdate:</strong> {birthdate || "—"}</Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item size={{ xs:6 }}>
             <Typography variant="body1"><strong>Birthplace:</strong> {birthplace || "—"}</Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item size={{ xs:6 }}>
             <Typography variant="body1"><strong>Debut Year:</strong> {debut_year || "—"}</Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item size={{ xs:6 }}>
             <Typography variant="body1"><strong>Club:</strong> {club_team || "—"}</Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item size={{ xs:6 }}>
             <Typography variant="body1"><strong>Caps:</strong> {caps ?? "0"}</Typography>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item size={{ xs:6 }}>
             <Typography variant="body1"><strong>Points:</strong> {points ?? "0"}</Typography>
           </Grid>
         </Grid>

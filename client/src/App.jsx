@@ -38,6 +38,8 @@ const DashboardSponsor = lazy(() => import("./pages/dashboard/DashboardSponsor.j
 const DashboardScout = lazy(() => import("./pages/dashboard/DashboardScout.jsx"));
 const Headers = lazy(() => import("./components/common/Header.jsx"));
 const Footer = lazy(() => import("./components/common/Footer.jsx"));
+const Pricing = lazy(() => import("./pages/pricing/Pricing.jsx"));
+
 export default function App() {
   return (
 
@@ -113,6 +115,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+                <Route path="/pricing" element={<Pricing />} />
         {/* Sports */}
         <Route path="/sports" element={<SportsList />} />
         <Route path="/sports/:sportId" element={<SportsDetails />} />

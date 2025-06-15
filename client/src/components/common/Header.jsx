@@ -6,6 +6,10 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
+import icon from '../../assets/icon.png';
+import LoginButton from "./LoginButton";
+
+
 
 export default function Header() {
   const theme = useTheme();
@@ -66,7 +70,9 @@ export default function Header() {
           to="/"
           sx={{ textDecoration: "none", color: "inherit", fontWeight: 700 }}
         >
-          TheBahamasSports
+          {/* TheBahamasSports */}
+          <img src={icon} alt="App Icon" style={{ width: 80, height: 80 }} />
+
         </Typography>
 
         {isMobile ? (
@@ -123,7 +129,7 @@ export default function Header() {
             <Button color="inherit" onClick={(e) => handleMenuOpen(e, "Events")}>Events</Button>
             <Button color="inherit" onClick={(e) => handleMenuOpen(e, "Company")}>Company</Button>
             <Button component={Link} to="/pricing" color="inherit">Pricing</Button>
-            <Button component={Link} to="/login" color="inherit">Login</Button>
+          <LoginButton/>
             <Button component={Link} to="/signup" variant="contained" color="primary">Sign Up</Button>
           </Box>
         )}
