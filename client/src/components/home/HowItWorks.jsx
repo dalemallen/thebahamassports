@@ -65,7 +65,7 @@ export default function HowItWorksTop() {
       </Typography>
       <Grid container spacing={3} justifyContent="center">
         {steps.map((step, index) => (
-          <Grid key={index} item size={{ xs: 12, sm: 6, md: 3 }}>
+          <Grid key={index} size={{ xs: 12, sm: 6, md: 3 }}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

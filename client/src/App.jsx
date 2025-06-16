@@ -14,6 +14,7 @@ const Pricing = lazy(() => import("./pages/pricing/Pricing.jsx"));
 const Onboard = lazy(() => import("./pages/onboard/Onboard.jsx"));
 
 // Dashboards by role
+const Dashboard = lazy(() => import("./pages/dashboard/Dashboard.jsx"));
 const DashboardAthlete = lazy(() => import("./pages/dashboard/DashboardAthlete.jsx"));
 const DashboardCoach = lazy(() => import("./pages/dashboard/DashboardCoach.jsx"));
 const DashboardFederation = lazy(() => import("./pages/dashboard/DashboardFederation.jsx"));
@@ -62,6 +63,7 @@ export default function App() {
         <Route path="/onboard" element={<Onboard />} />
 
         {/* Dashboards by Role */}
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route
           path="/dashboard/athlete"
           element={

@@ -47,7 +47,7 @@ export default function PricingTable() {
 
       <Grid container spacing={4}>
         {Object.entries(pricingData).map(([role, tiers]) => (
-          <Grid item key={role} size={{ xs: 12, sm: 6, md: 4 }}>
+          <Grid key={role} size={{ xs: 12, sm: 6, md: 4 }}>
             <Paper elevation={3} sx={{ p: 2 }}>
               <Typography variant="h6" gutterBottom>
                 {role}

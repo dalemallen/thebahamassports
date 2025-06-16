@@ -55,7 +55,7 @@ export default function FeatureGrid() {
       </Typography>
       <Grid container spacing={4} justifyContent="center">
         {featureData.map((item, i) => (
-          <Grid item key={i} size={{ xs: 12, sm: 6, md: 4 }} spacing={2}>
+          <Grid key={i} size={{ xs: 12, sm: 6, md: 4 }} spacing={2}>
             <Card
               sx={{
        

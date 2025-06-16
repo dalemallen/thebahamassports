@@ -1,4 +1,4 @@
-import { useProfile } from "../../context/ProfileContext";
+import { useUser } from "../../context/UserContext";
 import AthleteForm from "./AthleteForm";
 import CoachForm from "./CoachForm";
 import ParentForm from "./ParentForm";
@@ -10,7 +10,7 @@ import ScoutForm from "./ScoutForm";
 // ...import other forms
 
 export default function Onboard() {
-  const { userRole } = useProfile();
+  const { userRole } = useUser();
 
   if (!userRole) return <p>Loading role...</p>;
 

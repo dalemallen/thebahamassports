@@ -64,7 +64,7 @@ const TeamForm = () => {
         Team Onboarding
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             name="teamName"
             label="Team Name"
@@ -75,7 +75,7 @@ const TeamForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             name="federationId"
             label="Sport / Federation"
@@ -93,7 +93,7 @@ const TeamForm = () => {
           </TextField>
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             name="location"
             label="Location"
@@ -104,7 +104,7 @@ const TeamForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             name="coachName"
             label="Coach Name"
@@ -114,7 +114,7 @@ const TeamForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             name="ageGroup"
             label="Age Group"
@@ -124,7 +124,7 @@ const TeamForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             name="gender"
             label="Team Gender"
@@ -140,7 +140,7 @@ const TeamForm = () => {
         </Grid>
 
         {/* Logo Upload */}
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <Button variant="outlined" component="label" fullWidth>
             Upload Logo
             <input
@@ -159,7 +159,7 @@ const TeamForm = () => {
         </Grid>
 
         {/* Cover Upload */}
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <Button variant="outlined" component="label" fullWidth>
             Upload Cover Image (Premium)
             <input
@@ -181,7 +181,7 @@ const TeamForm = () => {
           )}
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12  }}>
           <Button type="submit" variant="contained" fullWidth>
             Submit Team Info
           </Button>

@@ -5,7 +5,7 @@ export default function NationalRoster({ players = [] }) {
   return (
     <Grid container spacing={2}>
       {players.map(player => (
-        <Grid item xs={12} sm={6} md={4} key={player.id}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }} key={player.id}>
           <Card>
             <CardContent>
               <Avatar sx={{ mb: 1 }}>{player.first_name[0]}</Avatar>

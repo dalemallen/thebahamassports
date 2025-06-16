@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useProfile } from "../../context/ProfileContext";
+import { useUser } from "../../context/UserContext";
 import {
   TextField,
   Button,
@@ -17,7 +17,7 @@ const positionOptions = {
 };
 
 export default function AthleteForm({ selectedSport = "soccer" }) {
-  const { user } = useProfile();
+  const { user } = useUser();
   const [formData, setFormData] = useState({
     birthdate: "",
     birthplace: "",
@@ -65,7 +65,7 @@ export default function AthleteForm({ selectedSport = "soccer" }) {
         🏅 Athlete Onboarding
       </Typography>
       <Grid container spacing={2}>
-        <Grid item size={{ xs: 12, sm: 6 }}>
+        <Grid  size={{ xs: 12, sm: 6 }}>
           <TextField
             name="birthdate"
             label="Birthdate"
@@ -75,7 +75,7 @@ export default function AthleteForm({ selectedSport = "soccer" }) {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item size={{ xs: 12, sm: 6 }}>
+        <Grid  size={{ xs: 12, sm: 6 }}>
           <TextField
             name="birthplace"
             label="Birthplace"
@@ -83,7 +83,7 @@ export default function AthleteForm({ selectedSport = "soccer" }) {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item size={{ xs: 12, sm: 6 }}>
+        <Grid  size={{ xs: 12, sm: 6 }}>
           <TextField
             name="height_cm"
             label="Height (cm)"
@@ -92,7 +92,7 @@ export default function AthleteForm({ selectedSport = "soccer" }) {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item size={{ xs: 12, sm: 6 }}>
+        <Grid  size={{ xs: 12, sm: 6 }}>
           <TextField
             name="weight_kg"
             label="Weight (kg)"
@@ -101,7 +101,7 @@ export default function AthleteForm({ selectedSport = "soccer" }) {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item size={{ xs: 12, sm: 6 }}>
+        <Grid  size={{ xs: 12, sm: 6 }}>
           <TextField
             select
             name="position"
@@ -117,7 +117,7 @@ export default function AthleteForm({ selectedSport = "soccer" }) {
             ))}
           </TextField>
         </Grid>
-        <Grid item size={{ xs: 12, sm: 6 }}>
+        <Grid  size={{ xs: 12, sm: 6 }}>
           <TextField
             name="club_team"
             label="Club/Team"
@@ -125,7 +125,7 @@ export default function AthleteForm({ selectedSport = "soccer" }) {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item size={{ xs: 12, sm: 6 }}>
+        <Grid  size={{ xs: 12, sm: 6 }}>
           <TextField
             name="debut_year"
             label="Debut Year"
@@ -134,7 +134,7 @@ export default function AthleteForm({ selectedSport = "soccer" }) {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item size={{ xs: 12, sm: 6 }}>
+        <Grid  size={{ xs: 12, sm: 6 }}>
           <TextField
             name="caps"
             label="Caps"
@@ -143,7 +143,7 @@ export default function AthleteForm({ selectedSport = "soccer" }) {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item size={{ xs: 12, sm: 6 }}>
+        <Grid  size={{ xs: 12, sm: 6 }}>
           <TextField
             name="points"
             label="Points"
@@ -152,7 +152,7 @@ export default function AthleteForm({ selectedSport = "soccer" }) {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item size={{ xs: 12 }}>
+        <Grid  size={{ xs: 12 }}>
           <TextField
             name="achievements"
             label="Achievements"
@@ -162,7 +162,7 @@ export default function AthleteForm({ selectedSport = "soccer" }) {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item size={{ xs: 12 }}>
+        <Grid  size={{ xs: 12 }}>
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Submit
           </Button>

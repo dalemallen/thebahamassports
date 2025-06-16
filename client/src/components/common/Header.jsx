@@ -6,7 +6,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
-import icon from '../../assets/icon.png';
+import logo from '../../assets/icon.png';
 import LoginButton from "./LoginButton";
 import LogoutButton from "./LogoutButton";
 import { useAuth } from "../../context/AuthContext";
@@ -74,8 +74,8 @@ export default function Header() {
           sx={{ textDecoration: "none", color: "inherit", fontWeight: 700 }}
         >
           {/* TheBahamasSports */}
-          <img src={icon} alt="App Icon" style={{ width: 80, height: 80 }} />
-
+      
+    <img src={logo} alt="The Bahamas Sports" style={{ height: 36 }} />  
         </Typography>
 
         {isMobile ? (

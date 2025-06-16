@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useProfile } from "../../context/ProfileContext";
+import { useUser } from "../../context/UserContext";
 import {
   TextField,
   Button,
@@ -12,7 +12,7 @@ const coachingLevels = ["Youth", "High School", "College", "Professional"];
 const sportsList = ["Soccer", "Basketball", "Rugby", "Track", "Tennis"]; // Customize as needed
 
 export default function CoachForm() {
-  const { user } = useProfile();
+  const { user } = useUser();
   const [formData, setFormData] = useState({
     sport: "",
     coaching_level: "",
@@ -54,7 +54,7 @@ export default function CoachForm() {
         🧢 Coach Onboarding
       </Typography>
       <Grid container spacing={2}>
-        <Grid item size={{ xs: 12, sm: 6 }}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             select
             name="sport"
@@ -70,7 +70,7 @@ export default function CoachForm() {
             ))}
           </TextField>
         </Grid>
-        <Grid item size={{ xs: 12, sm: 6 }}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             select
             name="coaching_level"
@@ -86,7 +86,7 @@ export default function CoachForm() {
             ))}
           </TextField>
         </Grid>
-        <Grid item size={{ xs: 12, sm: 6 }}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             name="team_name"
             label="Team Name"
@@ -94,7 +94,7 @@ export default function CoachForm() {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item size={{ xs: 12, sm: 6 }}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             name="years_experience"
             label="Years of Experience"
@@ -103,7 +103,7 @@ export default function CoachForm() {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item size={{ xs: 12 }}>
+        <Grid size={{ xs: 12 }}>
           <TextField
             name="certifications"
             label="Certifications (comma separated)"
@@ -111,7 +111,7 @@ export default function CoachForm() {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item size={{ xs: 12 }}>
+        <Grid size={{ xs: 12 }}>
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Submit
           </Button>

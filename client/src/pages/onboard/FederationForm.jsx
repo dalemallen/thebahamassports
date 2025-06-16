@@ -68,7 +68,7 @@ const FederationForm = () => {
         Federation Onboarding
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             name="federationId"
             label="Federation ID"
@@ -78,7 +78,7 @@ const FederationForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             name="federationName"
             label="Federation Name"
@@ -88,7 +88,7 @@ const FederationForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12  }}>
           <TextField
             name="description"
             label="Federation Description"
@@ -100,7 +100,7 @@ const FederationForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <ImageUpload
             name="logo"
             label="Upload Logo"
@@ -109,7 +109,7 @@ const FederationForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <ImageUpload
             name="coverImage"
             label="Upload Cover Image (Premium)"
@@ -118,7 +118,7 @@ const FederationForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12  }}>
           <Button type="submit" variant="contained" fullWidth>
             Submit Federation Info
           </Button>

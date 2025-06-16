@@ -5,8 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
-import { RoleProvider } from './context/RoleContext';
-import { ProfileProvider } from './context/ProfileContext';
+import { UserProvider } from './context/UserContext';
 import { SportsProvider } from './context/SportsContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -22,13 +21,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   >
     <BrowserRouter>
       <AuthProvider>
-        <RoleProvider>
-          <ProfileProvider>
+        <UserProvider>
             <SportsProvider>
               <App />
                </SportsProvider>
-          </ProfileProvider>
-        </RoleProvider>
+        </UserProvider>
       </AuthProvider>
     </BrowserRouter>
   </Auth0Provider>

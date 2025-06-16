@@ -59,7 +59,7 @@ export default function TeamsList() {
       </Typography>
 
       <Grid container spacing={2} sx={{ mb: 2 }}>
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             fullWidth
             label="Search teams"
@@ -76,7 +76,7 @@ export default function TeamsList() {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             select
             fullWidth
@@ -96,7 +96,7 @@ export default function TeamsList() {
 
       <Grid container spacing={2}>
         {filteredTeams.map((team) => (
-          <Grid key={team.id} item xs={12} sm={6} md={4}>
+          <Grid key={team.id} size={{ xs: 12, sm: 6, md: 4 }}>
             <Card
               onClick={() => navigate(`/teams/${team.id}`)}
               sx={{ cursor: "pointer" }}

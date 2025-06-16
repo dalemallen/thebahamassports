@@ -20,7 +20,7 @@ export default function TeamsList() {
   return (
     <Grid container spacing={2} sx={{ p: 2 }}>
       {teams.map((team) => (
-        <Grid item xs={12} sm={6} md={4} key={team.id}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }} key={team.id}>
           <Card onClick={() => navigate(`/teams/${team.id}`)} sx={{ cursor: "pointer" }}>
             <CardContent>
               <Avatar src={team.logo_url} sx={{ width: 56, height: 56, mb: 1 }} />

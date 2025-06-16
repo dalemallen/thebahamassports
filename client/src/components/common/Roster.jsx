@@ -41,7 +41,7 @@ export default function Roster({
       <Grid container spacing={2}>
         {filteredData.length > 0 ? (
           filteredData.map((player) => (
-            <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={player.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={player.id}>
               <RosterCard player={player} linkToProfile={linkToProfile} />
             </Grid>
           ))

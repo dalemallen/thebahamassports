@@ -58,7 +58,7 @@ const OrganizerForm = ({ onSubmit }) => {
       </Typography>
 
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             label="Organization Name"
             name="organizationName"
@@ -69,7 +69,7 @@ const OrganizerForm = ({ onSubmit }) => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             label="Contact Email"
             name="contactEmail"
@@ -81,7 +81,7 @@ const OrganizerForm = ({ onSubmit }) => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             label="Contact Phone"
             name="contactPhone"
@@ -91,7 +91,7 @@ const OrganizerForm = ({ onSubmit }) => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12  }}>
           <TextField
             label="Description"
             name="description"
@@ -103,7 +103,7 @@ const OrganizerForm = ({ onSubmit }) => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             select
             label="Sport"
@@ -121,7 +121,7 @@ const OrganizerForm = ({ onSubmit }) => {
           </TextField>
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             select
             label="Federation"
@@ -139,21 +139,21 @@ const OrganizerForm = ({ onSubmit }) => {
           </TextField>
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <ImageUpload
             label="Logo"
             onUpload={(url) => handleImageUpload("logoUrl", url)}
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <ImageUpload
             label="Cover Image (Optional)"
             onUpload={(url) => handleImageUpload("coverImageUrl", url)}
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12  }}>
           <Button type="submit" variant="contained" fullWidth>
             Submit Organizer Details
           </Button>

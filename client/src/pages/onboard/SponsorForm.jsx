@@ -6,10 +6,10 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useState } from "react";
-import { useProfile } from "../../context/ProfileContext";
+import { useUser } from "../../context/UserContext";
 
 const SponsorOnboardForm = () => {
-  const { user } = useProfile();
+  const { user } = useUser();
 
   const [formData, setFormData] = useState({
     sponsor_name: user?.name || "",
@@ -42,7 +42,7 @@ const SponsorOnboardForm = () => {
         Sponsor Onboarding
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <TextField
             label="Sponsor/Company Name"
             name="sponsor_name"
@@ -53,7 +53,7 @@ const SponsorOnboardForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <TextField
             label="Email"
             name="email"
@@ -63,7 +63,7 @@ const SponsorOnboardForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <TextField
             label="Phone Number"
             name="phone_number"
@@ -73,14 +73,14 @@ const SponsorOnboardForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <Button variant="outlined" component="label" fullWidth>
             Upload Logo
             <input type="file" hidden onChange={handleFileChange} />
           </Button>
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             label="Website / Social Media"
             name="website"
@@ -91,7 +91,7 @@ const SponsorOnboardForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             select
             label="Sponsorship Tier"
@@ -108,7 +108,7 @@ const SponsorOnboardForm = () => {
           </TextField>
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12  }}>
           <TextField
             label="About / Mission Statement"
             name="bio"
@@ -120,7 +120,7 @@ const SponsorOnboardForm = () => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12  }}>
           <Button type="submit" variant="contained" color="primary">
             Complete Onboarding
           </Button>

@@ -5,7 +5,7 @@ export default function TeamGrid({ teams = [] }) {
   return (
     <Grid container spacing={3}>
       {teams.map(team => (
-        <Grid item xs={12} sm={6} md={4} key={team.id}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }} key={team.id}>
           <Card sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
             <Avatar src={team.logo_url} sx={{ width: 56, height: 56, mr: 2 }} />
             <CardContent>

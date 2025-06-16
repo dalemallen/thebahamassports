@@ -8,9 +8,35 @@ export const AuthProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && user && !isLoading) {
+
       getAccessTokenSilently().then(setAccessToken).catch(console.error);
-    }
+
+  const role = sessionStorage.getItem('pendingRole');
+    if (!role) return;
+
+    sessionStorage.removeItem('pendingRole');
+
+    fetch('/api/register-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        auth0_id: user.sub,
+        email: user.email,
+        first_name: user.given_name,
+        last_name: user.family_name,
+        role: role
+      })
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Registration failed');
+      return res.json();
+    })
+    .catch(err => {
+      console.error('DB registration error:', err);
+      window.location.href = '/account-setup-failed'; // or show toast/snackbar
+    });
+  }
   }, [isAuthenticated, getAccessTokenSilently]);
 
   return (

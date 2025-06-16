@@ -39,7 +39,7 @@ export default function FederationsList() {
 
       <Grid container spacing={3}>
         {(loading ? Array.from(new Array(4)) : federations).map((fed, index) => (
-          <Grid item size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={fed?.id || index}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={fed?.id || index}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

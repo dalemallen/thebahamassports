@@ -42,7 +42,7 @@ export default function PlayerList() {
 
       <Grid container spacing={3}>
         {(loading ? Array.from(new Array(6)) : players).map((player, index) => (
-          <Grid item key={player?.id || index}  size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+          <Grid key={player?.id || index}  size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
