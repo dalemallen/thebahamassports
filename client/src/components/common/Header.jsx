@@ -8,6 +8,8 @@ import { Link } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import icon from '../../assets/icon.png';
 import LoginButton from "./LoginButton";
+import LogoutButton from "./LogoutButton";
+import { useAuth } from "../../context/AuthContext";
 
 
 
@@ -17,6 +19,7 @@ export default function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [menuType, setMenuType] = useState("");
+    const { user, isAuthenticated } = useAuth();
 
   const toggleDrawer = (open) => () => setDrawerOpen(open);
   const handleMenuOpen = (event, type) => {
@@ -129,7 +132,10 @@ export default function Header() {
             <Button color="inherit" onClick={(e) => handleMenuOpen(e, "Events")}>Events</Button>
             <Button color="inherit" onClick={(e) => handleMenuOpen(e, "Company")}>Company</Button>
             <Button component={Link} to="/pricing" color="inherit">Pricing</Button>
-          <LoginButton/>
+            {isAuthenticated ? (
+               <LogoutButton/>
+            ) :      <LoginButton/>}
+     
             <Button component={Link} to="/signup" variant="contained" color="primary">Sign Up</Button>
           </Box>
         )}
