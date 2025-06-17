@@ -2,6 +2,7 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import { useEffect, Suspense, lazy } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import PageLoader from "./components/PageLoader.jsx";
+import FederationPage from "./pages/federations/FederationsPage.jsx";
 
 // Core
 const Home = lazy(() => import("./pages/home/Home.jsx"));
@@ -25,8 +26,6 @@ const DashboardSponsor = lazy(() => import("./pages/dashboard/DashboardSponsor.j
 const DashboardScout = lazy(() => import("./pages/dashboard/DashboardScout.jsx"));
 
 // Sports & Federations
-const SportsList = lazy(() => import("./components/sports/SportsList.jsx"));
-const SportsDetails = lazy(() => import("./pages/SportsDetails.jsx"));
 const FederationsList = lazy(() => import("./components/federations/FederationsList.jsx"));
 const FederationDetails = lazy(() => import("./pages/federations/FederationDetails.jsx"));
 
@@ -130,10 +129,9 @@ export default function App() {
         />
 
         {/* Sports & Federations */}
-        <Route path="/sports" element={<SportsList />} />
-        <Route path="/sports/:sportId" element={<SportsDetails />} />
-        <Route path="/federations" element={<FederationsList />} />
-        <Route path="/federations/:federationId" element={<FederationDetails />} />
+ <Route path="/sports" element={<FederationPage />} />
+<Route path="/sports/:sportId" element={<FederationDetails />} />
+
 
         {/* Leagues & Tournaments */}
         <Route path="/leagues" element={<LeaguesPage />} />

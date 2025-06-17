@@ -1,174 +1,228 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from 'react';
 import {
-  AppBar, Toolbar, Typography, IconButton, Button, Drawer,
-  List, ListItem, ListItemText, Box, Menu, MenuItem, useMediaQuery
-} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import { Link } from "react-router-dom";
-import { useTheme } from "@mui/material/styles";
-import logo from '../../assets/icon.png';
-import LoginButton from "./LoginButton";
-import LogoutButton from "./LogoutButton";
-import { useAuth } from "../../context/AuthContext";
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Box,
+  Button,
+  Grid,
+  Container,
+  Collapse,
+  Divider,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  useMediaQuery,
+  ClickAwayListener,
+  Grow,
+  Paper
+} from '@mui/material';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import MenuIcon from '@mui/icons-material/Menu';
+import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 
+const Header = () => {
+  const [navItems, setNavItems] = useState([]);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [menuItems, setMenuItems] = useState([]);
+  const [activeLabel, setActiveLabel] = useState('');
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const isMobile = useMediaQuery('(max-width:900px)');
+  const location = useLocation();
+  const dropdownRef = useRef(null);
 
+  useEffect(() => {
+    const fetchNavItems = async () => {
+      const staticNav = [
+        {
+          label: 'Competition',
+          children: [
+            { label: 'Schedule', path: '/schedule' },
+            { label: 'Tournaments', path: '/tournaments' },
+            { label: 'Leagues', path: '/leagues' },
+            { label: '1-Day Events', path: '/events/one-day' },
+            { label: 'Tryouts', path: '/tryouts' }
+          ]
+        },
+        {
+          label: 'Discover',
+          children: [
+            { label: 'Players', path: '/players' },
+            { label: 'Teams', path: '/teams' },
+            { label: 'Top Performers', path: '/top-performers' },
+            { label: 'Clubs', path: '/clubs' }
+          ]
+        },
+        {
+          label: 'Watch',
+          children: [
+            { label: 'Highlights', path: '/highlights' },
+            { label: 'Interviews', path: '/interviews' },
+            { label: 'Training Clips', path: '/training-clips' },
+            { label: 'Athlete Spotlights', path: '/spotlights' }
+          ]
+        },
+        {
+          label: 'Updates',
+          children: [
+            { label: 'Federation Updates', path: '/updates/federation' },
+            { label: 'Athlete Announcements', path: '/updates/athletes' },
+            { label: 'Scholarships & Sponsorships', path: '/updates/opportunities' }
+          ]
+        },
+        {
+          label: 'Sponsors',
+          children: [
+            { label: 'Sponsorships', path: '/sponsors/opportunities' },
+            { label: 'Sponsor Accounts', path: '/sponsors/accounts' },
+            { label: 'Scholarships', path: '/sponsors/scholarships' }
+          ]
+        },
+        {
+          label: 'Accounts',
+          children: [
+            { label: 'Athlete', path: '/accounts/athlete' },
+            { label: 'Team', path: '/accounts/team' },
+            { label: 'Coach', path: '/accounts/coach' },
+            { label: 'Parent', path: '/accounts/parent' },
+            { label: 'Sponsor', path: '/accounts/sponsor' },
+            { label: 'Organization', path: '/accounts/organization' }
+          ]
+        },
+        {
+          label: 'Info Hub',
+          children: [
+            { label: 'About Us', path: '/about' },
+            { label: 'FAQ', path: '/faq' }
+          ]
+        },
+        { label: 'Contact', path: '/contact' }
+      ];
 
-export default function Header() {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [menuType, setMenuType] = useState("");
-    const { user, isAuthenticated } = useAuth();
+      let sports = [];
+      try {
+        const sportsRes = await axios.get('/api/sports');
+        sports = sportsRes.data.map((sport) => ({
+          label: sport.name,
+          path: `/sports/${sport.id}`
+        }));
+      } catch (err) {
+        console.error('Failed to fetch sports:', err);
+        sports = [];
+      }
 
-  const toggleDrawer = (open) => () => setDrawerOpen(open);
-  const handleMenuOpen = (event, type) => {
-    setAnchorEl(event.currentTarget);
-    setMenuType(type);
+      setNavItems([{ label: 'Home', path: '/' }, { label: 'Sports', children: sports }, ...staticNav]);
+    };
+
+    fetchNavItems();
+  }, []);
+
+  const handleDropdown = (item) => {
+    setActiveDropdown((prev) => (prev === item.label ? null : item.label));
+    setMenuItems(item.children);
+    setActiveLabel(item.label);
   };
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    setMenuType("");
-  };
 
-  const sports = [
-    "Basketball", "Football", "Track & Field", "Volleyball", "Baseball", "Softball", "Rugby", "Swimming",
-    "Soccer", "Tennis", "Boxing", "Cycling", "Cricket", "Golf", "Judo", "Karate", "Sailing",
-    "Shooting", "Table Tennis", "Taekwondo", "Triathlon", "Weightlifting", "Wrestling", "Gymnastics"
-  ];
-
-  const dropdowns = {
-    Features: [
-      { label: "Registration & Payment", path: "/features/registration" },
-      { label: "Scheduling", path: "/features/scheduling" },
-      { label: "Fundraising", path: "/features/fundraising" },
-      { label: "Website Builder", path: "/features/website" },
-      { label: "Athlete Profiles", path: "/features/profiles" },
-      { label: "Team & League Management", path: "/features/management" },
-    ],
-    Accounts: [
-      { label: "Athletes", path: "/accounts/athletes" },
-      { label: "Teams", path: "/accounts/teams" },
-      { label: "Coaches", path: "/accounts/coaches" },
-      { label: "Sponsors", path: "/accounts/sponsors" },
-      { label: "Scouts", path: "/accounts/scouts" },
-    ],
-    Events: [
-      { label: "Leagues", path: "/leagues" },
-      { label: "Tournaments", path: "/tournaments" },
-      { label: "Interschool", path: "/events/interschool" },
-    ],
-    Company: [
-      { label: "About Us", path: "/company/about" },
-      { label: "Contact Us", path: "/company/contact" },
-    ]
+  const handleClickAway = () => {
+    setActiveDropdown(null);
+    setMenuItems([]);
+    setActiveLabel('');
   };
 
   return (
-    <AppBar position="sticky" color="inherit" elevation={1}>
-      <Toolbar sx={{ justifyContent: "space-between" }}>
-        <Typography
-          variant="h6"
-          component={Link}
-          to="/"
-          sx={{ textDecoration: "none", color: "inherit", fontWeight: 700 }}
-        >
-          {/* TheBahamasSports */}
-      
-    <img src={logo} alt="The Bahamas Sports" style={{ height: 36 }} />  
-        </Typography>
-
-        {isMobile ? (
-          <>
-            <IconButton edge="end" color="inherit" onClick={toggleDrawer(true)}>
-              <MenuIcon />
-            </IconButton>
-            <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
-              <Box sx={{ width: 260, p: 2 }}>
-                <List>
-                  <ListItem button component={Link} to="/federations" onClick={toggleDrawer(false)}>
-                    <ListItemText primary="Sports" />
-                  </ListItem>
-                  {sports.map((sport) => (
-                    <ListItem
-                      key={sport}
-                      button
-                      component={Link}
-                      to={`/federations/${sport.toLowerCase().replace(/\s+/g, "-")}`}
-                      onClick={toggleDrawer(false)}
-                      sx={{ pl: 4 }}
+    <ClickAwayListener onClickAway={handleClickAway}>
+      <Box>
+        <AppBar position="sticky" sx={{ bgcolor: '#fff', color: '#000', boxShadow: 'none' }}>
+          <Toolbar>
+            <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
+              The Bahamas
+            </Typography>
+            {isMobile ? (
+              <IconButton edge="end" color="inherit" onClick={() => setMobileOpen(true)}>
+                <MenuIcon />
+              </IconButton>
+            ) : (
+              navItems.map((item) => (
+                <Box key={item.label}>
+                  {item.children ? (
+                    <Button
+                      onClick={() => handleDropdown(item)}
+                      sx={{
+                        color: activeDropdown === item.label ? 'primary.main' : '#000',
+                        fontWeight: 500,
+                        textTransform: 'none'
+                      }}
+                      endIcon={<ArrowDropDownIcon />}
                     >
-                      <ListItemText primary={sport} />
-                    </ListItem>
-                  ))}
-                  {Object.entries(dropdowns).map(([label, items]) => (
-                    <React.Fragment key={label}>
-                      <ListItem><ListItemText primary={label} /></ListItem>
-                      {items.map((item) => (
-                        <ListItem
-                          key={item.label}
-                          button
-                          component={Link}
-                          to={item.path}
-                          onClick={toggleDrawer(false)}
-                          sx={{ pl: 4 }}
-                        >
-                          <ListItemText primary={item.label} />
-                        </ListItem>
-                      ))}
-                    </React.Fragment>
-                  ))}
-                  <ListItem button component={Link} to="/login"><ListItemText primary="Login" /></ListItem>
-                  <ListItem button component={Link} to="/signup"><ListItemText primary="Sign Up" /></ListItem>
-                </List>
-              </Box>
-            </Drawer>
-          </>
-        ) : (
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <Button component={Link} to="/federations" color="inherit">Sports</Button>
-            <Button color="inherit" onClick={(e) => handleMenuOpen(e, "Features")}>Features</Button>
-            <Button color="inherit" onClick={(e) => handleMenuOpen(e, "Accounts")}>Accounts</Button>
-            <Button color="inherit" onClick={(e) => handleMenuOpen(e, "Events")}>Events</Button>
-            <Button color="inherit" onClick={(e) => handleMenuOpen(e, "Company")}>Company</Button>
-            <Button component={Link} to="/pricing" color="inherit">Pricing</Button>
-            {isAuthenticated ? (
-               <LogoutButton/>
-            ) :      <LoginButton/>}
-     
-            <Button component={Link} to="/signup" variant="contained" color="primary">Sign Up</Button>
-          </Box>
-        )}
-      </Toolbar>
+                      {item.label}
+                    </Button>
+                  ) : (
+                    <Button
+                      href={item.path}
+                      sx={{
+                        color: location.pathname === item.path ? 'primary.main' : '#000',
+                        fontWeight: 500,
+                        textTransform: 'none'
+                      }}
+                    >
+                      {item.label}
+                    </Button>
+                  )}
+                </Box>
+              ))
+            )}
+            {!isMobile && (
+              <Button href="/login" sx={{ color: '#000', fontWeight: 500, ml: 2 }}>
+                Login / Sign Up
+              </Button>
+            )}
+          </Toolbar>
+        </AppBar>
 
-      {/* Dropdown Menus (Desktop Only) */}
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-        MenuListProps={{ onMouseLeave: handleMenuClose }}
-      >
-        {menuType === "Features" && dropdowns.Features.map((item) => (
-          <MenuItem key={item.label} component={Link} to={item.path} onClick={handleMenuClose}>
-            {item.label}
-          </MenuItem>
-        ))}
-        {menuType === "Accounts" && dropdowns.Accounts.map((item) => (
-          <MenuItem key={item.label} component={Link} to={item.path} onClick={handleMenuClose}>
-            {item.label}
-          </MenuItem>
-        ))}
-        {menuType === "Events" && dropdowns.Events.map((item) => (
-          <MenuItem key={item.label} component={Link} to={item.path} onClick={handleMenuClose}>
-            {item.label}
-          </MenuItem>
-        ))}
-        {menuType === "Company" && dropdowns.Company.map((item) => (
-          <MenuItem key={item.label} component={Link} to={item.path} onClick={handleMenuClose}>
-            {item.label}
-          </MenuItem>
-        ))}
-      </Menu>
-    </AppBar>
+        <Grow in={Boolean(activeDropdown)} timeout={250} unmountOnExit>
+          <Box sx={{ bgcolor: '#fff', py: 3, pl: 3, borderTop: '1px solid #eee', boxShadow: 1 }}>
+            <Container>
+              <Grid container spacing={2} columns={5}>
+                {menuItems.map((item, index) => (
+                  <Grid item xs={1} key={index}>
+                    <Button
+                      href={item.path}
+                      fullWidth
+                      sx={{ justifyContent: 'flex-start', color: '#000', textTransform: 'none' }}
+                    >
+                      {item.label}
+                    </Button>
+                  </Grid>
+                ))}
+              </Grid>
+            </Container>
+          </Box>
+        </Grow>
+
+        <Drawer anchor="right" open={mobileOpen} onClose={() => setMobileOpen(false)}>
+          <List sx={{ width: 250 }}>
+            {navItems.map((item) => (
+              <ListItem
+                button
+                key={item.label}
+                component="a"
+                href={item.path || '#'}
+                onClick={() => setMobileOpen(false)}
+              >
+                <ListItemText primary={item.label} />
+              </ListItem>
+            ))}
+            <ListItem button component="a" href="/login" onClick={() => setMobileOpen(false)}>
+              <ListItemText primary="Login / Sign Up" />
+            </ListItem>
+          </List>
+        </Drawer>
+      </Box>
+    </ClickAwayListener>
   );
-}
+};
+
+export default Header;
