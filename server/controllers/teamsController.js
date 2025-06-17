@@ -229,7 +229,818 @@ const TeamStats = async (req, res) => {
   res.header('Content-Type', 'text/csv').attachment('team_stats.csv').send(csv);
 };
 
-// === Export ===
+const searchTeams = async (req, res) => {
+  const { q } = req.query;
+
+  if (!q || q.trim() === '') {
+    return res.status(400).json({ error: 'Search query is required' });
+  }
+
+  try {
+    const result = await pool.query(`
+      SELECT t.*, s.name AS sport_name, f.name AS federation_name
+      FROM teams t
+      LEFT JOIN sports s ON t.sport_id = s.id
+      LEFT JOIN federations f ON t.federation_id = f.id
+      WHERE
+        LOWER(t.name) ILIKE $1 OR
+        LOWER(s.name) ILIKE $1 OR
+        LOWER(f.name) ILIKE $1
+      AND t.deleted_at IS NULL
+    `, [`%${q.toLowerCase()}%`]);
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('searchTeams error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+const uploadTeamMedia = async (req, res) => {
+  const teamId = req.params.id;
+  const { logo_url, cover_image_url } = req.body;
+
+  if (!logo_url && !cover_image_url) {
+    return res.status(400).json({ error: 'At least one media URL must be provided' });
+  }
+
+  try {
+    const updates = [];
+    const values = [teamId];
+
+    if (logo_url) {
+      values.push(logo_url);
+      updates.push(`logo_url = $${values.length}`);
+    }
+
+    if (cover_image_url) {
+      values.push(cover_image_url);
+      updates.push(`cover_image_url = $${values.length}`);
+    }
+
+    const query = `
+      UPDATE teams
+      SET ${updates.join(', ')}
+      WHERE id = $1
+      RETURNING *
+    `;
+
+    const result = await pool.query(query, values);
+    res.json({ message: 'Media updated', team: result.rows[0] });
+  } catch (err) {
+    console.error('uploadTeamMedia error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
+// === Team Role Management ===
+const assignTeamRole = async (req, res) => {
+  const { user_id, role } = req.body;
+  try {
+    await pool.query(
+      'INSERT INTO team_roles (team_id, user_id, role) VALUES ($1, $2, $3) ON CONFLICT (team_id, user_id) DO UPDATE SET role = $3',
+      [req.params.id, user_id, role]
+    );
+    res.json({ message: 'Role assigned' });
+  } catch (err) {
+    console.error('assignTeamRole error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const getTeamRoles = async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM team_roles WHERE team_id = $1',
+      [req.params.id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getTeamRoles error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === Custom Tags ===
+const updateTeamTags = async (req, res) => {
+  try {
+    const { tags } = req.body;
+    await pool.query(
+      'UPDATE teams SET tags = $1 WHERE id = $2',
+      [tags, req.params.id]
+    );
+    res.json({ message: 'Tags updated' });
+  } catch (err) {
+    console.error('updateTeamTags error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === Facility Management ===
+const getTeamFacilities = async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM team_facilities WHERE team_id = $1',
+      [req.params.id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getTeamFacilities error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const createTeamFacility = async (req, res) => {
+  try {
+    const { name, location, description } = req.body;
+    await pool.query(
+      'INSERT INTO team_facilities (team_id, name, location, description) VALUES ($1, $2, $3, $4)',
+      [req.params.id, name, location, description]
+    );
+    res.status(201).json({ message: 'Facility added' });
+  } catch (err) {
+    console.error('createTeamFacility error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === Team Documents ===
+const getTeamDocuments = async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM team_documents WHERE team_id = $1',
+      [req.params.id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getTeamDocuments error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const uploadTeamDocument = async (req, res) => {
+  try {
+    const { name, url, uploaded_by } = req.body;
+    await pool.query(
+      'INSERT INTO team_documents (team_id, name, url, uploaded_by) VALUES ($1, $2, $3, $4)',
+      [req.params.id, name, url, uploaded_by]
+    );
+    res.status(201).json({ message: 'Document uploaded' });
+  } catch (err) {
+    console.error('uploadTeamDocument error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const deleteTeamDocument = async (req, res) => {
+  try {
+    await pool.query(
+      'DELETE FROM team_documents WHERE id = $1 AND team_id = $2',
+      [req.params.docId, req.params.id]
+    );
+    res.json({ message: 'Document deleted' });
+  } catch (err) {
+    console.error('deleteTeamDocument error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === Coach Notes ===
+const getTeamNotes = async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM team_notes WHERE team_id = $1',
+      [req.params.id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getTeamNotes error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const addTeamNote = async (req, res) => {
+  try {
+    const { note, created_by } = req.body;
+    await pool.query(
+      'INSERT INTO team_notes (team_id, note, created_by) VALUES ($1, $2, $3)',
+      [req.params.id, note, created_by]
+    );
+    res.status(201).json({ message: 'Note added' });
+  } catch (err) {
+    console.error('addTeamNote error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === Team Messaging ===
+const getTeamMessages = async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM team_messages WHERE team_id = $1 ORDER BY created_at DESC',
+      [req.params.id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getTeamMessages error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const postTeamMessage = async (req, res) => {
+  try {
+    const { message, sent_by } = req.body;
+    await pool.query(
+      'INSERT INTO team_messages (team_id, message, sent_by) VALUES ($1, $2, $3)',
+      [req.params.id, message, sent_by]
+    );
+    res.status(201).json({ message: 'Message sent' });
+  } catch (err) {
+    console.error('postTeamMessage error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === Availability ===
+const getAvailability = async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM availability WHERE team_id = $1',
+      [req.params.id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getAvailability error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const setAvailability = async (req, res) => {
+  try {
+    const { user_id, date, status } = req.body;
+    await pool.query(
+      'INSERT INTO availability (team_id, user_id, date, status) VALUES ($1, $2, $3, $4) ON CONFLICT (team_id, user_id, date) DO UPDATE SET status = $4',
+      [req.params.id, user_id, date, status]
+    );
+    res.status(201).json({ message: 'Availability set' });
+  } catch (err) {
+    console.error('setAvailability error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === 1. Team Calendar ===
+const getTeamCalendar = async (req, res) => {
+  try {
+    const teamId = req.params.id;
+    const [matches, trainings, availability] = await Promise.all([
+      pool.query('SELECT match_date AS date, location, result FROM tournament_matches WHERE home_team_id = $1 OR away_team_id = $1', [teamId]),
+      pool.query('SELECT date, topic FROM team_trainings WHERE team_id = $1', [teamId]),
+      pool.query('SELECT date, status, user_id FROM availability WHERE team_id = $1', [teamId])
+    ]);
+
+    res.json({
+      matches: matches.rows,
+      trainings: trainings.rows,
+      availability: availability.rows
+    });
+  } catch (err) {
+    console.error('getTeamCalendar error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === 2. Trainings ===
+const scheduleTraining = async (req, res) => {
+  const { date, topic, location } = req.body;
+  try {
+    await pool.query(
+      'INSERT INTO team_trainings (team_id, date, topic, location) VALUES ($1, $2, $3, $4)',
+      [req.params.id, date, topic, location]
+    );
+    res.status(201).json({ message: 'Training scheduled' });
+  } catch (err) {
+    console.error('scheduleTraining error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const getTrainings = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM team_trainings WHERE team_id = $1 ORDER BY date', [req.params.id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getTrainings error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === 3. Opponent History ===
+const getTeamOpponents = async (req, res) => {
+  try {
+    const result = await pool.query(
+`
+      SELECT DISTINCT 
+        CASE 
+          WHEN t.id = m.home_team_id THEN a.name
+          ELSE h.name
+        END AS opponent
+      FROM tournament_matches m
+      JOIN teams h ON m.home_team_id = h.id
+      JOIN teams a ON m.away_team_id = a.id
+      JOIN teams t ON t.id = $1
+      WHERE m.home_team_id = $1 OR m.away_team_id = $1`, [req.params.id]);
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getTeamOpponents error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === 4. Activity Log ===
+const getActivityLog = async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM team_activity_log WHERE team_id = $1 ORDER BY created_at DESC',
+      [req.params.id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getActivityLog error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === 5. Media Gallery ===
+const getGallery = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM team_gallery WHERE team_id = $1 ORDER BY created_at DESC', [req.params.id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getGallery error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const uploadToGallery = async (req, res) => {
+  const { url, type, uploaded_by } = req.body;
+  try {
+    await pool.query(
+      'INSERT INTO team_gallery (team_id, url, type, uploaded_by) VALUES ($1, $2, $3, $4)',
+      [req.params.id, url, type, uploaded_by]
+    );
+    res.status(201).json({ message: 'Media uploaded' });
+  } catch (err) {
+    console.error('uploadToGallery error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === 6. Request Verification ===
+const requestTeamVerification = async (req, res) => {
+  try {
+    const { user_id, notes } = req.body;
+    await pool.query(
+      'INSERT INTO verifications (user_id, role, notes, status) VALUES ($1, $2, $3, $4)',
+      [user_id, 'team', notes, 'pending']
+    );
+    res.status(201).json({ message: 'Verification request submitted' });
+  } catch (err) {
+    console.error('requestTeamVerification error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === 7. Report Team Issue ===
+const reportTeamIssue = async (req, res) => {
+  const { reported_by, issue } = req.body;
+  try {
+    await pool.query(
+      'INSERT INTO team_reports (team_id, reported_by, issue) VALUES ($1, $2, $3)',
+      [req.params.id, reported_by, issue]
+    );
+    res.status(201).json({ message: 'Issue reported' });
+  } catch (err) {
+    console.error('reportTeamIssue error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === 8. Recruitment Status ===
+const getRecruitmentStatus = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT recruitment_status FROM teams WHERE id = $1', [req.params.id]);
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('getRecruitmentStatus error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const updateRecruitmentStatus = async (req, res) => {
+  try {
+    const { recruitment_status } = req.body;
+    await pool.query(
+      'UPDATE teams SET recruitment_status = $1 WHERE id = $2',
+      [recruitment_status, req.params.id]
+    );
+    res.json({ message: 'Recruitment status updated' });
+  } catch (err) {
+    console.error('updateRecruitmentStatus error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === 9. Player Evaluation ===
+const evaluatePlayer = async (req, res) => {
+  const { player_id, evaluation, evaluated_by } = req.body;
+  try {
+    await pool.query(
+      'INSERT INTO player_evaluations (team_id, player_id, evaluation, evaluated_by) VALUES ($1, $2, $3, $4)',
+      [req.params.id, player_id, evaluation, evaluated_by]
+    );
+    res.status(201).json({ message: 'Evaluation submitted' });
+  } catch (err) {
+    console.error('evaluatePlayer error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === 10. Public Contact ===
+const sendContactEmail = async (req, res) => {
+  const { name, email, message } = req.body;
+  try {
+    // In production, send email via SendGrid/Mailgun/Nodemailer etc.
+    console.log(`Contact Message to Team ${req.params.id}:`, { name, email, message });
+    res.json({ message: 'Message sent to team contact' });
+  } catch (err) {
+    console.error('sendContactEmail error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
+// === MVP ADDITIONS ===
+
+// Soft deactivate team (e.g. inactive season)
+const deactivateTeam = async (req, res) => {
+  try {
+    await pool.query('UPDATE teams SET is_active = false WHERE id = $1', [req.params.id]);
+    res.json({ message: 'Team deactivated' });
+  } catch (err) {
+    console.error('deactivateTeam error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const assignCaptain = async (req, res) => {
+  const { player_id } = req.body;
+  try {
+    await pool.query('UPDATE players SET is_captain = true WHERE id = $1', [player_id]);
+    res.json({ message: 'Captain assigned' });
+  } catch (err) {
+    console.error('assignCaptain error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const removeCaptain = async (req, res) => {
+  const { player_id } = req.body;
+  try {
+    await pool.query('UPDATE players SET is_captain = false WHERE id = $1', [player_id]);
+    res.json({ message: 'Captain removed' });
+  } catch (err) {
+    console.error('removeCaptain error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const requestJoinTeam = async (req, res) => {
+  const { user_id, message } = req.body;
+  try {
+    await pool.query('INSERT INTO team_join_requests (team_id, user_id, message, status) VALUES ($1, $2, $3, $4)', [req.params.id, user_id, message, 'pending']);
+    res.status(201).json({ message: 'Join request sent' });
+  } catch (err) {
+    console.error('requestJoinTeam error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const getTeamPublicProfile = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT id, name, sport_id, logo_url, cover_image_url FROM teams WHERE id = $1', [req.params.id]);
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('getTeamPublicProfile error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === NICE-TO-HAVE FEATURES ===
+
+const exportSeasonSummary = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM team_stats WHERE team_id = $1', [req.params.id]);
+    const csv = new Parser().parse(result.rows);
+    res.header('Content-Type', 'text/csv').attachment('season_summary.csv').send(csv);
+  } catch (err) {
+    console.error('exportSeasonSummary error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const assignAward = async (req, res) => {
+  const { player_id, award_name } = req.body;
+  try {
+    await pool.query('INSERT INTO player_awards (player_id, team_id, award_name) VALUES ($1, $2, $3)', [player_id, req.params.id, award_name]);
+    res.status(201).json({ message: 'Award assigned' });
+  } catch (err) {
+    console.error('assignAward error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const getTeamAnalytics = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        COUNT(*) FILTER (WHERE result = 'win') AS wins,
+        COUNT(*) FILTER (WHERE result = 'loss') AS losses,
+        COUNT(*) FILTER (WHERE result = 'draw') AS draws,
+        AVG(points_scored) AS avg_points
+      FROM team_stats WHERE team_id = $1
+    `, [req.params.id]);
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('getTeamAnalytics error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const updateTeamCustomFields = async (req, res) => {
+  const { custom_fields } = req.body; // JSON
+  try {
+    await pool.query('UPDATE teams SET custom_fields = $1 WHERE id = $2', [custom_fields, req.params.id]);
+    res.json({ message: 'Custom fields updated' });
+  } catch (err) {
+    console.error('updateTeamCustomFields error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const getTeamsByUser = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM teams WHERE created_by = $1', [req.params.userId]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getTeamsByUser error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const mergeTeams = async (req, res) => {
+  const { source_team_id } = req.body;
+  try {
+    await pool.query('UPDATE players SET team_id = $1 WHERE team_id = $2', [req.params.id, source_team_id]);
+    await pool.query('DELETE FROM teams WHERE id = $1', [source_team_id]);
+    res.json({ message: 'Teams merged' });
+  } catch (err) {
+    console.error('mergeTeams error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const suspendTeam = async (req, res) => {
+  try {
+    await pool.query('UPDATE teams SET status = $1 WHERE id = $2', ['suspended', req.params.id]);
+    res.json({ message: 'Team suspended' });
+  } catch (err) {
+    console.error('suspendTeam error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === BONUS FEATURES ===
+
+const getTeamPermissions = async (req, res) => {
+  const { user_id } = req.query;
+  try {
+    const result = await pool.query('SELECT role FROM team_roles WHERE team_id = $1 AND user_id = $2', [req.params.id, user_id]);
+    res.json(result.rows[0] || { role: 'none' });
+  } catch (err) {
+    console.error('getTeamPermissions error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const archiveTeam = async (req, res) => {
+  try {
+    await pool.query('UPDATE teams SET archived_at = NOW() WHERE id = $1', [req.params.id]);
+    res.json({ message: 'Team archived' });
+  } catch (err) {
+    console.error('archiveTeam error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const restoreTeam = async (req, res) => {
+  try {
+    await pool.query('UPDATE teams SET archived_at = NULL WHERE id = $1', [req.params.id]);
+    res.json({ message: 'Team restored' });
+  } catch (err) {
+    console.error('restoreTeam error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const getTeamTimeline = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM team_activity_log WHERE team_id = $1 ORDER BY created_at DESC', [req.params.id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getTeamTimeline error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
+// === Team Dues ===
+const getTeamDues = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM team_dues WHERE team_id = $1', [req.params.id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getTeamDues error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const addTeamDue = async (req, res) => {
+  const { description, amount, due_date } = req.body;
+  try {
+    await pool.query(
+      'INSERT INTO team_dues (team_id, description, amount, due_date) VALUES ($1, $2, $3, $4)',
+      [req.params.id, description, amount, due_date]
+    );
+    res.status(201).json({ message: 'Due added' });
+  } catch (err) {
+    console.error('addTeamDue error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === Payments & Revenue ===
+const getTeamPayments = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM team_payments WHERE team_id = $1', [req.params.id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getTeamPayments error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const getTeamRevenue = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM team_revenue WHERE team_id = $1', [req.params.id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getTeamRevenue error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === Player Add/Remove ===
+const addPlayerToTeam = async (req, res) => {
+  const { user_id } = req.body;
+  try {
+    await pool.query('UPDATE player_profiles SET team_id = $1 WHERE user_id = $2', [req.params.id, user_id]);
+    res.json({ message: 'Player added to team' });
+  } catch (err) {
+    console.error('addPlayerToTeam error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const removePlayerById = async (req, res) => {
+  try {
+    await pool.query('UPDATE player_profiles SET team_id = NULL WHERE user_id = $1 AND team_id = $2', [req.params.playerId, req.params.id]);
+    res.json({ message: 'Player removed from team' });
+  } catch (err) {
+    console.error('removePlayerById error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === Join Request Approval ===
+const respondToJoinRequest = async (req, res) => {
+  const { status } = req.body; // 'approved' or 'rejected'
+  try {
+    await pool.query('UPDATE team_join_requests SET status = $1 WHERE id = $2 AND team_id = $3', [status, req.params.requestId, req.params.id]);
+    res.json({ message: `Join request ${status}` });
+  } catch (err) {
+    console.error('respondToJoinRequest error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === Team Bulletin Board ===
+const getTeamBulletin = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM team_bulletin WHERE team_id = $1 ORDER BY created_at DESC', [req.params.id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('getTeamBulletin error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const postTeamBulletin = async (req, res) => {
+  const { title, content, posted_by } = req.body;
+  try {
+    await pool.query('INSERT INTO team_bulletin (team_id, title, content, posted_by) VALUES ($1, $2, $3, $4)', [req.params.id, title, content, posted_by]);
+    res.status(201).json({ message: 'Bulletin posted' });
+  } catch (err) {
+    console.error('postTeamBulletin error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === Player Status & Position ===
+const deactivatePlayer = async (req, res) => {
+  try {
+    await pool.query('UPDATE players SET status = $1 WHERE id = $2 AND team_id = $3', ['inactive', req.params.playerId, req.params.id]);
+    res.json({ message: 'Player marked inactive' });
+  } catch (err) {
+    console.error('deactivatePlayer error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const setPlayerPosition = async (req, res) => {
+  const { position } = req.body;
+  try {
+    await pool.query('UPDATE players SET position = $1 WHERE id = $2 AND team_id = $3', [position, req.params.playerId, req.params.id]);
+    res.json({ message: 'Player position updated' });
+  } catch (err) {
+    console.error('setPlayerPosition error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// === QR Code Endpoint (placeholder logic) ===
+const getTeamQRCode = async (req, res) => {
+  try {
+    const qrLink = `https://thebahamassports.com/teams/${req.params.id}/join`;
+    res.json({ qr_url: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrLink)}` });
+  } catch (err) {
+    console.error('getTeamQRCode error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
+// === Final Additions to TeamsController ===
+
+const getTeamEquipment = async (req, res) => {
+  res.json({ message: 'List of team equipment' });
+};
+
+const addTeamEquipment = async (req, res) => {
+  res.json({ message: 'Team equipment added' });
+};
+
+const getTeamTransport = async (req, res) => {
+  res.json({ message: 'List of team transportation plans' });
+};
+
+const addTeamTransport = async (req, res) => {
+  res.json({ message: 'Transportation plan created' });
+};
+
+const getTeamMeals = async (req, res) => {
+  res.json({ message: 'List of team meal plans' });
+};
+
+const addTeamMeal = async (req, res) => {
+  res.json({ message: 'Meal added to plan' });
+};
+
+const getTeamMedia = async (req, res) => {
+  res.json({ message: 'List of team media items' });
+};
+
+
+const getTeamSponsors = async (req, res) => {
+  res.json({ message: 'List of team sponsors and details' });
+};
+
+const addTeamSponsor = async (req, res) => {
+  res.json({ message: 'Sponsor assigned to team' });
+};
+
 
 export default {
   getAllTeams,
@@ -246,12 +1057,76 @@ export default {
   getTeamStats,
   createTeamAnnouncement,
   getTeamAnnouncements,
-  // searchTeams,
-  // uploadTeamMedia,
-  // TeamRoster,
-  // TeamSchedule,
-  // TeamAnnouncements,
-  // PlayerPerformance,
-  // TeamAttendance,
-  // TeamStats,
+  searchTeams,
+  uploadTeamMedia,
+  TeamRoster,
+  TeamSchedule,
+  TeamAnnouncements,
+  PlayerPerformance,
+  TeamAttendance,
+  TeamStats,
+  assignTeamRole,
+  getTeamRoles,
+  updateTeamTags,
+  getTeamFacilities,
+  createTeamFacility,
+  getTeamDocuments,
+  uploadTeamDocument,
+  deleteTeamDocument,
+  getTeamNotes,
+  addTeamNote,
+  getTeamMessages,
+  postTeamMessage,
+  getAvailability,
+  setAvailability,
+  getTeamCalendar,
+  scheduleTraining,
+  getTrainings,
+  getTeamOpponents,
+  getActivityLog,
+  getGallery,
+  uploadToGallery,
+  requestTeamVerification,
+  reportTeamIssue,
+  getRecruitmentStatus,
+  updateRecruitmentStatus,
+  evaluatePlayer,
+  sendContactEmail,
+  deactivateTeam,
+  assignCaptain,
+  removeCaptain,
+  requestJoinTeam,
+  getTeamPublicProfile,
+  exportSeasonSummary,
+  assignAward,
+  getTeamAnalytics,
+  updateTeamCustomFields,
+  getTeamsByUser,
+  mergeTeams,
+  suspendTeam,
+  getTeamPermissions,
+  archiveTeam,
+  restoreTeam,
+  getTeamTimeline,
+  getTeamDues,
+  addTeamDue,
+  getTeamPayments,
+  getTeamRevenue,
+  addPlayerToTeam,
+  removePlayerById,
+  deactivatePlayer,
+  setPlayerPosition,
+  respondToJoinRequest,
+  getTeamBulletin,
+  postTeamBulletin,
+  getTeamQRCode,
+  getTeamEquipment,
+  addTeamEquipment,
+  getTeamTransport,
+  addTeamTransport,
+  getTeamMeals,
+  addTeamMeal,
+  getTeamMedia,
+  getTeamSponsors,
+  addTeamSponsor,
 };

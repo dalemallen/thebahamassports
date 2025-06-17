@@ -1,52 +1,54 @@
-// backend/routes/player.js
-import express from "express";
-import pool from "../db/index.js";
+import express from 'express';
+import playerController from '../controllers/playerController.js';
+import { requireRole } from '../middleware/rbac.js';
+
 
 const router = express.Router();
 
-// Get all players
-router.get("/", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM players");
-    res.json(result.rows);
-    console.log('result.rows: ', result.rows);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch players", details: err.message });
-  }
-});
+// Core
+router.get('/', playerController.getAllPlayers);
+router.get('/team/:teamId', playerController.getPlayersByTeam);
+router.get('/federation/:federationId', playerController.getPlayersByFederation);
+router.get('/leaderboard', playerController.getPlayerLeaderboard);
+router.get('/search', playerController.searchPlayers);
 
-// Get player by ID
-router.get("/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const result = await pool.query("SELECT * FROM players WHERE id = $1", [id]);
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Player not found" });
-    }
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch player", details: err.message });
-  }
-});
+// Stats & Profile
+router.get('/:id/stats', playerController.getPlayerStats);
+router.get('/:id/attendance', playerController.getPlayerAttendance);
+router.get('/:id/trainings', playerController.getPlayerTrainingHistory);
+router.get('/:id/calendar', playerController.getPlayerCalendarAvailability);
+router.get('/:id/full-profile', playerController.getPlayerFullProfile);
+router.get('/:id/team-history', playerController.getPlayerTeamHistory);
+router.get('/:id/awards', playerController.getPlayerAwards);
 
-// Create a new player (with validation)
-router.post("/", async (req, res) => {
-  const { first_name, last_name, bracket, team_id, premium } = req.body;
+// Roles & Evaluation
 
-  if (/\d/.test(first_name) || /\d/.test(last_name)) {
-    return res.status(400).json({ error: "Player names cannot contain numbers" });
-  }
+router.post('/evaluate', requireRole(['coach', 'federation']), playerController.evaluatePlayer);
 
-  try {
-    const result = await pool.query(
-      `INSERT INTO players (first_name, last_name, bracket, team_id, premium)
-       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [first_name, last_name, bracket, team_id, premium]
-    );
-    res.status(201).json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to create player", details: err.message });
-  }
-});
+router.post('/assign-role', playerController.assignPlayerRole);
+
+// Availability
+router.patch('/:id/availability', playerController.updatePlayerAvailability);
+
+// Highlights & Notes
+router.post('/:id/highlights', playerController.addPlayerHighlight);
+router.get('/:id/highlights', playerController.getPlayerMediaGallery);
+router.get('/:id/notes', playerController.getPlayerNotes);
+
+// Player Actions
+router.post('/:id/flag', playerController.flagPlayerForReview);
+router.post('/:id/misconduct', playerController.reportPlayerMisconduct);
+router.delete('/:id', playerController.deactivatePlayer);
+
+// Comparison & Ranking
+router.get('/compare', playerController.comparePlayers);
+router.get('/top-by-stat', playerController.getTopPlayersByStat);
+
+// Follow System
+router.post('/:id/follow', playerController.followPlayer);
+router.post('/:id/unfollow', playerController.unfollowPlayer);
+router.get('/:id/followers', playerController.getFollowers);
+
+
 
 export default router;
