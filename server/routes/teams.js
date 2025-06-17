@@ -1,71 +1,72 @@
-import express from "express";
-import pool from '../db/index.js';
+import express from 'express';
+import pg from 'pg';
+import dotenv from 'dotenv';
 
+dotenv.config();
 const router = express.Router();
+const { Pool } = pg;
 
-// GET all teams
-router.get('/', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM teams WHERE deleted_at IS NULL');
-    res.json(result.rows);
-  } catch (err) {
-    console.error('Error fetching teams:', err);
-    res.status(500).json({ error: 'Internal server error' });
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+    ssl: {
+    rejectUnauthorized: false // ✅ required for Render and Heroku
   }
 });
 
-// GET single team details with players
-router.get("/:id", async (req, res) => {
-  const { id } = req.params;
+import teamsController from '../controllers/teamsController.js';
 
-  try {
-    // Get the team with federation and sport
-    const teamQuery = `
-      SELECT 
-        t.id,
-        t.name,
-        t.logo_url,
-        t.league_id,
-        t.bracket_id,
-        f.name AS federation_name,
-        s.name AS sport_name
-      FROM teams t
-      LEFT JOIN federations f ON t.federation_id = f.id
-      LEFT JOIN sports s ON t.sport_id = s.id
-      WHERE t.id = $1
-    `;
-    const teamResult = await pool.query(teamQuery, [id]);
+router.get('/', teamsController.getAllTeams);
+router.get('/:id', teamsController.getTeamById);
+router.get('/:id/players', teamsController.getTeamPlayers);
+router.post('/', teamsController.createTeam);
+router.post('/join', teamsController.joinTeamByInviteCode);
 
-    if (teamResult.rows.length === 0) {
-      return res.status(404).json({ error: "Team not found" });
-    }
+// New routes
+router.patch('/:id', teamsController.updateTeam);
+router.delete('/:id', teamsController.softDeleteTeam);
+router.get('/federation/:id', teamsController.getTeamsByFederation);
+router.get('/creator/:userId', teamsController.getTeamsByCreator);
 
-    // Get the players for that team
-    const playerQuery = `
-      SELECT 
-        id, 
-        first_name, 
-        last_name, 
-        position, 
-        jersey_number,
-        is_captain,
-        is_mvp
-      FROM players 
-      WHERE team_id = $1
-    `;
-    const playersResult = await pool.query(playerQuery, [id]);
+router.get('/:id/invites', teamsController.getTeamInvites);
+router.post('/:id/remove-player', teamsController.removePlayerFromTeam);
+router.get('/:id/stats', teamsController.getTeamStats);
+router.post('/:id/announcement', teamsController.createTeamAnnouncement);
+router.get('/:id/announcements', teamsController.getTeamAnnouncements);
 
-    const team = {
-      ...teamResult.rows[0],
-      players: playersResult.rows,
-    };
+// CSV Exports
+// router.get('/:id/export', teamsController.exportTeamRoster);
+// router.get('/:id/schedule/export', teamsController.exportTeamSchedule);
+// router.get('/:id/announcements/export', teamsController.exportTeamAnnouncements);
+// router.get('/:id/performance/export', teamsController.exportPlayerPerformance);
+// router.get('/:id/attendance/export', teamsController.exportTeamAttendance);
+// router.get('/:id/stats/export', teamsController.exportTeamStats);
 
-    res.json(team);
-  } catch (err) {
-    console.error("Error fetching team:", err);
-    res.status(500).json({ error: "Failed to fetch team", details: err.message });
-  }
-});
+// // Team roles
+// router.post('/:id/assign-role', teamsController.assignTeamRole);
+// router.get('/:id/roles', teamsController.getTeamRoles);
 
+// // Custom tags
+// router.patch('/:id/tags', teamsController.updateTeamTags);
 
-export default router;
+// // Facility management
+// router.get('/:id/facilities', teamsController.getTeamFacilities);
+// router.post('/:id/facilities', teamsController.createTeamFacility);
+
+// // Team documents
+// router.get('/:id/documents', teamsController.getTeamDocuments);
+// router.post('/:id/documents', teamsController.uploadTeamDocument);
+// router.delete('/:id/documents/:docId', teamsController.deleteTeamDocument);
+
+// // Coach notes
+// router.get('/:id/notes', teamsController.getTeamNotes);
+// router.post('/:id/notes', teamsController.addTeamNote);
+
+// // Messaging
+// router.get('/:id/messages', teamsController.getTeamMessages);
+// router.post('/:id/messages', teamsController.postTeamMessage);
+
+// // Availability
+// router.get('/:id/availability', teamsController.getAvailability);
+// router.post('/:id/availability', teamsController.setAvailability);
+
+export default  router;
