@@ -5,6 +5,11 @@ import federationController from '../controllers/federationsController.js';
 
 const router = express.Router();
 
+
+router.get('/by-sport/:sportId', federationController.getFederationBySport);
+router.get('/:id/weekly-summary', federationController.getWeeklySummary);
+router.get('/:id/media-highlights', federationController.getMediaHighlights);
+
 router.get('/', federationController.getAllFederations);
 router.get('/:id', federationController.getFederationById);
 router.post('/', federationController.createFederation);

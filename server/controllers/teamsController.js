@@ -9,6 +9,12 @@ const getAllTeams = async (req, res) => {
 };
 
 const getTeamById = async (req, res) => {
+  const teamId = parseInt(req.params.id, 10);
+  if (isNaN(teamId)) {
+    return res.status(400).json({ error: 'Invalid team ID' });
+  }
+
+  console.log('THE REQUEST: ', req.params);
   const result = await pool.query('SELECT * FROM teams WHERE id = $1', [req.params.id]);
   res.json(result.rows[0]);
 };

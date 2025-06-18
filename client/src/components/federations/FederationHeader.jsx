@@ -1,13 +1,21 @@
 import React from 'react';
-import { Typography, Box, Avatar } from '@mui/material';
+import { Box, Typography, FormControl, Select, MenuItem } from '@mui/material';
 
-export default function FederationHeader({ logo, name, sport, description }) {
-  return (
-    <Box sx={{ textAlign: 'center', my: 4 }}>
-      <Avatar src={logo} sx={{ width: 100, height: 100, mx: 'auto' }} />
-      <Typography variant="h4" mt={2}>{name}</Typography>
-      <Typography variant="subtitle1" color="text.secondary">{sport}</Typography>
-      <Typography variant="body1" mt={1}>{description}</Typography>
-    </Box>
-  );
-}
+const FederationHeader = ({ name, sportId, sports, handleSportChange }) => (
+  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 3, mt: -10, mb: 4 }}>
+    <Typography variant="h4" fontWeight={600} color="#fff" sx={{ textShadow: '1px 1px 4px rgba(0,0,0,0.6)' }}>
+      {name}
+    </Typography>
+    <FormControl>
+      <Select value={sportId} onChange={handleSportChange} size="small">
+        {sports.map((sport) => (
+          <MenuItem key={sport.id} value={sport.id}>
+            {sport.name}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  </Box>
+);
+
+export default FederationHeader;

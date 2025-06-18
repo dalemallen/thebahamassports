@@ -1,7 +1,8 @@
 // controllers/eventsController.js
 import pool from '../db/index.js';
 
-export const getAllEvents = async (req, res) => {
+
+ const getAllEvents = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM events ORDER BY date ASC');
     res.json(result.rows);
@@ -11,7 +12,7 @@ export const getAllEvents = async (req, res) => {
   }
 };
 
-export const getEventById = async (req, res) => {
+ const getEventById = async (req, res) => {
   try {
     const { id } = req.params;
     const result = await pool.query('SELECT * FROM events WHERE id = $1', [id]);
@@ -21,4 +22,30 @@ export const getEventById = async (req, res) => {
     console.error('Error fetching event:', err);
     res.status(500).json({ error: 'Failed to fetch event' });
   }
+};
+
+ const getUpcomingEvents = async (req, res) => {
+  try {
+    const { federationId } = req.query;
+
+    const result = await pool.query(
+      `SELECT * FROM events
+       WHERE federation_id = $1 AND start_date >= CURRENT_DATE
+       ORDER BY start_date ASC
+       LIMIT 5`,
+      [federationId]
+    );
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching upcoming events:', error);
+    res.status(500).json({ error: 'Failed to load upcoming events' });
+  }
+};
+
+
+export default {
+  getAllEvents,
+  getEventById,
+getUpcomingEvents
 };

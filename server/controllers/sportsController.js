@@ -1,5 +1,4 @@
 // server/controllers/sportsController.js
-import db from '../db/index.js';
 import pool from '../db/index.js';
 
 export const getAllSports = async (req, res) => {

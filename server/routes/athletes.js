@@ -6,5 +6,8 @@ const router = express.Router();
 router.post('/', athletesController.createAthleteProfile);
 router.get('/:id', athletesController.getAthleteProfile);
 router.put('/:id', athletesController.updateAthleteProfile);
+router.get('/top', athletesController.getTopAthletes);
+
+
 
 export default router;

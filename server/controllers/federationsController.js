@@ -11,6 +11,25 @@ import pool from '../db/index.js';
   res.json(result.rows[0]);
 };
 
+// server/controllers/federationController.js
+export const getFederationBySport = async (req, res) => {
+  const { sportId } = req.params;
+  try {
+    const result = await pool.query(
+      'SELECT * FROM federations WHERE sport_id = $1 AND deleted_at IS NULL',
+      [sportId]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Federation not found for this sport.' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error fetching federation by sport:', err);
+    res.status(500).json({ error: 'Failed to fetch federation' });
+  }
+};
+
+
  const createFederation = async (req, res) => {
   const { name, sport_id, president } = req.body;
   const result = await pool.query(
@@ -454,9 +473,44 @@ const getFederationAthletes = async (req, res) => {
   }
 };
 
+export const getWeeklySummary = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(`
+      SELECT COUNT(*) AS events_this_week
+      FROM events
+      WHERE federation_id = $1 AND start_date >= CURRENT_DATE - INTERVAL '7 days'
+    `, [id]);
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error fetching weekly summary:', err);
+    res.status(500).json({ error: 'Failed to fetch weekly summary' });
+  }
+};
+
+export const getMediaHighlights = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(`
+      SELECT * FROM media
+      WHERE federation_id = $1
+      ORDER BY created_at DESC
+      LIMIT 10
+    `, [id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching media highlights:', err);
+    res.status(500).json({ error: 'Failed to fetch media highlights' });
+  }
+};
+
+
+
+
 export default {
   getAllFederations,
   getFederationById,
+  getFederationBySport,
   createFederation,
   updateFederation,
   deleteFederation,
@@ -499,4 +553,6 @@ export default {
   manageFederationSponsors,
   scheduleAnnualMeetings,
   getFederationAthletes,
+  getWeeklySummary,
+  getMediaHighlights,
 };

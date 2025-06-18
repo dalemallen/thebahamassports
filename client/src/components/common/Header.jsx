@@ -183,7 +183,7 @@ const Header = () => {
         </AppBar>
 
         <Grow in={Boolean(activeDropdown)} timeout={250} unmountOnExit>
-          <Box sx={{ bgcolor: '#fff', py: 3, pl: 3, borderTop: '1px solid #eee', boxShadow: 1 }}>
+          <Box sx={{ bgcolor: '#fff', py: 3, pl: 3,  }}>
             <Container>
               <Grid container spacing={2} columns={5}>
                 {menuItems.map((item, index) => (

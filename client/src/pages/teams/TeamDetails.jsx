@@ -10,13 +10,13 @@ import BackButton from "../../components/common/BackButton";
 import Roster from "../../components/common/Roster";  // Modular Roster Component
 
 export default function TeamDetails() {
-  const { id } = useParams();
+  const { teamId } = useParams();
   const [team, setTeam] = useState(null);
 
   useEffect(() => {
     const fetchTeam = async () => {
       try {
-        const { data } = await axios.get(`/api/teams/${id}`);
+        const { data } = await axios.get(`/api/teams/${teamId}`);
         setTeam(data);
       } catch (err) {
         console.error("Failed to load team details", err);
@@ -24,7 +24,7 @@ export default function TeamDetails() {
     };
 
     fetchTeam();
-  }, [id]);
+  }, [teamId]);
 
   if (!team) return <Typography>Loading team details...</Typography>;
 

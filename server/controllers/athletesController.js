@@ -101,3 +101,32 @@ exports.updateAthleteProfile = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const getTopAthletes = async (req, res) => {
+  const { sportId, federationId } = req.query;
+
+  try {
+    const result = await pool.query(
+      `SELECT a.id, u.first_name || ' ' || u.last_name as name, a.position, a.points
+       FROM athlete_profiles a
+       JOIN users u ON a.user_id = u.id
+       WHERE a.deleted_at IS NULL
+         AND u.id IN (
+           SELECT user_id FROM user_roles WHERE role_id = (
+             SELECT id FROM roles WHERE name = 'athlete'
+           )
+         )
+         AND a.club_team IN (
+           SELECT name FROM teams WHERE federation_id = $1
+         )
+       ORDER BY a.points DESC NULLS LAST
+       LIMIT 6`,
+      [federationId]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching top athletes:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+

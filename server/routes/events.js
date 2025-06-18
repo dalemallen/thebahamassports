@@ -3,8 +3,9 @@ import eventsController from '../controllers/eventsController.js'; // make sure 
 
 const router = express.Router();
 
-router.get('/user/:userId', eventsController.getScheduleForUser);
-router.get('/', eventsController.getAllEvents);
-router.get('/:id/results', eventsController.getEventResults);
+router.get('/upcoming',eventsController.getUpcomingEvents);
+// router.get('/user/:userId', getScheduleForUser);
+// router.get('/', getAllEvents);
+// router.get('/:id/results', getEventResults);
 
 export default router;

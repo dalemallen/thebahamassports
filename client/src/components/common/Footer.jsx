@@ -67,13 +67,13 @@ export default function Footer() {
         ) : (
           <Grid container spacing={4}>
             {Object.entries(desktopLinks).map(([section, links]) => (
-              <Grid  size={{ xs:6, sm:4, md:2 }} key={section}>
+              <Grid  size={{ xs:6, sm:4, md: section === "Sports" ? 4 : 2 }} key={section}>
                 <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom>
                   {section}
                 </Typography>
-             
+              <Grid container >
                 {links.map((label, idx) => (
-
+ <Grid  size={{ xs:12, md: section === "Sports" ? 4 : 12 }} key={links} id="jere">
                   <Link
                     href={`/sports/${label.toLowerCase().replace(/ /g, "-")}`}
                     key={idx}
@@ -84,9 +84,9 @@ export default function Footer() {
                   >
                     {label}
                   </Link>
-               
+                    </Grid>
                 ))}
-       
+        </Grid>
               </Grid>
             ))}
           </Grid>
