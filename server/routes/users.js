@@ -1,10 +1,15 @@
+// routes/users.js
 import express from 'express';
-import usersController from '../controllers/usersController.js';
+import {
+  registerUser,
+  getUserById,
+  completeOnboarding
+} from '../controllers/usersController.js';
 
 const router = express.Router();
 
-router.post('/register-user', usersController.registerUser);
-router.get('/:id', usersController.getUserById);
-router.patch('/:id/complete-onboarding', usersController.completeOnboarding);
+router.post('/register-user', registerUser);
+router.get('/:id', getUserById);
+router.patch('/:id/complete-onboarding', completeOnboarding);
 
 export default router;

@@ -244,6 +244,28 @@ const getFederationTeams = async (req, res) => {
   }
 };
 
+ const getAthletesByFederation = async (req, res) => {
+  const { id: federationId } = req.params;
+
+  try {
+    const result = await pool.query(
+      `
+      SELECT u.id, u.first_name, u.last_name, ap.position, ap.club_team
+      FROM users u
+      JOIN athlete_profiles ap ON u.id = ap.user_id
+      WHERE ap.federation_id = $1
+      ORDER BY u.last_name ASC
+      `,
+      [federationId]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching federation athletes:', err);
+    res.status(500).json({ error: 'Failed to fetch federation athletes' });
+  }
+};
+
 // Approve team join request to a federation
 const approveTeamJoinRequest = async (req, res) => {
   const { request_id } = req.body;
@@ -473,36 +495,47 @@ const getFederationAthletes = async (req, res) => {
   }
 };
 
+// WEEKLY SUMMARY
 export const getWeeklySummary = async (req, res) => {
-  const { id } = req.params;
+  const { federationId } = req.params;
+
   try {
-    const result = await pool.query(`
-      SELECT COUNT(*) AS events_this_week
-      FROM events
-      WHERE federation_id = $1 AND start_date >= CURRENT_DATE - INTERVAL '7 days'
-    `, [id]);
-    res.json(result.rows[0]);
+    const result = await pool.query(
+      `SELECT summary_text FROM weekly_summaries
+       WHERE federation_id = $1
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [federationId]
+    );
+
+    res.json(result.rows[0] || null);
   } catch (err) {
     console.error('Error fetching weekly summary:', err);
-    res.status(500).json({ error: 'Failed to fetch weekly summary' });
+    res.status(500).json({ error: 'Failed to load summary' });
   }
 };
 
+// MEDIA HIGHLIGHTS
 export const getMediaHighlights = async (req, res) => {
-  const { id } = req.params;
+  const { federationId } = req.params;
+
   try {
-    const result = await pool.query(`
-      SELECT * FROM media
-      WHERE federation_id = $1
-      ORDER BY created_at DESC
-      LIMIT 10
-    `, [id]);
+    const result = await pool.query(
+      `SELECT title, highlight_date, media_url
+       FROM media_highlights
+       WHERE federation_id = $1
+       ORDER BY highlight_date DESC
+       LIMIT 6`,
+      [federationId]
+    );
+
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching media highlights:', err);
-    res.status(500).json({ error: 'Failed to fetch media highlights' });
+    res.status(500).json({ error: 'Failed to load highlights' });
   }
 };
+
 
 
 
@@ -555,4 +588,5 @@ export default {
   getFederationAthletes,
   getWeeklySummary,
   getMediaHighlights,
+  getAthletesByFederation,
 };

@@ -8,15 +8,11 @@ import {
   Tabs,
   Tab,
   Grid,
-  MenuItem,
-  Select,
-  FormControl,
   CircularProgress,
   Card,
   CardContent,
   CardActions,
   Button,
-  Paper,
 } from '@mui/material';
 import axios from 'axios';
 import PlayersGrid from '../../components/federations/PlayersGrid';
@@ -33,13 +29,9 @@ const FederationDetails = () => {
   const [sports, setSports] = useState([]);
   const [federation, setFederation] = useState(null);
   const [topAthletes, setTopAthletes] = useState([]);
-  console.log('topAthletes: ', topAthletes);
   const [events, setEvents] = useState([]);
-  console.log('events: ', events);
   const [weeklySummary, setWeeklySummary] = useState(null);
-  console.log('weeklySummary: ', weeklySummary);
   const [mediaHighlights, setMediaHighlights] = useState([]);
-  console.log('mediaHighlights: ', mediaHighlights);
   const [tab, setTab] = useState(0);
 
   useEffect(() => {
@@ -49,18 +41,21 @@ const FederationDetails = () => {
         setSports(sportsRes.data);
 
         const federationRes = await axios.get(`/api/federations/by-sport/${sportId}`);
-        console.log('federationRes: ', federationRes);
         const fedData = federationRes.data;
         setFederation(fedData);
 
-        if (fedData?.id) {
+        if (fedData?.id) {console.log('O');
           const [topAthletesRes, eventsRes, summaryRes, highlightsRes] = await Promise.all([
-            axios.get(`/api/athletes/top?sportId=${sportId}&federationId=${fedData.id}`),
-            axios.get(`/api/events/upcoming?federationId=${fedData.id}`),
+    
+            axios.get(`/api/athletes/top/${sportId}/${fedData.id}`),
+            axios.get(`/api/events/upcoming/${fedData.id}`),
             axios.get(`/api/federations/${fedData.id}/weekly-summary`),
             axios.get(`/api/federations/${fedData.id}/media-highlights`),
           ]);
+          console.log("Calling:", `/api/athletes/top/${sportId}/${fedData.id}`);
 
+                  console.log('topAthletesRes: ', topAthletesRes);
+ console.log('eventsRes: ', eventsRes);
           setTopAthletes(topAthletesRes.data);
           setEvents(eventsRes.data);
           setWeeklySummary(summaryRes.data);
@@ -98,7 +93,6 @@ const FederationDetails = () => {
       />
 
       <Box sx={{ px: 3, mt: 4 }}>
-        {/* CTA Cards */}
         <Grid container spacing={2} sx={{ mb: 4 }}>
           <Grid item xs={12} sm={6}>
             <Card>
@@ -132,16 +126,8 @@ const FederationDetails = () => {
           </Grid>
         </Grid>
 
-        {/* Federation Stats */}
-        {federation?.id ? (
-          <FederationStats federationId={federation.id} />
-        ) : (
-          <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
-            Stats currently unavailable.
-          </Typography>
-        )}
+        <FederationStats federationId={federation.id} />
 
-        {/* Events and Weekly Summary */}
         <Grid container spacing={2} sx={{ my: 4 }}>
           <Grid item xs={12} md={6}>
             <UpcomingEvents events={events} />
@@ -151,13 +137,11 @@ const FederationDetails = () => {
           </Grid>
         </Grid>
 
-        {/* Highlights */}
         <Box sx={{ mb: 4 }}>
           <Typography variant="h6" sx={{ mb: 2 }}>Highlights</Typography>
           <MediaCarousel highlights={mediaHighlights} />
         </Box>
 
-        {/* Top Performers */}
         <Box sx={{ my: 4 }}>
           <Typography variant="h6" sx={{ mb: 2 }}>Top Performers</Typography>
           <Grid container spacing={2}>
@@ -174,22 +158,15 @@ const FederationDetails = () => {
           </Grid>
         </Box>
 
-        {/* Tabs Section */}
         <Tabs value={tab} onChange={(e, newVal) => setTab(newVal)} sx={{ mb: 3 }}>
           <Tab label="Players" />
           <Tab label="Teams" />
         </Tabs>
 
-        {federation?.id ? (
-          tab === 0 ? (
-            <PlayersGrid federationId={federation.id} />
-          ) : (
-            <TeamsGrid federationId={federation.id} />
-          )
+        {tab === 0 ? (
+         <PlayersGrid players={topAthletes} />
         ) : (
-          <Typography variant="body2" color="textSecondary">
-            Unable to load federation data.
-          </Typography>
+          <TeamsGrid federationId={federation.id} />
         )}
       </Box>
     </Container>

@@ -21,16 +21,20 @@ export default function PlayerDetails() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`/api/players/${playerId}`)
-      .then(res => {
-        setPlayer(res.data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Error fetching player:", err);
-        setLoading(false);
-      });
-  }, [playerId]);
+  const fetchPlayer = async () => {
+    try {
+      const res = await axios.get(`/api/players/${playerId}`);
+      console.log('res: ', res);
+      setPlayer(res.data);
+    } catch (err) {
+      console.error("Error fetching player:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (playerId) fetchPlayer();
+}, [playerId]);
 
   if (loading || !player) {
     return (

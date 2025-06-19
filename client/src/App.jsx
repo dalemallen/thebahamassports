@@ -4,6 +4,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import PageLoader from "./components/PageLoader.jsx";
 
 
+
 // Core
 const Home = lazy(() => import("./pages/home/Home.jsx"));
 const RedirectHandler = lazy(() => import("./components/auth/RedirectHandler.jsx"));
@@ -47,6 +48,7 @@ const EventLists = lazy(() => import("./components/events/EventLists.jsx"));
 const EventDetails = lazy(() => import("./pages/events/EventDetails.jsx"));
 const EventTeams = lazy(() => import("./components/events/EventTeams.jsx"));
 const EventResults = lazy(() => import("./components/events/EventResults.jsx"));
+const SchedulePage = lazy(() => import("./pages/schedules/SchedulePage.jsx"));
 
 export default function App() {
   return (
@@ -152,6 +154,9 @@ export default function App() {
         <Route path="/events/:eventId" element={<EventDetails />} />
         <Route path="/events/:eventId/teams" element={<EventTeams />} />
         <Route path="/events/:eventId/results" element={<EventResults />} />
+<Route path="/schedule" element={<SchedulePage />} />
+          <Route path="/schedule/:federationId/" element={<EventResults />} />
+          <Route path="/schedule/:userId/" element={<EventResults />} />
       </Routes>
       <Footer />
     </Suspense>

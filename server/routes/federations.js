@@ -7,8 +7,9 @@ const router = express.Router();
 
 
 router.get('/by-sport/:sportId', federationController.getFederationBySport);
-router.get('/:id/weekly-summary', federationController.getWeeklySummary);
-router.get('/:id/media-highlights', federationController.getMediaHighlights);
+router.get('/:federationId/weekly-summary', federationController.getWeeklySummary);
+router.get('/:federationId/media-highlights', federationController.getMediaHighlights);
+router.get('/:federationId/athletes', federationController.getAthletesByFederation);
 
 router.get('/', federationController.getAllFederations);
 router.get('/:id', federationController.getFederationById);

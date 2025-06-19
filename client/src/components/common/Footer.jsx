@@ -73,10 +73,10 @@ export default function Footer() {
                 </Typography>
               <Grid container >
                 {links.map((label, idx) => (
- <Grid  size={{ xs:12, md: section === "Sports" ? 4 : 12 }} key={links} id="jere">
+ <Grid  size={{ xs:12, md: section === "Sports" ? 4 : 12 }}  key={idx}>
                   <Link
                     href={`/sports/${label.toLowerCase().replace(/ /g, "-")}`}
-                    key={idx}
+                   
                     underline="hover"
                     color="textPrimary"
                     display="block"

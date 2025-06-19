@@ -1,3 +1,4 @@
+import { pl } from '@faker-js/faker';
 import pool from '../db/index.js';
 import { handleError } from '../utils/errorHandler.js';
 
@@ -351,6 +352,31 @@ const getTopPlayersByStat = async (req, res) => {
   }
 };
 
+ const getPlayerById = async (req, res) => {
+  console.log('getPlayerById: ');
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(
+      `SELECT u.id, u.first_name, u.last_name, ap.*
+       FROM users u
+       JOIN athlete_profiles ap ON u.id = ap.user_id
+       WHERE u.id = $1`,
+      [id]
+    );
+     console.log('result: ', result);
+    if (result.rowCount === 0) {
+ 
+      return res.status(404).json({ error: 'Player not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error fetching player:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 export default {
   getAllPlayers,
   getPlayersByTeam,
@@ -377,5 +403,6 @@ export default {
   unfollowPlayer,
   getFollowers,
   getPlayerCalendarAvailability,
-  getTopPlayersByStat
+  getTopPlayersByStat,
+  getPlayerById,
 };

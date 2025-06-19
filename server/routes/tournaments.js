@@ -1,9 +1,15 @@
+// routes/tournaments.js
 import express from 'express';
-import tournamentsController from '../controllers/tournamentsController.js';
+import {
+  getAllTournaments,
+  getTournamentById,
+  registerForTournament
+} from '../controllers/tournamentsController.js';
 
 const router = express.Router();
 
-router.get('/', tournamentsController.getAllTournaments);
-router.get('/:id', tournamentsController.getTournamentById);
+router.get('/', getAllTournaments);
+router.get('/:id', getTournamentById);
+router.post('/register', registerForTournament);
 
 export default router;

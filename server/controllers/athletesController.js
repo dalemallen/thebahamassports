@@ -1,7 +1,7 @@
 import pool from '../db/index.js';
 
 // POST /api/athletes
-exports.createAthleteProfile = async (req, res) => {
+export const createAthleteProfile = async (req, res) => {
   const {
     user_id,
     birthdate,
@@ -58,29 +58,8 @@ exports.createAthleteProfile = async (req, res) => {
   }
 };
 
-// GET /api/athletes/:id
-exports.getAthleteProfile = async (req, res) => {
-  const userId = req.params.id;
-
-  try {
-    const result = await pool.query(`
-      SELECT * FROM athlete_profiles
-      WHERE user_id = $1
-    `, [userId]);
-
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: 'Athlete profile not found' });
-    }
-
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error('getAthleteProfile error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
 // PUT /api/athletes/:id
-exports.updateAthleteProfile = async (req, res) => {
+export const updateAthleteProfile = async (req, res) => {
   const userId = req.params.id;
   const updates = req.body;
 
@@ -102,31 +81,33 @@ exports.updateAthleteProfile = async (req, res) => {
   }
 };
 
+// controllers/playerController.js
 export const getTopAthletes = async (req, res) => {
-  const { sportId, federationId } = req.query;
+  const { sportId, federationId } = req.params;
+  console.log('Fetching top athletes for:', sportId, federationId);
 
   try {
     const result = await pool.query(
-      `SELECT a.id, u.first_name || ' ' || u.last_name as name, a.position, a.points
-       FROM athlete_profiles a
-       JOIN users u ON a.user_id = u.id
-       WHERE a.deleted_at IS NULL
-         AND u.id IN (
-           SELECT user_id FROM user_roles WHERE role_id = (
-             SELECT id FROM roles WHERE name = 'athlete'
-           )
-         )
-         AND a.club_team IN (
-           SELECT name FROM teams WHERE federation_id = $1
-         )
-       ORDER BY a.points DESC NULLS LAST
-       LIMIT 6`,
-      [federationId]
+      `SELECT u.id, u.first_name, u.last_name, ap.stat_summary
+       FROM users u
+       JOIN athlete_profiles ap ON u.id = ap.user_id
+       WHERE ap.sport_id = $1 AND ap.federation_id = $2
+       ORDER BY ap.stat_summary DESC
+       LIMIT 5`,
+      [sportId, federationId]
     );
+
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching top athletes:', err);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ error: 'Failed to fetch top athletes' });
   }
 };
 
+
+export default {
+  createAthleteProfile,
+  updateAthleteProfile,
+  getTopAthletes,
+
+};

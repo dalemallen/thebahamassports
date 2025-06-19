@@ -3,6 +3,7 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 
 const WeeklySummary = ({ summary }) => {
+  console.log('summary: ', summary);
   if (!summary) return <Typography>No weekly summary available.</Typography>;
 
   return (

@@ -52,46 +52,45 @@ const Header = () => {
           children: [
             { label: 'Players', path: '/players' },
             { label: 'Teams', path: '/teams' },
-            { label: 'Top Performers', path: '/top-performers' },
-            { label: 'Clubs', path: '/clubs' }
+            // { label: 'Top Performers', path: '/top-performers' },
           ]
         },
-        {
-          label: 'Watch',
-          children: [
-            { label: 'Highlights', path: '/highlights' },
-            { label: 'Interviews', path: '/interviews' },
-            { label: 'Training Clips', path: '/training-clips' },
-            { label: 'Athlete Spotlights', path: '/spotlights' }
-          ]
-        },
-        {
-          label: 'Updates',
-          children: [
-            { label: 'Federation Updates', path: '/updates/federation' },
-            { label: 'Athlete Announcements', path: '/updates/athletes' },
-            { label: 'Scholarships & Sponsorships', path: '/updates/opportunities' }
-          ]
-        },
-        {
-          label: 'Sponsors',
-          children: [
-            { label: 'Sponsorships', path: '/sponsors/opportunities' },
-            { label: 'Sponsor Accounts', path: '/sponsors/accounts' },
-            { label: 'Scholarships', path: '/sponsors/scholarships' }
-          ]
-        },
-        {
-          label: 'Accounts',
-          children: [
-            { label: 'Athlete', path: '/accounts/athlete' },
-            { label: 'Team', path: '/accounts/team' },
-            { label: 'Coach', path: '/accounts/coach' },
-            { label: 'Parent', path: '/accounts/parent' },
-            { label: 'Sponsor', path: '/accounts/sponsor' },
-            { label: 'Organization', path: '/accounts/organization' }
-          ]
-        },
+        // {
+        //   label: 'Watch',
+        //   children: [
+        //     { label: 'Highlights', path: '/highlights' },
+        //     { label: 'Interviews', path: '/interviews' },
+        //     { label: 'Training Clips', path: '/training-clips' },
+        //     { label: 'Athlete Spotlights', path: '/spotlights' }
+        //   ]
+        // },
+        // {
+        //   label: 'Updates',
+        //   children: [
+        //     { label: 'Federation Updates', path: '/updates/federation' },
+        //     { label: 'Athlete Announcements', path: '/updates/athletes' },
+        //     { label: 'Scholarships & Sponsorships', path: '/updates/opportunities' }
+        //   ]
+        // },
+        // {
+        //   label: 'Sponsors',
+        //   children: [
+        //     { label: 'Sponsorships', path: '/sponsors/opportunities' },
+        //     { label: 'Sponsor Accounts', path: '/sponsors/accounts' },
+        //     { label: 'Scholarships', path: '/sponsors/scholarships' }
+        //   ]
+        // },
+        // {
+        //   label: 'Accounts',
+        //   children: [
+        //     { label: 'Athlete', path: '/accounts/athlete' },
+        //     { label: 'Team', path: '/accounts/team' },
+        //     { label: 'Coach', path: '/accounts/coach' },
+        //     { label: 'Parent', path: '/accounts/parent' },
+        //     { label: 'Sponsor', path: '/accounts/sponsor' },
+        //     { label: 'Organization', path: '/accounts/organization' }
+        //   ]
+        // },
         {
           label: 'Info Hub',
           children: [

@@ -5,6 +5,7 @@ import { requireRole } from '../middleware/rbac.js';
 
 const router = express.Router();
 
+router.get('/:id', playerController.getPlayerById);
 // Core
 router.get('/', playerController.getAllPlayers);
 router.get('/team/:teamId', playerController.getPlayersByTeam);
@@ -13,6 +14,7 @@ router.get('/leaderboard', playerController.getPlayerLeaderboard);
 router.get('/search', playerController.searchPlayers);
 
 // Stats & Profile
+
 router.get('/:id/stats', playerController.getPlayerStats);
 router.get('/:id/attendance', playerController.getPlayerAttendance);
 router.get('/:id/trainings', playerController.getPlayerTrainingHistory);

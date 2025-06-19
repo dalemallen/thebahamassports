@@ -1,10 +1,15 @@
+// routes/leagues.js
 import express from 'express';
-import leaguesController from '../controllers/leaguesController.js'; // Adjust the path if needed
+import {
+  getAllLeagues,
+  getLeagueById,
+  registerForLeague
+} from '../controllers/leaguesController.js';
 
 const router = express.Router();
 
-router.get('/', leaguesController.getAllLeagues);
-router.get('/:id', leaguesController.getLeagueById);
-router.post('/register', leaguesController.registerForLeague);
+router.get('/', getAllLeagues);
+router.get('/:id', getLeagueById);
+router.post('/register', registerForLeague);
 
 export default router;
