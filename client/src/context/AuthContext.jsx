@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
 
     sessionStorage.removeItem('pendingRole');
 
-    fetch('/api/register-user', {
+    fetch('/api/users/register-user', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
     })
     .catch(err => {
       console.error('DB registration error:', err);
-      window.location.href = '/account-setup-failed'; // or show toast/snackbar
+    // window.location.href = '/?account_error=true'; // or show toast/snackbar
     });
   }
   }, [isAuthenticated, getAccessTokenSilently]);

@@ -1,21 +1,25 @@
 import { useAuth0 } from '@auth0/auth0-react';
+import { Button } from '@mui/material';
 
-export default function LoginButton({ role }) {
+const LoginButton = ({ role = 'athlete' }) => {
   const { loginWithRedirect } = useAuth0();
 
   const handleLogin = () => {
-    // Store role in sessionStorage so we can retrieve it after redirect
     sessionStorage.setItem('pendingRole', role);
 
     loginWithRedirect({
-      appState: { role }, // optional, may not survive reload
+      appState: { role },
       authorizationParams: {
-        redirect_uri: window.location.origin + "/callback", // or your redirect URL
+        redirect_uri: window.location.origin + "/callback", // adjust as needed
       },
     });
   };
 
   return (
-    <button onClick={handleLogin}>Login as {role}</button>
+    <Button onClick={handleLogin} variant="contained" color="primary">
+      Log In / Sign Up
+    </Button>
   );
-}
+};
+
+export default LoginButton;

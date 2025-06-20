@@ -13,6 +13,8 @@ import StayConnected from "../../components/home/StayConnected";
 
 export default function Home() {
   const { user, isAuthenticated, isLoading, getIdTokenClaims } = useAuth0();
+  console.log('isAuthenticated: ', isAuthenticated);
+  console.log('user: ', user);
   const [role, setRole] = useState("");
 
   useEffect(() => {

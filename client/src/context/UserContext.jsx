@@ -1,60 +1,52 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { jwtDecode } from 'jwt-decode';
 
 const UserContext = createContext();
 const namespace = "https://thebahamassports.com/roles";
 
 export const UserProvider = ({ children }) => {
-  const { isAuthenticated, getAccessTokenSilently, user } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently, user, isLoading } = useAuth0();
+  const [dbUser, setDbUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [selectedRole, setSelectedRole] = useState(() => sessionStorage.getItem("pendingRole"));
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  const [userLoading, setUserLoading] = useState(true);
 
-  // 🔑 Fetch role from access token or DB
   useEffect(() => {
-    const fetchRoleAndOnboarding = async () => {
-      if (!isAuthenticated) return;
-
-      try {
-        const token = await getAccessTokenSilently({
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-        });
-        const decoded = jwtDecode(token);
-        const roles = decoded[namespace];
-        if (roles && roles.length > 0) {
-          setUserRole(roles[0]);
-        }
-      } catch (err) {
-        console.error("Error decoding role from token", err);
-      }
+    const fetchUserData = async () => {
+      if (!isAuthenticated || !user) return;
 
       try {
         const res = await fetch(`/api/users/${user.sub}`);
+        if (!res.ok) throw new Error("User not found in DB");
         const data = await res.json();
-        if (!data || !data.profileCompleted) {
-          setNeedsOnboarding(true);
-        } else {
-          setNeedsOnboarding(false);
-        }
+
+        setDbUser(data);
+        setUserRole(data.role);
+        setNeedsOnboarding(!data.onboarding_complete);
       } catch (err) {
-        console.log("Error checking onboarding", err);
+        console.error("UserContext DB fetch error:", err);
         setNeedsOnboarding(true);
+      } finally {
+        setUserLoading(false);
       }
     };
 
-    fetchRoleAndOnboarding();
-  }, [isAuthenticated, getAccessTokenSilently, user]);
+    fetchUserData();
+  }, [isAuthenticated, user]);
 
   return (
     <UserContext.Provider
       value={{
         user,
         isAuthenticated,
+        isLoading,
+        dbUser,
         userRole,
         selectedRole,
         setSelectedRole,
-        needsOnboarding
+        needsOnboarding,
+        userLoading
       }}
     >
       {children}

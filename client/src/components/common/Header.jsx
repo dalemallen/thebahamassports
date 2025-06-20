@@ -17,14 +17,22 @@ import {
   useMediaQuery,
   ClickAwayListener,
   Grow,
-  Paper
+  Paper, 
+  Avatar, 
+  Menu,
+  MenuItem
 } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import MenuIcon from '@mui/icons-material/Menu';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
+import LoginButton from './LoginButton';  
+import LogoutButton from './LogoutButton'
+import { useAuth0 } from '@auth0/auth0-react';
 
 const Header = () => {
+  const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
+  const [anchorEl, setAnchorEl] = useState(null);
   const [navItems, setNavItems] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [menuItems, setMenuItems] = useState([]);
@@ -33,6 +41,9 @@ const Header = () => {
   const isMobile = useMediaQuery('(max-width:900px)');
   const location = useLocation();
   const dropdownRef = useRef(null);
+
+    const handleAvatarClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
 
   useEffect(() => {
     const fetchNavItems = async () => {
@@ -174,9 +185,28 @@ const Header = () => {
               ))
             )}
             {!isMobile && (
-              <Button href="/login" sx={{ color: '#000', fontWeight: 500, ml: 2 }}>
-                Login / Sign Up
-              </Button>
+     <>{isAuthenticated ? (
+        <>
+          <Avatar
+            src={user.picture}
+            alt={user.name}
+            onClick={handleAvatarClick}
+            sx={{ cursor: 'pointer', ml: 2 }}
+          />
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+            <MenuItem disabled>{user.name}</MenuItem>
+            <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>Logout</MenuItem>
+          </Menu>
+        </>
+      ) : (
+        <Button
+          variant="contained"
+          onClick={() => loginWithRedirect()}
+          sx={{ ml: 2 }}
+        >
+          Log In / Sign Up
+        </Button>
+      )}</>
             )}
           </Toolbar>
         </AppBar>
@@ -214,9 +244,29 @@ const Header = () => {
                 <ListItemText primary={item.label} />
               </ListItem>
             ))}
-            <ListItem button component="a" href="/login" onClick={() => setMobileOpen(false)}>
-              <ListItemText primary="Login / Sign Up" />
-            </ListItem>
+                <>{isAuthenticated ? (
+        <>
+          <Avatar
+            src={user.picture}
+            alt={user.name}
+            onClick={handleAvatarClick}
+            sx={{ cursor: 'pointer', ml: 2 }}
+          />
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+            <MenuItem disabled>{user.name}</MenuItem>
+            <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>Logout</MenuItem>
+          </Menu>
+        </>
+      ) : (
+        <Button
+          variant="contained"
+          onClick={() => loginWithRedirect()}
+          sx={{ ml: 2 }}
+        >
+          Log In / Sign Up
+        </Button>
+      )}</>
+       
           </List>
         </Drawer>
       </Box>
