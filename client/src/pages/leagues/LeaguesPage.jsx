@@ -1,79 +1,86 @@
 
-// src/pages/LeaguesPage.jsx
-import { useEffect, useState } from "react";
-import { useSport } from "../../context/SportsContext";
-import axios from "axios";
-import LeagueList from "../../components/leagues/LeagueList";
+import React, { useEffect, useState, useContext } from 'react';
+import {
+  Container, Box, Typography, Grid, Button, Select, MenuItem, TextField
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { UserContext } from '../../context/UserContext';
 
-export default function LeaguesPage() {
-  const { sport } = useSport();
+const LeaguesPage = () => {
   const [leagues, setLeagues] = useState([]);
+  const [sports, setSports] = useState([]);
+  const [selectedSport, setSelectedSport] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`/api/leagues?sport=${sport}`)
-      .then(res => setLeagues(res.data))
-      .catch(() => setLeagues([{ id: 1, name: "Placeholder League" }]));
-  }, [sport]);
+    const fetchData = async () => {
+      const [sportsRes, leaguesRes] = await Promise.all([
+        axios.get('/api/sports'),
+        axios.get('/api/leagues')
+      ]);
+      setSports(sportsRes.data);
+      setLeagues(leaguesRes.data);
+    };
+    fetchData();
+  }, []);
 
-  return (
-    <div>
-      <h1>{sport.charAt(0).toUpperCase() + sport.slice(1)} League</h1>
-      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-      {leagues.map(league => (
-        <LeagueCard key={league.id} league={league} />
-      ))}
-    </div>
+  const filtered = leagues.filter(l =>
+    (!selectedSport || l.sport_id === selectedSport) &&
+    l.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
-}
-
-function LeagueCard({ league }) {
-  const [teams, setTeams] = useState([]);
-  const [matches, setMatches] = useState([]);
-
-  useEffect(() => {
-    axios.get(`/api/leagues/${league.id}/teams`).then(res => setTeams(res.data))
-      .catch(() => setTeams([{ id: 1, name: "Team A" }, { id: 2, name: "Team B" }]));
-    axios.get(`/api/leagues/${league.id}/matches`).then(res => setMatches(res.data))
-      .catch(() => setMatches([{ id: 1, home: "Team A", away: "Team B", date: "TBD" }]));
-  }, [league.id]);
 
   return (
-    <div>
-      <h2>{league.name}</h2>
-      <section>
-        <h3>Teams</h3>
-        <div style={{ display: "flex", gap: "1rem" }}>
-          {teams.map(team => (
-            <div key={team.id} style={{ width: 120, height: 120, background: "#eee" }}>{team.name}</div>
-          ))}
-        </div>
-      </section>
+    <Container>
+      <Box sx={{ my: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography variant="h4">Leagues</Typography>
+        {user?.role === 'federation' && (
+          <Button variant="contained" onClick={() => navigate('/leagues/create')}>
+            + Create New
+          </Button>
+        )}
+      </Box>
 
-      <section>
-        <h3>Upcoming Matches</h3>
-        {matches.map(match => (
-          <div key={match.id} style={{ border: "1px solid #ccc", padding: "0.5rem", margin: "0.5rem 0" }}>
-            {match.home} vs {match.away} — {match.date}
-          </div>
-        ))}
-      </section>
-
-      <section>
-        <h3>Standings</h3>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr><th>Team</th><th>W</th><th>D</th><th>L</th><th>Pts</th></tr>
-          </thead>
-          <tbody>
-            {teams.map((team, index) => (
-              <tr key={index}>
-                <td>{team.name}</td><td>0</td><td>0</td><td>0</td><td>0</td>
-              </tr>
+      <Grid container spacing={2} sx={{ mb: 4 }}>
+        <Grid item xs={12} sm={4}>
+          <Select
+            value={selectedSport}
+            onChange={(e) => setSelectedSport(e.target.value)}
+            fullWidth
+            displayEmpty
+          >
+            <MenuItem value=''>All Sports</MenuItem>
+            {sports.map(s => (
+              <MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>
             ))}
-          </tbody>
-        </table>
-      </section>
-      <LeagueList />
-    </div>
+          </Select>
+        </Grid>
+        <Grid item xs={12} sm={8}>
+          <TextField
+            placeholder="Search by title or organizer"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            fullWidth
+          />
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={2}>
+        {filtered.map(l => (
+          <Grid item xs={12} key={l.id}>
+            <Box p={2} border={1} borderRadius={2}>
+              <Typography variant="h6">{l.title}</Typography>
+              <Typography variant="body2">Organized by: {l.organizer_name}</Typography>
+              <Typography variant="body2">Dates: {l.start_date} - {l.end_date}</Typography>
+              <Button size="small" onClick={() => navigate(`/leagues/${l.id}`)}>View Details</Button>
+            </Box>
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
   );
-}
+};
+
+export default LeaguesPage;

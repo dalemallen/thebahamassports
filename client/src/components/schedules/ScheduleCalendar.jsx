@@ -35,10 +35,11 @@ const ScheduleCalendar = () => {
         initialView="dayGridMonth"
         events={events}
         height="auto"
+        selectable={true}
         headerToolbar={{
           left: 'prev,next today',
           center: 'title',
-          right: 'dayGridMonth,dayGridWeek,dayGridDay'
+          right: 'dayGridMonth'
         }}
       />
     </div>
