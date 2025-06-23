@@ -219,6 +219,27 @@ const payload = {
 };
 
 
+const getAthleteProfile = async (req, res) => {
+  try {
+    const { auth0_id } = req.query;
+    const user_id = await getUserIdFromAuth0(auth0_id);
+
+    const { rows } = await pool.query(
+      'SELECT * FROM athlete_profiles WHERE user_id = $1',
+      [user_id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'Profile not found' });
+    }
+
+    res.status(200).json(rows[0]);
+  } catch (err) {
+    console.error('Error fetching athlete profile:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 
 
 export default {
@@ -226,4 +247,5 @@ export default {
   updateAthleteProfile,
   getTopAthletes,
   saveDraft,
+  getAthleteProfile,
 };

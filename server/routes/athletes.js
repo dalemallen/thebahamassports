@@ -8,6 +8,7 @@ router.put('/:id', athletesController.updateAthleteProfile);
 router.get('/top', athletesController.getTopAthletes);
 router.get('/top/:sportId/:federationId', athletesController.getTopAthletes);
 router.post('/save-draft', athletesController.saveDraft);
+router.get('/profile', athletesController.getAthleteProfile); 
 
 
 export default router;
