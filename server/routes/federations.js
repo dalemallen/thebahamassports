@@ -1,6 +1,7 @@
 
 import express from 'express';
 import federationController from '../controllers/federationsController.js';
+import requireAuth from '../middleware/requireAuth.js';
 
 
 const router = express.Router();
@@ -12,7 +13,18 @@ router.get('/:federationId/media-highlights', federationController.getMediaHighl
 router.get('/:federationId/athletes', federationController.getAthletesByFederation);
 
 router.get('/', federationController.getAllFederations);
-router.get('/:id', federationController.getFederationById);
+
+router.get('/:id', requireAuth, async (req, res) => {
+  const { id } = req.params;
+  console.log('id: ', id);
+
+  if (id === 'me') {
+    return federationController.getFederationByUser(req, res);
+  }
+
+  return federationController.getFederationById(req, res);
+});
+
 router.post('/', federationController.createFederation);
 router.patch('/:id', federationController.updateFederation);
 router.delete('/:id', federationController.deleteFederation);

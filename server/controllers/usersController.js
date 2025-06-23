@@ -39,9 +39,12 @@ export const registerUser = async (req, res) => {
     return res.status(400).json({ error: 'auth0_id, email, and role are required.' });
   }
 
+  const client = await pool.connect();
   try {
-    // 1. Check if user already exists by auth0_id
-    const existingUserRes = await pool.query(
+    await client.query('BEGIN');
+
+    // 1. Check if user already exists
+    const existingUserRes = await client.query(
       `SELECT u.id, u.onboarding_complete, r.name AS role
        FROM users u
        LEFT JOIN user_roles ur ON u.id = ur.user_id
@@ -51,37 +54,41 @@ export const registerUser = async (req, res) => {
     );
 
     if (existingUserRes.rowCount > 0) {
+      await client.query('COMMIT');
       return res.status(200).json(existingUserRes.rows[0]);
     }
 
     // 2. Get role ID
-    const roleRes = await pool.query(`SELECT id FROM roles WHERE name = $1`, [role]);
+    const roleRes = await client.query(`SELECT id FROM roles WHERE name = $1`, [role]);
     if (roleRes.rowCount === 0) {
+      await client.query('ROLLBACK');
       return res.status(400).json({ error: 'Invalid role name' });
     }
     const roleId = roleRes.rows[0].id;
 
     // 3. Insert new user
-    const id = uuidv4();
-    await pool.query(
+    const userId = uuidv4();
+    await client.query(
       `INSERT INTO users (id, auth0_id, email, first_name, last_name, onboarding_complete)
-       VALUES ($1, $2, $3, $4, $5, false)
-       ON CONFLICT (auth0_id) DO NOTHING`,
-      [id, auth0_id, email, first_name, last_name]
+       VALUES ($1, $2, $3, $4, $5, false)`,
+      [userId, auth0_id, email, first_name, last_name]
     );
 
     // 4. Link user to role
-    await pool.query(
+    await client.query(
       `INSERT INTO user_roles (user_id, role_id)
-       VALUES ($1, $2)
-       ON CONFLICT DO NOTHING`,
-      [id, roleId]
+       VALUES ($1, $2)`,
+      [userId, roleId]
     );
 
-    return res.status(201).json({ id, role, onboarding_complete: false });
+    await client.query('COMMIT');
+    return res.status(201).json({ id: userId, role, onboarding_complete: false });
   } catch (err) {
+    await client.query('ROLLBACK');
     console.error('Error registering user:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    client.release();
   }
 };
 
@@ -103,16 +110,16 @@ export const completeOnboarding = async (req, res) => {
 };
 
 export const getUserById = async (req, res) => {
-  const { id } = req.params;
-
   try {
+    const auth0_id = decodeURIComponent(req.params.id);
+
     const result = await pool.query(
       `SELECT u.*, r.name as role
        FROM users u
        LEFT JOIN user_roles ur ON u.id = ur.user_id
        LEFT JOIN roles r ON ur.role_id = r.id
-       WHERE u.id = $1`,
-      [id]
+       WHERE u.auth0_id = $1`,
+      [auth0_id]
     );
 
     if (result.rowCount === 0) {
@@ -122,16 +129,17 @@ export const getUserById = async (req, res) => {
     const user = result.rows[0];
     res.json({
       id: user.id,
+      auth0_id: user.auth0_id,
       email: user.email,
       first_name: user.first_name,
       last_name: user.last_name,
       onboarding_complete: user.onboarding_complete,
       role: user.role,
       profileCompleted: user.onboarding_complete,
+      federation_id: user.federation_id || null, // optional
     });
   } catch (error) {
     console.error('getUserById error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
-

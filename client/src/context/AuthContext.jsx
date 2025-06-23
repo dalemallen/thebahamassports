@@ -1,49 +1,51 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+// Add these imports
+import { useAuth0 } from "@auth0/auth0-react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const { user, getAccessTokenSilently, isAuthenticated, isLoading } = useAuth0();
-  const [accessToken, setAccessToken] = useState(null);
+  const { user: auth0User, isAuthenticated, isLoading } = useAuth0();
+
+  const [user, setUser] = useState(null);
+  const [selectedRole, setSelectedRole] = useState(null);
 
   useEffect(() => {
-    if (isAuthenticated && user && !isLoading) {
+    if (!isAuthenticated || isLoading || !auth0User) return;
 
-      getAccessTokenSilently().then(setAccessToken).catch(console.error);
+    const loadUser = async () => {
+      try {
+        const res = await axios.get(`/api/users/${auth0User.sub}`);
+        setUser(res.data);
+        setSelectedRole(res.data.role);
+      } catch (err) {
+        if (err.response?.status === 404) {
+          const role = sessionStorage.getItem("pendingRole") || "athlete";
+          const payload = {
+            auth0_id: auth0User.sub,
+            email: auth0User.email,
+            first_name: auth0User.given_name || "",
+            last_name: auth0User.family_name || "",
+            role,
+          };
 
-  const role = sessionStorage.getItem('pendingRole');
-    if (!role) return;
+          const regRes = await axios.post(`/api/users/register-user`, payload);
+          setUser(regRes.data);
+          setSelectedRole(role);
+          sessionStorage.removeItem("pendingRole");
+        } else {
+          console.error("Error fetching/creating user", err);
+        }
+      }
+    };
 
-    sessionStorage.removeItem('pendingRole');
-
-    fetch('/api/users/register-user', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        auth0_id: user.sub,
-        email: user.email,
-        first_name: user.given_name,
-        last_name: user.family_name,
-        role: role
-      })
-    })
-    .then(res => {
-      if (!res.ok) throw new Error('Registration failed');
-      return res.json();
-    })
-    .catch(err => {
-      console.error('DB registration error:', err);
-    // window.location.href = '/?account_error=true'; // or show toast/snackbar
-    });
-  }
-  }, [isAuthenticated, getAccessTokenSilently]);
+    loadUser();
+  }, [auth0User, isAuthenticated, isLoading]);
 
   return (
-    <AuthContext.Provider value={{ user, accessToken, isAuthenticated, isLoading }}>
+    <AuthContext.Provider value={{ user, selectedRole, setSelectedRole }}>
       {children}
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => useContext(AuthContext);

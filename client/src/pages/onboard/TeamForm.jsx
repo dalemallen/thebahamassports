@@ -23,20 +23,23 @@ const TeamForm = () => {
   });
 
   const [sports, setSports] = useState([]);
+  console.log('sports: ', sports);
   const [logoPreview, setLogoPreview] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
 
-  useEffect(() => {
-    const fetchSports = async () => {
+ useEffect(() => {
+    const fetchSportsWithFederations = async () => {
       try {
-        const res = await axios.get("/api/sports");
+        const res = await axios.get("/api/sports/with-federations");
         setSports(res.data);
       } catch (err) {
-        console.error("Error loading sports", err);
+        console.error("Failed to load sports with federations", err);
       }
     };
-    fetchSports();
+    fetchSportsWithFederations();
   }, []);
+
+
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -85,9 +88,9 @@ const TeamForm = () => {
             onChange={handleChange}
             required
           >
-            {sports.map((sport) => (
-              <MenuItem key={sport.id} value={sport.federation.id}>
-                {sport.name} — {sport.federation.name}
+            {sports.map((sport, federation) => (
+                 <MenuItem key={federation.id} value={federation.id}>
+                  {`${sport.name} — ${federation.name}`}    
               </MenuItem>
             ))}
           </TextField>

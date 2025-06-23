@@ -20,7 +20,7 @@ const TournamentsPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const [sportsRes, tournamentsRes] = await Promise.all([
-        axios.get('/api/sports'),
+        axios.get('/api/sports/with-federations'),
         axios.get('/api/tournaments')
       ]);
       setSports(sportsRes.data);

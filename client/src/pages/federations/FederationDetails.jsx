@@ -37,7 +37,7 @@ const FederationDetails = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const sportsRes = await axios.get('/api/sports');
+        const sportsRes = await axios.get('/api/sports/with-federations');
         setSports(sportsRes.data);
 
         const federationRes = await axios.get(`/api/federations/by-sport/${sportId}`);

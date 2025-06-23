@@ -112,17 +112,19 @@ const Header = () => {
         { label: 'Contact', path: '/contact' }
       ];
 
-      let sports = [];
-      try {
-        const sportsRes = await axios.get('/api/sports');
-        sports = sportsRes.data.map((sport) => ({
-          label: sport.name,
-          path: `/sports/${sport.id}`
-        }));
-      } catch (err) {
-        console.error('Failed to fetch sports:', err);
-        sports = [];
-      }
+let sports = [];
+try {
+  const { data } = await axios.get('/api/sports/with-federations');
+
+  sports = data.map(({ sport: { id, name } }) => ({
+    label: name,
+    path: `/sports/${id}`,
+  }));
+} catch (err) {
+  console.error('Failed to fetch sports:', err);
+  sports = [];
+}
+
 
       setNavItems([{ label: 'Home', path: '/' }, { label: 'Sports', children: sports }, ...staticNav]);
     };

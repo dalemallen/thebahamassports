@@ -5,7 +5,8 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { UserContext } from '../../context/UserContext';
+import  UserContext  from '../../context/UserContext';
+
 
 const LeaguesPage = () => {
   const [leagues, setLeagues] = useState([]);
@@ -18,7 +19,7 @@ const LeaguesPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       const [sportsRes, leaguesRes] = await Promise.all([
-        axios.get('/api/sports'),
+        axios.get('/api/sports/with-federations'),
         axios.get('/api/leagues')
       ]);
       setSports(sportsRes.data);

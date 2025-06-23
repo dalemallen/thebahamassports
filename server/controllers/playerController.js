@@ -1,6 +1,6 @@
 import { pl } from '@faker-js/faker';
 import pool from '../db/index.js';
-import { handleError } from '../utils/errorHandler.js';
+import  handleError  from '../utils/errorHandler.js';
 
 // === Core ===
 const getAllPlayers = async (req, res) => {

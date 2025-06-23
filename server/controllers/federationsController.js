@@ -11,8 +11,32 @@ import pool from '../db/index.js';
   res.json(result.rows[0]);
 };
 
+ const getFederationByUser = async (req, res) => {
+  const { auth0_id } = req.user || req.body; // adjust based on your auth flow
+
+  try {
+    const userRes = await pool.query(
+      `SELECT federation_id FROM users WHERE auth0_id = $1`,
+      [auth0_id]
+    );
+
+    if (userRes.rowCount === 0 || !userRes.rows[0].federation_id) {
+      return res.status(404).json({ error: 'No federation linked to user.' });
+    }
+
+    const federationId = userRes.rows[0].federation_id;
+
+    const fedRes = await pool.query(`SELECT * FROM federations WHERE id = $1`, [federationId]);
+    return res.json(fedRes.rows[0]);
+  } catch (err) {
+    console.error('getFederationByUser error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+
 // server/controllers/federationController.js
-export const getFederationBySport = async (req, res) => {
+ const getFederationBySport = async (req, res) => {
   const { sportId } = req.params;
   try {
     const result = await pool.query(
@@ -496,7 +520,7 @@ const getFederationAthletes = async (req, res) => {
 };
 
 // WEEKLY SUMMARY
-export const getWeeklySummary = async (req, res) => {
+ const getWeeklySummary = async (req, res) => {
   const { federationId } = req.params;
 
   try {
@@ -516,7 +540,7 @@ export const getWeeklySummary = async (req, res) => {
 };
 
 // MEDIA HIGHLIGHTS
-export const getMediaHighlights = async (req, res) => {
+ const getMediaHighlights = async (req, res) => {
   const { federationId } = req.params;
 
   try {
@@ -543,6 +567,7 @@ export const getMediaHighlights = async (req, res) => {
 export default {
   getAllFederations,
   getFederationById,
+  getFederationByUser,
   getFederationBySport,
   createFederation,
   updateFederation,

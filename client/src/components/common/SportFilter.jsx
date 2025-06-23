@@ -6,7 +6,7 @@ const SportFilter = ({ value, onChange, label = 'Sport' }) => {
   const [sports, setSports] = useState([]);
 
   useEffect(() => {
-    axios.get('/api/sports')
+    axios.get('/api/sports/with-federations')
       .then(res => setSports(res.data))
       .catch(err => console.error('Failed to fetch sports:', err));
   }, []);
