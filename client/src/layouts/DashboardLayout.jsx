@@ -2,6 +2,8 @@ import React from 'react';
 import { Box, Drawer, useMediaQuery, useTheme } from '@mui/material';
 import { useUser } from '../context/UserContext';
 import Sidebar from '../components/common/Sidebar'; // your custom sidebar component
+import Header from '../components/common/Header';
+
 
 export default function DashboardLayout({ children }) {
   const { dbUser, user } = useUser(); // ✅ Grab from context
@@ -11,7 +13,9 @@ export default function DashboardLayout({ children }) {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
+    <>   <Header />
     <Box sx={{ display: 'flex' }}>
+    
       {/* Sidebar hidden on mobile */}
       {!isMobile && (
         <Drawer
@@ -30,5 +34,6 @@ export default function DashboardLayout({ children }) {
         {children}
       </Box>
     </Box>
+    </>
   );
 }

@@ -201,6 +201,7 @@ const Header = () => {
           </Menu>
         </>
       ) : (
+<>
         <Button
           variant="contained"
           onClick={() => loginWithRedirect()}
@@ -208,6 +209,20 @@ const Header = () => {
         >
           Log In / Sign Up
         </Button>
+<Button
+  variant="contained"
+  onClick={() => {
+    sessionStorage.setItem("pendingRole", "federation");
+    loginWithRedirect({
+      authorizationParams: {
+        redirect_uri: window.location.origin + "/redirect-handler",
+      },
+    });
+  }}
+>
+  Federation Login / Signup
+</Button>
+</>
       )}</>
             )}
           </Toolbar>
@@ -259,7 +274,7 @@ const Header = () => {
             <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>Logout</MenuItem>
           </Menu>
         </>
-      ) : (
+      ) : (<>
         <Button
           variant="contained"
           onClick={() => loginWithRedirect()}
@@ -267,6 +282,21 @@ const Header = () => {
         >
           Log In / Sign Up
         </Button>
+<Button
+  variant="contained"
+  onClick={() =>
+    loginWithRedirect({
+      appState: { role: "federation" },
+      authorizationParams: {
+        redirect_uri: window.location.origin + "/callback",
+      },
+    })
+  }
+  sx={{ ml: 2 }}
+>
+federation log in / sign up
+</Button>
+</>
       )}</>
        
           </List>

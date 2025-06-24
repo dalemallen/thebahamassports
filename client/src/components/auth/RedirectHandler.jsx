@@ -33,6 +33,7 @@ export default function RedirectHandler() {
       try {
         const auth0_id = user.sub;
 
+        sessionStorage.setItem("pendingRole", pendingRole);
         const res = await axios.get(`/api/users/${auth0_id}`);
         const existingUser = res.data;
 
