@@ -1,9 +1,15 @@
 import { NavLink } from 'react-router-dom';
 import logo from '../../assets/icon.png';
+import { Grid } from "@mui/material";
 
-const navItemsByRole = {
+
+
+export default function Sidebar({ role }) {
+  console.log('role: ', role);
+
+  const navItemsByRole = {
   athlete: [
-    { label: 'Dashboard', path: '/dashboard' },
+    { label: 'Dashboard', path: `/dashboard/${role}` },
     { label: 'My Sports', path: '/sports' },
     { label: 'Schedule', path: '/schedule' },
     { label: 'Stats', path: '/stats' },
@@ -29,14 +35,18 @@ const navItemsByRole = {
     { label: 'Manage Events', path: '/events' },
   ],
 };
-
-export default function Sidebar({ role }) {
     const tempRole = 'athlete'; 
   const navItems = navItemsByRole[tempRole] || [];
 
+
+
+
   return (
     <aside style={{ width: 240, background: '#023e8a', color: 'white', padding: '1rem' }}>
-      <img src={logo} alt="The Bahamas Sports" style={{ height: 40, marginBottom: '2rem' }} />
+      <Grid container justifyContent="center">
+        <img src={logo} alt="The Bahamas Sports" style={{ height: 120, marginBottom: '2rem' }} />
+      </Grid>
+      
       <nav>
         {navItems.map(({ label, path }) => (
           <NavLink

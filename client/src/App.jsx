@@ -2,7 +2,7 @@ import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, Suspense, lazy } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import PageLoader from "./components/PageLoader.jsx";
-
+import LayoutSwitcher from "./layouts/LayoutSwitcher.jsx";
 // Layouts & Core Pages
 const Headers = lazy(() => import("./components/common/Header.jsx"));
 const Footer = lazy(() => import("./components/common/Footer.jsx"));
@@ -49,7 +49,7 @@ export default function App() {
 
   return (
     <Suspense fallback={<PageLoader />}>
-      <Headers />
+<LayoutSwitcher>
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
@@ -58,20 +58,6 @@ export default function App() {
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/onboard/:role" element={<Onboard />} />
-
-        {/* Dynamic Redirect to Dashboard */}
-        <Route
-          path="/dashboard"
-          element={
-            user && onboardingComplete && userRole ? (
-              <Navigate to={`/dashboard/${userRole}`} replace />
-            ) : userRole ? (
-              <Navigate to={`/onboard/${userRole}`} replace />
-            ) : (
-              <Navigate to="/unauthorized" replace />
-            )
-          }
-        />
 
         {/* Dashboards by Role */}
         {Object.entries(roleDashboards).map(([role, Component]) => (
@@ -106,7 +92,7 @@ export default function App() {
         <Route path="/schedule/:federationId" element={<EventResults />} />
         <Route path="/schedule/:userId" element={<EventResults />} />
       </Routes>
-      <Footer />
+</LayoutSwitcher>
     </Suspense>
   );
 }

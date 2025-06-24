@@ -5,9 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 // 1. ✅ GET /api/users/:auth0_id
-export const getUserByAuth0Id = async (req, res) => {
+ const getUserByAuth0Id = async (req, res) => {
 
   const auth0_id = decodeURIComponent(req.params.auth0_id);
+  console.log('auth0_id: ', auth0_id);
   try {
     const userRes = await pool.query(
       `SELECT u.*, r.name as role
@@ -32,7 +33,7 @@ export const getUserByAuth0Id = async (req, res) => {
 };
 
 // 2. ✅ POST /api/users/register-user
-export const registerUser = async (req, res) => {
+ const registerUser = async (req, res) => {
   const { auth0_id, email, first_name = '', last_name = '', role } = req.body;
 
   if (!auth0_id || !email || !role) {
@@ -94,7 +95,7 @@ export const registerUser = async (req, res) => {
 
 
 // 3. ✅ PATCH /api/users/:id/complete-onboarding
-export const completeOnboarding = async (req, res) => {
+ const completeOnboarding = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -109,7 +110,7 @@ export const completeOnboarding = async (req, res) => {
   }
 };
 
-export const getUserById = async (req, res) => {
+ const getUserById = async (req, res) => {
   try {
     const auth0_id = decodeURIComponent(req.params.id);
 
@@ -143,3 +144,10 @@ export const getUserById = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export default {
+  getUserByAuth0Id,
+  registerUser,
+  completeOnboarding,
+  getUserById
+}

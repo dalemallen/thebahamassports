@@ -18,6 +18,7 @@ export const UserProvider = ({ children }) => {
 
       try {
         const res = await fetch(`/api/users/${user.sub}`);
+        console.log('res: ', res);
         if (!res.ok) throw new Error("User not found in DB");
         const data = await res.json();
 
