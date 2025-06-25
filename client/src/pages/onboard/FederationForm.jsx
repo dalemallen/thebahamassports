@@ -16,7 +16,7 @@ import ImageUpload from "../../components/common/ImageUpload";
 import { useAuth0 } from "@auth0/auth0-react";
 import debounce from "lodash.debounce";
 
-export default function FederationForm() {
+export default function FederationForm({ onSubmit }){
   const { getAccessTokenSilently } = useAuth0();
 
   const [formData, setFormData] = useState({
@@ -101,18 +101,14 @@ export default function FederationForm() {
     autoSave({ [name]: updated[name] });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Submitting final federation form:", formData);
-    setSnackbarOpen(true);
-  };
+
 
   const steps = ["Federation Info", "Branding", "Key Contacts", "Documents"];
 
   if (loading) return <CircularProgress sx={{ mt: 4 }} />;
 
   return (
-    <Box component="form" onSubmit={handleSubmit} p={3} maxWidth="md" mx="auto">
+    <Box component="form" onSubmit={onSubmit} p={3} maxWidth="md" mx="auto">
       <Typography variant="h5" mb={3} fontWeight={600} textAlign="center">
         Federation Onboarding
       </Typography>
