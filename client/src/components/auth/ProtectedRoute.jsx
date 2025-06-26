@@ -1,20 +1,23 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import { Navigate } from "react-router-dom";
+import { useUser } from '../../context/UserContext';
+import { Navigate } from 'react-router-dom';
 
-export default function ProtectedRoute({ children, requiredRole }) {
-  const { isAuthenticated, isLoading, user } = useAuth0();
+const ProtectedRoute = ({ children, requiredRole }) => {
+  const { dbUser, isLoading } = useUser();
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return null;
 
-  if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
+  if (!dbUser) return <Navigate to="/unauthorized" replace />;
 
-  const roles = user?.["https://thebahamassports.com/roles"] || [];
+  // ✅ Ensure we’re comparing strings safely
+  const userRole = dbUser.role?.toLowerCase();
+  const required = requiredRole?.toLowerCase();
 
-  if (requiredRole && !roles.includes(requiredRole)) {
+  if (required && userRole !== required) {
+    console.warn(`Blocked: user role '${userRole}' !== required '${required}'`);
     return <Navigate to="/unauthorized" replace />;
   }
 
   return children;
-}
+};
+
+export default ProtectedRoute;

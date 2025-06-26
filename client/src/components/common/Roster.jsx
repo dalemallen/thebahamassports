@@ -6,7 +6,7 @@ export default function Roster({
   data = [],
   title = "Roster",
   showNumbers = true,
-  linkToProfile = false,
+  linkToProfile = true,
   role = "player", // or "coach"
   emptyMessage = "No roster members found.",
 }) {
@@ -20,8 +20,7 @@ export default function Roster({
 
   return (
     <>
-      <Typography variant="h5" gutterBottom>{title}</Typography>
-
+      
       {uniquePositions.length > 1 && (
         <FormControl sx={{ mb: 2, minWidth: 200 }}>
           <InputLabel>Filter by Position</InputLabel>
@@ -41,7 +40,7 @@ export default function Roster({
       <Grid container spacing={2}>
         {filteredData.length > 0 ? (
           filteredData.map((player) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={player.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={player.user_id+player.name}>
               <RosterCard player={player} linkToProfile={linkToProfile} />
             </Grid>
           ))

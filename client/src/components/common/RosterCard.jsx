@@ -6,7 +6,7 @@ export default function RosterCard({ player, linkToProfile = false }) {
 
   const handleClick = () => {
     if (linkToProfile) {
-      navigate(`/players/${player.id}`);
+      navigate(`/players/${player.user_id}`);
     }
   };
 

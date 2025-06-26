@@ -3,6 +3,7 @@ import { useEffect, Suspense, lazy } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import PageLoader from "./components/PageLoader.jsx";
 import LayoutSwitcher from "./layouts/LayoutSwitcher.jsx";
+import AboutUsPage from "./pages/AboutUsPage.jsx";
 // Layouts & Core Pages
 const Headers = lazy(() => import("./components/common/Header.jsx"));
 const Footer = lazy(() => import("./components/common/Footer.jsx"));
@@ -71,7 +72,7 @@ export default function App() {
             }
           />
         ))}
-
+        <Route path="/aboutus" element={<AboutUsPage />} />
         {/* Feature Pages */}
         <Route path="/sports/:sportId" element={<FederationDetails />} />
         <Route path="/leagues" element={<LeaguesPage />} />

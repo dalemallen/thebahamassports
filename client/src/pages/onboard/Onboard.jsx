@@ -11,6 +11,7 @@ import TeamForm from "./TeamForm";
 import SponsorForm from "./SponsorForm";
 import OrganizerForm from "./OrganizerForm";
 import ScoutForm from "./ScoutForm";
+import ProfileForm from './ProfileForm';
 
 export default function Onboard() {
   const { userRole, dbUser, user } = useUser();
@@ -133,8 +134,12 @@ onsole.log('form: ', form);
     athlete: <AthleteForm onSubmit={handleSubmit} />,
     coach: <CoachForm onSubmit={handleSubmit} />,
     parent: <ParentForm onSubmit={handleSubmit} />,
-    federation: <FederationForm onSubmit={handleSubmit} />,
-    team: <TeamForm onSubmit={handleSubmit} />,
+  federation: (
+    <ProfileForm
+      endpoint="/api/users/me"
+      onComplete={() => navigate(`/dashboard/${userRole}`)}
+    />
+  ),    team: <TeamForm onSubmit={handleSubmit} />,
     sponsor: <SponsorForm onSubmit={handleSubmit} />,
     organizer: <OrganizerForm onSubmit={handleSubmit} />,
     scout: <ScoutForm onSubmit={handleSubmit} />,
