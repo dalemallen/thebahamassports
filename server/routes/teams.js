@@ -166,4 +166,38 @@ router.post("/:id/media", teamsController.uploadTeamMedia);
 router.get("/:id/sponsors", teamsController.getTeamSponsors);
 router.post("/:id/sponsors", teamsController.addTeamSponsor);
 
+// 📅 Training Sessions
+router.get("/:id/trainings", teamsController.getTeamTrainings);
+
+// 🎯 Recent Matches (league + tournament)
+router.get("/:id/recent-matches", teamsController.getRecentMatches);
+
+// ✅ Attendance
+router.get("/:id/attendance", teamsController.getAttendance);
+router.post("/:id/attendance", teamsController.createAttendance);
+
+// 🖼️ Team Gallery
+router.get("/:id/gallery", teamsController.getGallery);
+router.post("/:id/gallery", teamsController.uploadToGallery);
+
+// 📁 Documents
+router.get("/:id/documents", teamsController.getDocuments);
+router.post("/:id/documents", teamsController.uploadDocument);
+
+// 💵 Dues and Payments
+router.get("/:id/dues", teamsController.getTeamDues);
+
+// 📝 Internal Notes
+router.get("/:id/notes", teamsController.getTeamNotes);
+router.post("/:id/notes", teamsController.createTeamNote);
+
+router.get("/:id/schedule", teamController.getTeamSchedule);
+router.post("/:id/trainings", teamController.createTraining);
+router.delete("/trainings/:trainingId", teamController.deleteTraining);
+
+router.get("/:id/tryouts", teamController.getTryouts);
+router.post("/:id/tryouts", teamController.createTryout);
+router.patch("/tryouts/:id", teamController.updateTryout);
+router.delete("/tryouts/:id", teamController.deleteTryout);
+
 export default router;

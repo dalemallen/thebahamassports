@@ -105,7 +105,7 @@ const Header = () => {
         {
           label: 'Info Hub',
           children: [
-            { label: 'About Us', path: '/about' },
+            { label: 'About Us', path: '/aboutus' },
             { label: 'FAQ', path: '/faq' }
           ]
         },
@@ -209,6 +209,20 @@ const Header = () => {
         >
           Log In / Sign Up
         </Button>
+          <Button
+  variant="contained"
+  onClick={() =>
+    loginWithRedirect({
+      appState: { role: "team" },
+      authorizationParams: {
+        redirect_uri: window.location.origin + "/callback",
+      },
+    })
+  }
+  sx={{ ml: 2 }}
+>
+team log in / sign up
+</Button>
 <Button
   variant="contained"
   onClick={() => {
@@ -282,6 +296,20 @@ const Header = () => {
         >
           Log In / Sign Up
         </Button>
+        <Button
+  variant="contained"
+  onClick={() =>
+    loginWithRedirect({
+      appState: { role: "team" },
+      authorizationParams: {
+        redirect_uri: window.location.origin + "/callback",
+      },
+    })
+  }
+  sx={{ ml: 2 }}
+>
+team log in / sign up
+</Button>
 <Button
   variant="contained"
   onClick={() =>

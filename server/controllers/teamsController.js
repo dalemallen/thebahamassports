@@ -479,20 +479,6 @@ const deleteTeamDocument = async (req, res) => {
 	}
 };
 
-// === Coach Notes ===
-const getTeamNotes = async (req, res) => {
-	try {
-		const result = await pool.query(
-			"SELECT * FROM team_notes WHERE team_id = $1",
-			[req.params.id]
-		);
-		res.json(result.rows);
-	} catch (err) {
-		console.error("getTeamNotes error:", err);
-		res.status(500).json({ error: "Server error" });
-	}
-};
-
 const addTeamNote = async (req, res) => {
 	try {
 		const { note, created_by } = req.body;
@@ -659,31 +645,18 @@ const getActivityLog = async (req, res) => {
 	}
 };
 
-// === 5. Media Gallery ===
-const getGallery = async (req, res) => {
-	try {
-		const result = await pool.query(
-			"SELECT * FROM team_gallery WHERE team_id = $1 ORDER BY created_at DESC",
-			[req.params.id]
-		);
-		res.json(result.rows);
-	} catch (err) {
-		console.error("getGallery error:", err);
-		res.status(500).json({ error: "Server error" });
-	}
-};
-
 const uploadToGallery = async (req, res) => {
-	const { url, type, uploaded_by } = req.body;
 	try {
-		await pool.query(
-			"INSERT INTO team_gallery (team_id, url, type, uploaded_by) VALUES ($1, $2, $3, $4)",
-			[req.params.id, url, type, uploaded_by]
+		const { uploaded_by, media_url, type, tags } = req.body;
+		const { id } = req.params;
+		const result = await pool.query(
+			`INSERT INTO team_gallery (team_id, uploaded_by, media_url, type, tags) 
+		 VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+			[id, uploaded_by, media_url, type, tags]
 		);
-		res.status(201).json({ message: "Media uploaded" });
+		res.status(201).json(result.rows[0]);
 	} catch (err) {
-		console.error("uploadToGallery error:", err);
-		res.status(500).json({ error: "Server error" });
+		res.status(500).json({ error: err.message });
 	}
 };
 
@@ -1006,20 +979,6 @@ const getTeamTimeline = async (req, res) => {
 	}
 };
 
-// === Team Dues ===
-const getTeamDues = async (req, res) => {
-	try {
-		const result = await pool.query(
-			"SELECT * FROM team_dues WHERE team_id = $1",
-			[req.params.id]
-		);
-		res.json(result.rows);
-	} catch (err) {
-		console.error("getTeamDues error:", err);
-		res.status(500).json({ error: "Server error" });
-	}
-};
-
 const addTeamDue = async (req, res) => {
 	const { description, amount, due_date } = req.body;
 	try {
@@ -1213,6 +1172,268 @@ const addTeamSponsor = async (req, res) => {
 	res.json({ message: "Sponsor assigned to team" });
 };
 
+const getTeamTrainings = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const result = await pool.query(
+			"SELECT * FROM team_trainings WHERE team_id = $1 ORDER BY training_date ASC",
+			[id]
+		);
+		res.json(result.rows);
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+
+const getRecentMatches = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const leagueMatches = await pool.query(
+			`SELECT * FROM league_matches WHERE (home_team_id = $1 OR away_team_id = $1) AND match_date < NOW() ORDER BY match_date DESC LIMIT 5`,
+			[id]
+		);
+		const tournamentMatches = await pool.query(
+			`SELECT * FROM tournament_matches WHERE (home_team_id = $1 OR away_team_id = $1) AND match_date < NOW() ORDER BY match_date DESC LIMIT 5`,
+			[id]
+		);
+		res.json({
+			leagueMatches: leagueMatches.rows,
+			tournamentMatches: tournamentMatches.rows,
+		});
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+
+const getAttendance = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const result = await pool.query(
+			"SELECT * FROM attendance WHERE team_id = $1 ORDER BY attendance_date DESC",
+			[id]
+		);
+		res.json(result.rows);
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+
+const createAttendance = async (req, res) => {
+	try {
+		const { user_id, attendance_date, status } = req.body;
+		const { id } = req.params;
+		const result = await pool.query(
+			`INSERT INTO attendance (team_id, user_id, attendance_date, status) 
+		 VALUES ($1, $2, $3, $4) RETURNING *`,
+			[id, user_id, attendance_date, status]
+		);
+		res.status(201).json(result.rows[0]);
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+// === 5. Media Gallery ===
+const getGallery = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const result = await pool.query(
+			"SELECT * FROM team_gallery WHERE team_id = $1 ORDER BY created_at DESC",
+			[id]
+		);
+		res.json(result.rows);
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+
+const getDocuments = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const result = await pool.query(
+			"SELECT * FROM team_documents WHERE team_id = $1 ORDER BY created_at DESC",
+			[id]
+		);
+		res.json(result.rows);
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+
+const uploadDocument = async (req, res) => {
+	try {
+		const { doc_url, title, type } = req.body;
+		const { id } = req.params;
+		const result = await pool.query(
+			`INSERT INTO team_documents (team_id, doc_url, title, type) 
+		 VALUES ($1, $2, $3, $4) RETURNING *`,
+			[id, doc_url, title, type]
+		);
+		res.status(201).json(result.rows[0]);
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+
+const getTeamDues = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const dues = await pool.query(
+			"SELECT * FROM team_dues WHERE team_id = $1",
+			[id]
+		);
+		const payments = await pool.query(
+			`SELECT * FROM team_payments WHERE due_id IN (SELECT id FROM team_dues WHERE team_id = $1)`,
+			[id]
+		);
+		res.json({ dues: dues.rows, payments: payments.rows });
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+
+const getTeamNotes = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const result = await pool.query(
+			"SELECT * FROM team_notes WHERE team_id = $1 ORDER BY created_at DESC",
+			[id]
+		);
+		res.json(result.rows);
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+
+const createTeamNote = async (req, res) => {
+	try {
+		const { created_by, note } = req.body;
+		const { id } = req.params;
+		const result = await pool.query(
+			`INSERT INTO team_notes (team_id, created_by, note) 
+		 VALUES ($1, $2, $3) RETURNING *`,
+			[id, created_by, note]
+		);
+		res.status(201).json(result.rows[0]);
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+};
+
+// GET combined schedule (trainings + matches)
+const getTeamSchedule = async (req, res) => {
+	const teamId = req.params.id;
+	try {
+		const [trainings, leagueMatches, tournamentMatches] = await Promise.all([
+			db.any(
+				"SELECT * FROM team_trainings WHERE team_id = $1 AND deleted_at IS NULL",
+				[teamId]
+			),
+			db.any(
+				"SELECT * FROM league_matches WHERE (home_team_id = $1 OR away_team_id = $1) AND deleted_at IS NULL",
+				[teamId]
+			),
+			db.any(
+				"SELECT * FROM tournament_matches WHERE (home_team_id = $1 OR away_team_id = $1) AND deleted_at IS NULL",
+				[teamId]
+			),
+		]);
+		res.json({ trainings, leagueMatches, tournamentMatches });
+	} catch (err) {
+		console.error("Schedule fetch error:", err);
+		res.status(500).json({ error: "Failed to fetch schedule" });
+	}
+};
+
+// TRAININGS
+const createTraining = async (req, res) => {
+	const teamId = req.params.id;
+	const { training_date, focus, location, notes } = req.body;
+	try {
+		const training = await db.one(
+			`INSERT INTO team_trainings (team_id, training_date, focus, location, notes)
+		 VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+			[teamId, training_date, focus, location, notes]
+		);
+		res.status(201).json(training);
+	} catch (err) {
+		console.error("Create training error:", err);
+		res.status(500).json({ error: "Failed to create training" });
+	}
+};
+
+const deleteTraining = async (req, res) => {
+	const { trainingId } = req.params;
+	try {
+		await db.none(
+			`UPDATE team_trainings SET deleted_at = NOW() WHERE id = $1`,
+			[trainingId]
+		);
+		res.sendStatus(204);
+	} catch (err) {
+		console.error("Delete training error:", err);
+		res.status(500).json({ error: "Failed to delete training" });
+	}
+};
+
+// TRYOUTS
+const getTryouts = async (req, res) => {
+	try {
+		const teamId = req.params.id;
+		const tryouts = await db.any(
+			"SELECT * FROM team_tryouts WHERE team_id = $1",
+			[teamId]
+		);
+		res.json(tryouts);
+	} catch (err) {
+		console.error("Get tryouts error:", err);
+		res.status(500).json({ error: "Failed to fetch tryouts" });
+	}
+};
+
+const createTryout = async (req, res) => {
+	const teamId = req.params.id;
+	const { tryout_date, location, notes, age_group } = req.body;
+	try {
+		const tryout = await db.one(
+			`INSERT INTO team_tryouts (team_id, tryout_date, location, notes, age_group)
+		 VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+			[teamId, tryout_date, location, notes, age_group]
+		);
+		res.status(201).json(tryout);
+	} catch (err) {
+		console.error("Create tryout error:", err);
+		res.status(500).json({ error: "Failed to create tryout" });
+	}
+};
+
+const updateTryout = async (req, res) => {
+	const { id } = req.params;
+	const { tryout_date, location, notes, age_group } = req.body;
+	try {
+		const updated = await db.one(
+			`UPDATE team_tryouts
+		 SET tryout_date = $2, location = $3, notes = $4, age_group = $5
+		 WHERE id = $1 RETURNING *`,
+			[id, tryout_date, location, notes, age_group]
+		);
+		res.json(updated);
+	} catch (err) {
+		console.error("Update tryout error:", err);
+		res.status(500).json({ error: "Failed to update tryout" });
+	}
+};
+
+const deleteTryout = async (req, res) => {
+	const { id } = req.params;
+	try {
+		await db.none(`DELETE FROM team_tryouts WHERE id = $1`, [id]);
+		res.sendStatus(204);
+	} catch (err) {
+		console.error("Delete tryout error:", err);
+		res.status(500).json({ error: "Failed to delete tryout" });
+	}
+};
+
 export default {
 	getAllTeams,
 	getTeamById,
@@ -1279,7 +1500,7 @@ export default {
 	archiveTeam,
 	restoreTeam,
 	getTeamTimeline,
-	getTeamDues,
+
 	addTeamDue,
 	getTeamPayments,
 	getTeamRevenue,
@@ -1300,4 +1521,20 @@ export default {
 	getTeamMedia,
 	getTeamSponsors,
 	addTeamSponsor,
+	getTeamTrainings,
+	getRecentMatches,
+	getAttendance,
+	createAttendance,
+	getDocuments,
+	uploadDocument,
+	getTeamDues,
+	getTeamNotes,
+	createTeamNote,
+	getTeamSchedule,
+	createTraining,
+	deleteTraining,
+	getTryouts,
+	createTryout,
+	updateTryout,
+	deleteTryout,
 };
