@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import  UserContext  from '../../context/UserContext';
+import  UserContext  from '../../context/AuthContext';
 
 
 const LeaguesPage = () => {

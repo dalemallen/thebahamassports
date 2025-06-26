@@ -6,7 +6,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useState } from "react";
-import { useUser } from "../../context/UserContext";
+import { useUser } from "../../context/AuthContext";
 
 const ScoutForm = () => {
   const { user } = useUser();

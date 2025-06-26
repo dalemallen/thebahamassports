@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Drawer, useMediaQuery, useTheme } from '@mui/material';
-import { useUser } from '../context/UserContext';
+import { useUser } from '../context/AuthContext';
 import Sidebar from '../components/common/Sidebar'; // your custom sidebar component
 import Header from '../components/common/Header';
 

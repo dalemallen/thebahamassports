@@ -204,21 +204,32 @@ const Header = () => {
 <>
         <Button
           variant="contained"
-          onClick={() => loginWithRedirect()}
+         onClick={() => {
+    sessionStorage.setItem("pendingRole", "athlete");
+        
+    loginWithRedirect({
+      appState: { role: "athlete" },
+      authorizationParams: {
+        redirect_uri: window.location.origin + "/redirect-handler",
+      },
+    });
+  }}
           sx={{ ml: 2 }}
         >
           Log In / Sign Up
         </Button>
           <Button
   variant="contained"
-  onClick={() =>
+  onClick={() => {
+    sessionStorage.setItem("pendingRole", "team");
+        
     loginWithRedirect({
       appState: { role: "team" },
       authorizationParams: {
-        redirect_uri: window.location.origin + "/callback",
+        redirect_uri: window.location.origin + "/redirect-handler",
       },
-    })
-  }
+    });
+  }}
   sx={{ ml: 2 }}
 >
 team log in / sign up
@@ -227,7 +238,9 @@ team log in / sign up
   variant="contained"
   onClick={() => {
     sessionStorage.setItem("pendingRole", "federation");
+    
     loginWithRedirect({
+      appState: { role: "federation" },
       authorizationParams: {
         redirect_uri: window.location.origin + "/redirect-handler",
       },
@@ -288,41 +301,54 @@ team log in / sign up
             <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>Logout</MenuItem>
           </Menu>
         </>
-      ) : (<>
+      ) : (
+        <>
         <Button
           variant="contained"
-          onClick={() => loginWithRedirect()}
+         onClick={() => {
+    sessionStorage.setItem("pendingRole", "athlete");
+        
+    loginWithRedirect({
+      appState: { role: "athlete" },
+      authorizationParams: {
+        redirect_uri: window.location.origin + "/redirect-handler",
+      },
+    });
+  }}
           sx={{ ml: 2 }}
         >
           Log In / Sign Up
         </Button>
-        <Button
+          <Button
   variant="contained"
-  onClick={() =>
+  onClick={() => {
+    sessionStorage.setItem("pendingRole", "team");
+        
     loginWithRedirect({
       appState: { role: "team" },
       authorizationParams: {
-        redirect_uri: window.location.origin + "/callback",
+        redirect_uri: window.location.origin + "/redirect-handler",
       },
-    })
-  }
+    });
+  }}
   sx={{ ml: 2 }}
 >
 team log in / sign up
 </Button>
 <Button
   variant="contained"
-  onClick={() =>
+  onClick={() => {
+    sessionStorage.setItem("pendingRole", "federation");
+    
     loginWithRedirect({
       appState: { role: "federation" },
       authorizationParams: {
-        redirect_uri: window.location.origin + "/callback",
+        redirect_uri: window.location.origin + "/redirect-handler",
       },
-    })
-  }
-  sx={{ ml: 2 }}
+    });
+  }}
 >
-federation log in / sign up
+  Federation Login / Signup
 </Button>
 </>
       )}</>

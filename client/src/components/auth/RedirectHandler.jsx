@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useUser } from "../../context/UserContext";
+import { useUser } from "../../context/AuthContext";
 import axios from "axios";
 
 const roleRedirectMap = {
@@ -22,10 +22,11 @@ export default function RedirectHandler() {
   const location = useLocation();
 
   const pendingRole =
+
     location.state?.appState?.role ||
     sessionStorage.getItem("pendingRole") ||
     "athlete";
-
+  console.log('pendingRole: ', pendingRole);
   useEffect(() => {
     if (isLoading || !isAuthenticated || !user) return;
 

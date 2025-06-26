@@ -191,13 +191,13 @@ router.get("/:id/dues", teamsController.getTeamDues);
 router.get("/:id/notes", teamsController.getTeamNotes);
 router.post("/:id/notes", teamsController.createTeamNote);
 
-router.get("/:id/schedule", teamController.getTeamSchedule);
-router.post("/:id/trainings", teamController.createTraining);
-router.delete("/trainings/:trainingId", teamController.deleteTraining);
+router.get("/:id/schedule", teamsController.getTeamSchedule);
+router.post("/:id/trainings", teamsController.createTraining);
+router.delete("/trainings/:trainingId", teamsController.deleteTraining);
 
-router.get("/:id/tryouts", teamController.getTryouts);
-router.post("/:id/tryouts", teamController.createTryout);
-router.patch("/tryouts/:id", teamController.updateTryout);
-router.delete("/tryouts/:id", teamController.deleteTryout);
+router.get("/:id/tryouts", teamsController.getTryouts);
+router.post("/:id/tryouts", teamsController.createTryout);
+router.patch("/tryouts/:id", teamsController.updateTryout);
+router.delete("/tryouts/:id", teamsController.deleteTryout);
 
 export default router;

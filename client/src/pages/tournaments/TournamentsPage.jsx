@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useUser } from "../../context/UserContext";
+import { useUser } from "../../context/AuthContext";
 
 const TournamentsPage = () => {
   const [tournaments, setTournaments] = useState([]);

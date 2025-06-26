@@ -1,12 +1,13 @@
-// Add these imports
 import { useAuth0 } from "@auth0/auth0-react";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const { user: auth0User, isAuthenticated, isLoading } = useAuth0();
+  const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
   const [selectedRole, setSelectedRole] = useState(null);
@@ -17,11 +18,18 @@ export const AuthProvider = ({ children }) => {
     const loadUser = async () => {
       try {
         const res = await axios.get(`/api/users/${auth0User.sub}`);
-        setUser(res.data);
-        setSelectedRole(res.data.role);
+        const dbUser = res.data;
+
+        setUser(dbUser);
+        setSelectedRole(dbUser.role);
+
+        if (!dbUser.onboarding_complete) {
+          navigate(`/onboard/${dbUser.role}`);
+        }
       } catch (err) {
         if (err.response?.status === 404) {
           const role = sessionStorage.getItem("pendingRole") || "athlete";
+
           const payload = {
             auth0_id: auth0User.sub,
             email: auth0User.email,
@@ -31,9 +39,13 @@ export const AuthProvider = ({ children }) => {
           };
 
           const regRes = await axios.post(`/api/users/register-user`, payload);
-          setUser(regRes.data);
+          const newUser = regRes.data;
+
+          setUser(newUser);
           setSelectedRole(role);
+
           sessionStorage.removeItem("pendingRole");
+          navigate(`/onboard/${role}`);
         } else {
           console.error("Error fetching/creating user", err);
         }
@@ -49,3 +61,6 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+// ✅ Custom hook for easier usage
+export const useUser = () => useContext(AuthContext);

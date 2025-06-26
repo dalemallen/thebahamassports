@@ -112,36 +112,31 @@ const completeOnboarding = async (req, res) => {
 
 const getUserById = async (req, res) => {
 	try {
-		const auth0_id = decodeURIComponent(req.params.id);
-
-		const result = await pool.query(
-			`SELECT u.*, r.name as role
-       FROM users u
-       LEFT JOIN user_roles ur ON u.id = ur.user_id
-       LEFT JOIN roles r ON ur.role_id = r.id
-       WHERE u.auth0_id = $1`,
-			[auth0_id]
+		const userResult = await pool.query(
+			`SELECT * FROM users WHERE auth0_id = $1`,
+			[req.params.id]
 		);
 
-		if (result.rowCount === 0) {
-			return res.status(404).json({ error: "User not found" });
+		if (userResult.rows.length === 0) {
+			return res.status(404).json({ message: "User not found" });
 		}
 
-		const user = result.rows[0];
-		res.json({
-			id: user.id,
-			auth0_id: user.auth0_id,
-			email: user.email,
-			first_name: user.first_name,
-			last_name: user.last_name,
-			onboarding_complete: user.onboarding_complete,
-			role: user.role,
-			profileCompleted: user.onboarding_complete,
-			federation_id: user.federation_id || null, // optional
-		});
-	} catch (error) {
-		console.error("getUserById error:", error);
-		res.status(500).json({ error: "Internal server error" });
+		const user = userResult.rows[0];
+
+		// Fetch role
+		const roleResult = await pool.query(
+			`SELECT r.name FROM user_roles ur
+		 JOIN roles r ON r.id = ur.role_id
+		 WHERE ur.user_id = $1`,
+			[user.id]
+		);
+
+		user.role = roleResult.rows[0]?.name || null;
+
+		res.json(user);
+	} catch (err) {
+		console.error("Error fetching user:", err);
+		res.status(500).json({ message: "Server error" });
 	}
 };
 
