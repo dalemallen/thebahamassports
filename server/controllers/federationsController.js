@@ -157,15 +157,6 @@ const postFederationNews = async (req, res) => {
 	res.status(201).json({ message: "News posted" });
 };
 
-// === Federation Documents ===
-const getFederationDocuments = async (req, res) => {
-	const result = await pool.query(
-		"SELECT * FROM federation_documents WHERE federation_id = $1",
-		[req.params.id]
-	);
-	res.json(result.rows);
-};
-
 const uploadFederationDocument = async (req, res) => {
 	const { title, url, uploaded_by } = req.body;
 	await pool.query(
@@ -210,15 +201,6 @@ const getFederationMessages = async (req, res) => {
 	res.json(result.rows);
 };
 
-const postFederationMessage = async (req, res) => {
-	const { message, sender_id } = req.body;
-	await pool.query(
-		"INSERT INTO federation_messages (federation_id, message, sender_id) VALUES ($1, $2, $3)",
-		[req.params.id, message, sender_id]
-	);
-	res.status(201).json({ message: "Message posted" });
-};
-
 // === Verification & Reporting ===
 const requestFederationVerification = async (req, res) => {
 	const { user_id, notes } = req.body;
@@ -236,15 +218,6 @@ const reportFederationIssue = async (req, res) => {
 		[req.params.id, user_id, issue]
 	);
 	res.status(201).json({ message: "Issue reported" });
-};
-
-// === Calendar ===
-const getFederationCalendar = async (req, res) => {
-	const result = await pool.query(
-		"SELECT * FROM calendar_events WHERE federation_id = $1 ORDER BY event_date ASC",
-		[req.params.id]
-	);
-	res.json(result.rows);
 };
 
 const addCalendarEvent = async (req, res) => {
@@ -308,15 +281,6 @@ const addFederationDue = async (req, res) => {
 const getFederationPayments = async (req, res) => {
 	const result = await pool.query(
 		"SELECT * FROM federation_payments WHERE federation_id = $1",
-		[req.params.id]
-	);
-	res.json(result.rows);
-};
-
-// === Timeline ===
-const getFederationTimeline = async (req, res) => {
-	const result = await pool.query(
-		"SELECT * FROM federation_timeline WHERE federation_id = $1 ORDER BY event_time DESC",
 		[req.params.id]
 	);
 	res.json(result.rows);
@@ -706,7 +670,137 @@ const getMediaHighlights = async (req, res) => {
 	}
 };
 
+const getFederationTimeline = async (req, res) => {
+	const { id } = req.params;
+	try {
+		const { rows } = await db.query(
+			"SELECT * FROM federation_timeline WHERE federation_id = $1 ORDER BY timestamp DESC",
+			[id]
+		);
+		res.json(rows);
+	} catch (err) {
+		res.status(500).json({ error: "Failed to fetch federation timeline" });
+	}
+};
+
+const getFederationDocuments = async (req, res) => {
+	const { id } = req.params;
+	try {
+		const { rows } = await db.query(
+			"SELECT * FROM federation_documents WHERE federation_id = $1 ORDER BY created_at DESC",
+			[id]
+		);
+		res.json(rows);
+	} catch (err) {
+		res.status(500).json({ error: "Failed to fetch federation documents" });
+	}
+};
+
+const getFederationSponsors = async (req, res) => {
+	const { id } = req.params;
+	try {
+		const { rows } = await db.query(
+			`SELECT * FROM sponsor_profiles WHERE id IN (
+				SELECT sponsor_id FROM sponsor_team_support WHERE team_id IN (
+					SELECT id FROM teams WHERE federation_id = $1
+				)
+				UNION
+				SELECT sponsor_id FROM sponsor_athlete_support WHERE athlete_id IN (
+					SELECT user_id FROM athlete_profiles WHERE federation_id = $1
+				)
+			)`,
+			[id]
+		);
+		res.json(rows);
+	} catch (err) {
+		res.status(500).json({ error: "Failed to fetch federation sponsors" });
+	}
+};
+
+const getFederationRankings = async (req, res) => {
+	const { id } = req.params;
+	try {
+		const { rows } = await db.query(
+			`SELECT t.name as team_name, SUM(ts.points_scored) as total_points
+			FROM teams t
+			JOIN team_stats ts ON t.id = ts.team_id
+			WHERE t.federation_id = $1
+			GROUP BY t.name
+			ORDER BY total_points DESC`,
+			[id]
+		);
+		res.json(rows);
+	} catch (err) {
+		res.status(500).json({ error: "Failed to fetch federation rankings" });
+	}
+};
+
+const getFederationMembers = async (req, res) => {
+	const { id } = req.params;
+	try {
+		const { rows } = await db.query(
+			`SELECT u.id, u.first_name, u.last_name, u.email, fm.role
+			FROM federation_members fm
+			JOIN users u ON u.id = fm.user_id
+			WHERE fm.federation_id = $1 AND fm.status = 'accepted'`,
+			[id]
+		);
+		res.json(rows);
+	} catch (err) {
+		res.status(500).json({ error: "Failed to fetch federation members" });
+	}
+};
+
+const getFederationCalendar = async (req, res) => {
+	const { id } = req.params;
+	try {
+		const { rows } = await db.query(
+			"SELECT * FROM federation_calendar WHERE federation_id = $1 ORDER BY event_date ASC",
+			[id]
+		);
+		res.json(rows);
+	} catch (err) {
+		res.status(500).json({ error: "Failed to fetch federation calendar" });
+	}
+};
+
+const getFederationSpotlight = async (req, res) => {
+	const { id } = req.params;
+	try {
+		const { rows } = await db.query(
+			`SELECT * FROM athlete_profiles WHERE federation_id = $1
+			AND show_public = true
+			ORDER BY points DESC NULLS LAST, caps DESC NULLS LAST
+			LIMIT 1`,
+			[id]
+		);
+		res.json(rows[0] || {});
+	} catch (err) {
+		res
+			.status(500)
+			.json({ error: "Failed to fetch federation spotlight athlete" });
+	}
+};
+
+const postFederationMessage = async (req, res) => {
+	const { id } = req.params;
+	const { message, sent_by } = req.body;
+	try {
+		const result = await db.query(
+			"INSERT INTO federation_messages (federation_id, message, sent_by, created_at) VALUES ($1, $2, $3, NOW()) RETURNING *",
+			[id, message, sent_by]
+		);
+		res.status(201).json(result.rows[0]);
+	} catch (err) {
+		res.status(500).json({ error: "Failed to send message" });
+	}
+};
+
 export default {
+	getFederationSponsors,
+	getFederationRankings,
+	getFederationMembers,
+	getFederationSpotlight,
 	getAllFederations,
 	getFederationById,
 	getFederationByUser,

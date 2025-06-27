@@ -13,6 +13,7 @@ import {
   CardContent,
   CardActions,
   Button,
+  useTheme,
 } from '@mui/material';
 import axios from 'axios';
 import PlayersGrid from '../../components/federations/PlayersGrid';
@@ -24,6 +25,7 @@ import MediaCarousel from '../../components/federations/MediaCarousel';
 import WeeklySummary from '../../components/federations/WeeklySummary';
 
 const FederationDetails = () => {
+  const theme = useTheme();
   const { sportId } = useParams();
   const navigate = useNavigate();
   const [sports, setSports] = useState([]);
@@ -44,18 +46,14 @@ const FederationDetails = () => {
         const fedData = federationRes.data;
         setFederation(fedData);
 
-        if (fedData?.id) {console.log('O');
+        if (fedData?.id) {
           const [topAthletesRes, eventsRes, summaryRes, highlightsRes] = await Promise.all([
-    
             axios.get(`/api/athletes/top/${sportId}/${fedData.id}`),
             axios.get(`/api/events/upcoming/${fedData.id}`),
             axios.get(`/api/federations/${fedData.id}/weekly-summary`),
             axios.get(`/api/federations/${fedData.id}/media-highlights`),
           ]);
-          console.log("Calling:", `/api/athletes/top/${sportId}/${fedData.id}`);
 
-                  console.log('topAthletesRes: ', topAthletesRes);
- console.log('eventsRes: ', eventsRes);
           setTopAthletes(topAthletesRes.data);
           setEvents(eventsRes.data);
           setWeeklySummary(summaryRes.data);
@@ -72,16 +70,17 @@ const FederationDetails = () => {
     navigate(`/sports/${e.target.value}`);
   };
 
-  if (!federation) return <CircularProgress sx={{ mt: 5 }} />;
+  if (!federation) return <CircularProgress sx={{ mt: 5, mx: 'auto', display: 'block' }} />;
 
   return (
     <Container disableGutters maxWidth={false}>
       <Box
         sx={{
-          height: 200,
-          backgroundImage: 'url(/images/sport-banner.jpg)',
+          height: 280,
+          backgroundImage: `url(${federation.cover_image_url || '/images/sport-banner.jpg'})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          position: 'relative',
         }}
       />
 
@@ -92,17 +91,17 @@ const FederationDetails = () => {
         handleSportChange={handleSportChange}
       />
 
-      <Box sx={{ px: 3, mt: 4 }}>
-        <Grid container spacing={2} sx={{ mb: 4 }}>
+      <Box sx={{ px: 3, mt: 6 }}>
+        <Grid container spacing={3} sx={{ mb: 5 }}>
           <Grid item xs={12} sm={6}>
-            <Card>
+            <Card sx={{ borderRadius: 3 }}>
               <CardContent>
-                <Typography variant="h6">Join as an Athlete</Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography variant="h6" color="primary" fontWeight={700}>Join as an Athlete</Typography>
+                <Typography variant="body2" color="text.secondary">
                   Create your profile, track progress, join teams and more.
                 </Typography>
               </CardContent>
-              <CardActions>
+              <CardActions sx={{ px: 2, pb: 2 }}>
                 <Button href={`/login?role=athlete&sport=${federation.id}`} variant="contained">
                   Get Started
                 </Button>
@@ -110,14 +109,14 @@ const FederationDetails = () => {
             </Card>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Card>
+            <Card sx={{ borderRadius: 3 }}>
               <CardContent>
-                <Typography variant="h6">Register Your Team</Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography variant="h6" color="primary" fontWeight={700}>Register Your Team</Typography>
+                <Typography variant="body2" color="text.secondary">
                   Manage rosters, join tournaments, track stats and more.
                 </Typography>
               </CardContent>
-              <CardActions>
+              <CardActions sx={{ px: 2, pb: 2 }}>
                 <Button href={`/login?role=team&sport=${federation.id}`} variant="outlined">
                   Register Team
                 </Button>
@@ -128,7 +127,7 @@ const FederationDetails = () => {
 
         <FederationStats federationId={federation.id} />
 
-        <Grid container spacing={2} sx={{ my: 4 }}>
+        <Grid container spacing={3} sx={{ my: 5 }}>
           <Grid item xs={12} md={6}>
             <UpcomingEvents events={events} />
           </Grid>
@@ -137,20 +136,26 @@ const FederationDetails = () => {
           </Grid>
         </Grid>
 
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>Highlights</Typography>
+        <Box sx={{ mb: 5 }}>
+          <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }} color="primary">
+            Highlights
+          </Typography>
           <MediaCarousel highlights={mediaHighlights} />
         </Box>
 
-        <Box sx={{ my: 4 }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>Top Performers</Typography>
+        <Box sx={{ my: 5 }}>
+          <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }} color="primary">
+            Top Performers
+          </Typography>
           <Grid container spacing={2}>
             {topAthletes.map((athlete) => (
               <Grid item xs={12} sm={4} key={athlete.id}>
-                <Card>
+                <Card sx={{ borderRadius: 3 }}>
                   <CardContent>
                     <Typography variant="h6">{athlete.name}</Typography>
-                    <Typography variant="body2">🏅 {athlete.stat_summary || 'Top Performer'}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      🏅 {athlete.stat_summary || 'Top Performer'}
+                    </Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -158,13 +163,19 @@ const FederationDetails = () => {
           </Grid>
         </Box>
 
-        <Tabs value={tab} onChange={(e, newVal) => setTab(newVal)} sx={{ mb: 3 }}>
+        <Tabs
+          value={tab}
+          onChange={(e, newVal) => setTab(newVal)}
+          textColor="primary"
+          indicatorColor="primary"
+          sx={{ mb: 4 }}
+        >
           <Tab label="Players" />
           <Tab label="Teams" />
         </Tabs>
 
         {tab === 0 ? (
-         <PlayersGrid players={topAthletes} />
+          <PlayersGrid players={topAthletes} />
         ) : (
           <TeamsGrid federationId={federation.id} />
         )}

@@ -116,7 +116,7 @@ const Header = () => {
       try {
         const { data } = await axios.get('/api/sports/with-federations');
 
-        const sports = data.map(({ sport: { id, name } }) => ({
+         sports = data.map(({ sport: { id, name } }) => ({
      
           label: name,
           path: `/sports/${id}`,

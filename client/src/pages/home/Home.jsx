@@ -42,14 +42,18 @@ export default function Home() {
     <Box>
       <HeroBanner role={role} />
       <Container maxWidth="lg">
-        <PartnerCarousel />
+        {/* <PartnerCarousel /> */}
         <FeatureGrid />
         <HowItWorks />
         <RoleHighlights role={role} />
       </Container>
-      <LiveStatsTicker />
+ <Box sx={{ backgroundColor: "#00A3E0", color: "#fff", py: 1.5, px: 2 }}>
+  <Container maxWidth="lg">
+    <LiveStatsTicker />
+  </Container>
+</Box>
       <Container maxWidth="lg">
-        <UserSpotlight role={role} />
+        {/* <UserSpotlight role={role} /> */}
         <StayConnected />
       </Container>
     </Box>

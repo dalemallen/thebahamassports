@@ -1,114 +1,104 @@
 import {
-  Grid,
-  Typography,
   Box,
-  Paper,
-  Collapse,
-  IconButton,
-  useMediaQuery,
+  Typography,
   useTheme,
+  useMediaQuery,
+  Stack,
 } from "@mui/material";
-import { useState } from "react";
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import DescriptionIcon from "@mui/icons-material/Description";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import SmartphoneIcon from "@mui/icons-material/Smartphone";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { styled } from "@mui/material/styles";
 import { motion } from "framer-motion";
 
 const steps = [
   {
     title: "Create Your Free Account",
-    description:
-      "Choose your role — Athlete, Team, Coach, or Federation — and get started instantly.",
-    icon: <PersonAddAltIcon sx={{ fontSize: 40, color: "primary.main" }} />,
+    description: "Choose your role — Athlete, Team, Coach, or Federation. Get access instantly.",
+    icon: <PersonAddAltIcon sx={{ fontSize: 80 }} />,
+    bg: "#fefefe",
   },
   {
     title: "Build Your Profile",
-    description:
-      "Add player info, team rosters, or event details. Showcase your organization.",
-    icon: <DescriptionIcon sx={{ fontSize: 40, color: "primary.main" }} />,
+    description: "Showcase rosters, stats, and more — your brand, your sport, your legacy.",
+    icon: <DescriptionIcon sx={{ fontSize: 80 }} />,
+    bg: "#f9f9f9",
   },
   {
     title: "Join or Host Events",
-    description:
-      "Apply to leagues or tournaments — or host your own with our tools.",
-    icon: <EmojiEventsIcon sx={{ fontSize: 40, color: "primary.main" }} />,
+    description: "Register for leagues or run your own tournaments. Real-time. Local.",
+    icon: <EmojiEventsIcon sx={{ fontSize: 80 }} />,
+    bg: "#fff7e0",
   },
   {
     title: "Manage Everything Online",
-    description:
-      "Use dashboards to handle schedules, communications, and RSVPs from anywhere.",
-    icon: <SmartphoneIcon sx={{ fontSize: 40, color: "primary.main" }} />,
+    description: "From schedules to messaging — it's your digital control center.",
+    icon: <SmartphoneIcon sx={{ fontSize: 80 }} />,
+    bg: "#f0fbff",
   },
 ];
 
-const ExpandIcon = styled(ExpandMoreIcon)(({ expand }) => ({
-  transform: expand ? "rotate(180deg)" : "rotate(0deg)",
-  transition: "transform 0.3s ease",
-}));
-
-export default function HowItWorksTop() {
-  const [expandedIndex, setExpandedIndex] = useState(null);
+export default function HowItWorks() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const handleExpandClick = (index) => {
-    setExpandedIndex((prev) => (prev === index ? null : index));
-  };
-
   return (
-    <Box sx={{ py: 6 }}>
-      <Typography variant="h4" align="center" gutterBottom>
+    <Box sx={{ pt: 10, backgroundColor: "#fff" }}>
+      <Typography
+        variant="h3"
+        align="center"
+        fontWeight={900}
+        sx={{ mb: 10 }}
+      >
         How It Works
       </Typography>
-      <Grid container spacing={3} justifyContent="center">
+
+      <Stack spacing={6}>
         {steps.map((step, index) => (
-          <Grid key={index} size={{ xs: 12, sm: 6, md: 3 }}>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.2 }}
+          <Box
+            key={index}
+            component={motion.div}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: index * 0.1 }}
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", md: index % 2 === 0 ? "row" : "row-reverse" },
+              alignItems: "center",
+              justifyContent: "space-between",
+              px: { xs: 3, md: 10 },
+              py: 6,
+              backgroundColor: step.bg,
+              borderRadius: 6,
+            }}
+          >
+            {/* Icon side */}
+            <Box
+              sx={{
+                flexShrink: 0,
+                color: theme.palette.primary.main,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: { xs: "100%", md: "30%" },
+                mb: { xs: 4, md: 0 },
+              }}
             >
-              <Paper
-                elevation={3}
-                sx={{
-                  p: 3,
-                  textAlign: "center",
-                  borderRadius: 3,
-                  minHeight: 240,
-                  position: "relative",
-                }}
-              >
-                <Box mb={1}>{step.icon}</Box>
-                <Typography variant="h6" gutterBottom>
-                  {step.title}
-                </Typography>
+              {step.icon}
+            </Box>
 
-                <Collapse in={!isMobile || expandedIndex === index}>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mt: 1 }}
-                  >
-                    {step.description}
-                  </Typography>
-                </Collapse>
-
-                {isMobile && (
-                  <IconButton
-                    onClick={() => handleExpandClick(index)}
-                    sx={{ position: "absolute", bottom: 8, right: 8 }}
-                  >
-                    <ExpandIcon expand={expandedIndex === index ? 1 : 0} />
-                  </IconButton>
-                )}
-              </Paper>
-            </motion.div>
-          </Grid>
+            {/* Text side */}
+            <Box sx={{ width: { xs: "100%", md: "65%" } }}>
+              <Typography variant="h5" fontWeight={800} sx={{ mb: 1 }}>
+                {step.title}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {step.description}
+              </Typography>
+            </Box>
+          </Box>
         ))}
-      </Grid>
+      </Stack>
     </Box>
   );
 }

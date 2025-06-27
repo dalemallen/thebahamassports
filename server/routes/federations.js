@@ -100,4 +100,9 @@ router.get("/:id/sponsors", federationController.manageFederationSponsors);
 router.post("/:id/meetings", federationController.scheduleAnnualMeetings);
 router.get("/:id/athletes", federationController.getFederationAthletes);
 
+router.get("/:id/sponsors", federationController.getFederationSponsors);
+router.get("/:id/rankings", federationController.getFederationRankings);
+router.get("/:id/members", federationController.getFederationMembers);
+router.get("/:id/spotlight", federationController.getFederationSpotlight);
+
 export default router;

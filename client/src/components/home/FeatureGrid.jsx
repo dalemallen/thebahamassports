@@ -1,7 +1,13 @@
 import React from "react";
 import {
-  Box, Grid, Typography, Card, CardContent, useTheme
+  Box,
+  Grid,
+  Typography,
+  Card,
+  CardContent,
+  useTheme,
 } from "@mui/material";
+import { motion } from "framer-motion";
 import PersonIcon from "@mui/icons-material/Person";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import WebIcon from "@mui/icons-material/Web";
@@ -9,71 +15,98 @@ import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import StarIcon from "@mui/icons-material/Star";
 import GroupsIcon from "@mui/icons-material/Groups";
 
-const featureData = [
+const features = [
   {
-    title: "Registration & Payment",
-    description: "Collect registrations and fees with flexible forms and payment options.",
-    icon: <PersonIcon fontSize="large" color="primary" />,
+    title: "Seamless Registration",
+    description: "Collect sign-ups and payments effortlessly with flexible forms.",
+    icon: <PersonIcon fontSize="large" />,
   },
   {
-    title: "Scheduling",
-    description: "Plan balanced, conflict-free schedules for practices, games, and events.",
-    icon: <ScheduleIcon fontSize="large" color="primary" />,
+    title: "Smart Scheduling",
+    description: "Auto-generate conflict-free calendars for practices, games, and events.",
+    icon: <ScheduleIcon fontSize="large" />,
   },
   {
-    title: "Website Builder",
-    description: "Create a professional presence for your team or event with no coding required.",
-    icon: <WebIcon fontSize="large" color="primary" />,
+    title: "Custom Websites",
+    description: "Launch a stunning site for your team or league — no coding needed.",
+    icon: <WebIcon fontSize="large" />,
   },
   {
-    title: "Fundraising",
-    description: "Boost your program with built-in donation tools and sponsor management.",
-    icon: <VolunteerActivismIcon fontSize="large" color="primary" />,
+    title: "Built-In Fundraising",
+    description: "Raise funds, track sponsors, and accept donations with ease.",
+    icon: <VolunteerActivismIcon fontSize="large" />,
   },
   {
-    title: "Athlete Profiles",
-    description: "Scouting-ready profiles with stats, achievements, and media highlights.",
-    icon: <StarIcon fontSize="large" color="primary" />,
+    title: "Scouting-Ready Profiles",
+    description: "Showcase athlete stats, achievements, and highlights in one place.",
+    icon: <StarIcon fontSize="large" />,
   },
   {
-    title: "Team & League Management",
-    description: "Build rosters, track stats, and manage teams or host events.",
-    icon: <GroupsIcon fontSize="large" color="primary" />,
-  }
+    title: "Full Team Control",
+    description: "Manage rosters, track stats, and run your league like a pro.",
+    icon: <GroupsIcon fontSize="large" />,
+  },
 ];
 
 export default function FeatureGrid() {
   const theme = useTheme();
 
   return (
-    <Box sx={{ py: 8, px: 2 }}>
-      <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
-        Manage Sports Programs with Power & Flexibility
+    <Box sx={{ py: { xs: 10, md: 14 }, px: 3, backgroundColor: "#fff" }}>
+      <Typography
+        variant="h4"
+        fontWeight={800}
+        align="center"
+        sx={{ mb: 6, maxWidth: 800, mx: "auto" }}
+      >
+        Tools That Power Every Part of Your Sports Program
       </Typography>
-      <Typography variant="subtitle1" align="center" sx={{ maxWidth: 700, mx: "auto", mb: 5 }}>
-        Everything you need to run a successful season — all in one place.
-      </Typography>
-      <Grid container spacing={4} justifyContent="center">
-        {featureData.map((item, i) => (
-          <Grid key={i} size={{ xs: 12, sm: 6, md: 4 }} spacing={2}>
-            <Card
-              sx={{
-       
-                height: "100%",
-                transition: "transform 0.25s ease, box-shadow 0.25s ease",
-                "&:hover": {
-                  transform: "translateY(-6px)",
-                  boxShadow: theme.shadows[6],
-                  backgroundColor: theme.palette.grey[50]
-                }
-              }}
+
+      <Grid container spacing={4}>
+        {features.map((item, index) => (
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              whileHover={{ scale: 1.04 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              viewport={{ once: true }}
             >
-              <CardContent>
-                <Box sx={{ mb: 2 }}>{item.icon}</Box>
-                <Typography variant="h6" gutterBottom>{item.title}</Typography>
-                <Typography variant="body2">{item.description}</Typography>
-              </CardContent>
-            </Card>
+              <Card
+                elevation={3}
+                sx={{
+                  height: "100%",
+                  borderRadius: 4,
+                  transition: "box-shadow 0.3s ease",
+                  "&:hover": {
+                    boxShadow: "0 14px 28px rgba(0,0,0,0.1)",
+                  },
+                }}
+              >
+                <CardContent sx={{ textAlign: "center", py: 6 }}>
+                  <Box
+                    sx={{
+                      color: theme.palette.secondary.main,
+                      mb: 3,
+                      display: "flex",
+                      justifyContent: "center",
+                      fontSize: "2.25rem",
+                    }}
+                  >
+                    {item.icon}
+                  </Box>
+                  <Typography variant="h6" fontWeight={700} gutterBottom>
+                    {item.title}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "text.secondary", maxWidth: 280, mx: "auto" }}
+                  >
+                    {item.description}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </motion.div>
           </Grid>
         ))}
       </Grid>
