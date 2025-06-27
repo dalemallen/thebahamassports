@@ -16,8 +16,7 @@ const roleRedirectMap = {
 };
 
 export default function RedirectHandler() {
-  const { user, isAuthenticated, isLoading } = useAuth0();
-  const { setSelectedRole } = useUser();
+  const { user, role,setRole, isAuthenticated, isLoading } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,7 +38,7 @@ export default function RedirectHandler() {
         const existingUser = res.data;
 
         sessionStorage.removeItem("pendingRole");
-        setSelectedRole(existingUser.role);
+        setRole(existingUser.role);
 
         if (!existingUser.onboarding_complete) {
           navigate(`/onboard/${existingUser.role}`, { replace: true });
@@ -64,7 +63,7 @@ export default function RedirectHandler() {
             const newUser = registerRes.data;
 
             sessionStorage.removeItem("pendingRole");
-            setSelectedRole(newUser.role);
+            setRole(newUser.role);
             navigate(`/onboard/${newUser.role}`, { replace: true });
           } catch (registrationError) {
             console.error("Registration failed:", registrationError);
@@ -80,7 +79,7 @@ export default function RedirectHandler() {
     };
 
     handleRedirect();
-  }, [isAuthenticated, isLoading, user, location.state, navigate, setSelectedRole]);
+  }, [isAuthenticated, isLoading, user, location.state, navigate, setRole]);
 
   return <p>Redirecting...</p>;
 }

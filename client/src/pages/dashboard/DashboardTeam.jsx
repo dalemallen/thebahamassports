@@ -1,19 +1,23 @@
 import React from "react";
 import { Box, Grid, Typography } from "@mui/material";
 
-import TeamHeader from "./TeamHeader";
-import TeamStatsPanel from "./TeamStatsPanel";
-import UpcomingEventsPanel from "./UpcomingEventsPanel";
-import TeamRoster from "./TeamRoster";
-import RecentMatches from "./RecentMatches";
-import AttendanceTracker from "./AttendanceTracker";
-import TeamAnnouncements from "./TeamAnnouncements";
-import TeamGallery from "./TeamGallery";
-import DocumentsPanel from "./DocumentsPanel";
-import TeamDuesTable from "./TeamDuesTable";
-import InternalNotes from "./InternalNotes";
+import TeamHeader from "../../components/teams/TeamHeader";
+import TeamStatsPanel from "../../components/teams/TeamStatsPanel";
+import UpcomingEventsPanel from "../../components/teams/UpcomingEventsPanel";
+import TeamRoster from "../../components/teams/TeamRoster";
+import RecentMatches from "../../components/teams/RecentMatches";
+import AttendanceTracker from "../../components/teams/AttendanceTracker";
+import TeamAnnouncements from "../../components/teams/TeamAnnouncements";
+import TeamGallery from "../../components/teams/TeamGallery";
+import DocumentsPanel from "../../components/teams/DocumentsPanel";
+import TeamDuesTable from "../../components/teams/TeamDuesTable";
+import InternalNotes from "../../components/teams/InternalNotes";
+import TeamInfoBlock from "../../components/teams/TeamInfoBlock";
 
 const TeamDashboard = ({ teamId, team, userId }) => {
+  console.log('userId: ', userId);
+  console.log('teamId: ', teamId);
+  console.log('team: ', team);
   return (
     <Box sx={{ p: 3 }}>
       <TeamHeader team={team} editable={true} onUpdateImages={() => {}} />
@@ -62,6 +66,7 @@ const TeamDashboard = ({ teamId, team, userId }) => {
         <Grid item xs={12}>
           <InternalNotes teamId={teamId} userId={userId} />
         </Grid>
+        {team && <TeamInfoBlock team={team} />}
       </Grid>
     </Box>
   );

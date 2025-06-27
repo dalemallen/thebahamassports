@@ -142,15 +142,27 @@ const getTeamInvites = async (req, res) => {
 };
 
 const getTeamStats = async (req, res) => {
-	const result = await pool.query(
-		`SELECT COUNT(*) as total_matches,
-            SUM(CASE WHEN result = 'win' THEN 1 ELSE 0 END) as wins,
-            SUM(CASE WHEN result = 'loss' THEN 1 ELSE 0 END) as losses,
-            SUM(points_scored) as total_points
-     FROM team_stats WHERE team_id = $1`,
-		[req.params.id]
-	);
-	res.json(result.rows[0]);
+	const { id } = req.params;
+	console.log("req.params: ", req.params);
+	console.log("id: ", id);
+	const parsedId = parseInt(id);
+	if (isNaN(parsedId)) {
+		return res.status(400).json({ error: "Invalid team ID." });
+	}
+	try {
+		const result = await pool.query(
+			`SELECT COUNT(*) as total_matches,
+				SUM(CASE WHEN result = 'win' THEN 1 ELSE 0 END) as wins,
+				SUM(CASE WHEN result = 'loss' THEN 1 ELSE 0 END) as losses,
+				SUM(points_scored) as total_points
+		 FROM team_stats WHERE team_id = $1`,
+			[parsedId]
+		);
+		res.json(result.rows[0]);
+	} catch (err) {
+		console.error("Error fetching team stats:", err);
+		res.status(500).json({ error: "Failed to fetch team stats." });
+	}
 };
 
 const createTeamAnnouncement = async (req, res) => {
@@ -596,7 +608,7 @@ const scheduleTraining = async (req, res) => {
 const getTrainings = async (req, res) => {
 	try {
 		const result = await pool.query(
-			"SELECT * FROM team_trainings WHERE team_id = $1 ORDER BY date",
+			"SELECT * FROM team_trainings WHERE team_id = $1 ORDER BY training_date",
 			[req.params.id]
 		);
 		res.json(result.rows);
@@ -1434,6 +1446,80 @@ const deleteTryout = async (req, res) => {
 	}
 };
 
+const saveDraft = async (req, res) => {
+	const {
+		user_id,
+		name,
+		location,
+		ageGroup,
+		gender,
+		coachNames,
+		federation_id,
+		logo_url,
+		cover_image_url,
+	} = req.body;
+
+	if (!user_id || !name || !federation_id) {
+		return res.status(400).json({ error: "Missing required fields." });
+	}
+
+	try {
+		const result = await pool.query(
+			`INSERT INTO teams (
+		  user_id,
+		  name,
+		  location,
+		  age_group,
+		  gender,
+		  coach_names,
+		  federation_id,
+		  logo_url,
+		  cover_image_url
+		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+		RETURNING *`,
+			[
+				user_id,
+				name,
+				location || null,
+				ageGroup || null,
+				gender || null,
+				coachNames || [],
+				federation_id,
+				logo_url || null,
+				cover_image_url || null,
+			]
+		);
+
+		res.status(201).json(result.rows[0]);
+	} catch (err) {
+		console.error("Error saving team draft:", err);
+		res.status(500).json({ error: "Failed to save draft." });
+	}
+};
+
+const getTeamRoster = async (req, res) => {
+	const { teamId } = req.params;
+	console.log("teamId: ", teamId);
+	const parsedId = parseInt(teamId);
+	if (isNaN(parsedId)) {
+		return res.status(400).json({ error: "Invalid team ID." });
+	}
+
+	try {
+		const result = await pool.query(
+			`SELECT u.id, u.first_name, u.last_name, pr.position, pr.jersey_number
+		 FROM users u
+		 JOIN player_profiles pr ON pr.user_id = u.id
+		 WHERE pr.team_id = $1 AND pr.deleted_at IS NULL`,
+			[parsedId]
+		);
+		res.json(result.rows);
+	} catch (err) {
+		console.error("Error fetching team roster:", err);
+		res.status(500).json({ error: "Failed to fetch roster." });
+	}
+};
+
 export default {
 	getAllTeams,
 	getTeamById,
@@ -1537,4 +1623,6 @@ export default {
 	createTryout,
 	updateTryout,
 	deleteTryout,
+	saveDraft,
+	getTeamRoster,
 };

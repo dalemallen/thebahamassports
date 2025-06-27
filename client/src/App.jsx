@@ -14,17 +14,6 @@ const RedirectHandler = lazy(() => import("./components/auth/RedirectHandler.jsx
 const ProtectedRoute = lazy(() => import("./components/auth/ProtectedRoute.jsx"));
 const Onboard = lazy(() => import("./pages/onboard/Onboard.jsx"));
 
-// Dashboards by Role
-const roleDashboards = {
-  athlete: lazy(() => import("./pages/dashboard/DashboardAthlete.jsx")),
-  coach: lazy(() => import("./pages/dashboard/DashboardCoach.jsx")),
-  federation: lazy(() => import("./pages/dashboard/DashboardFederation.jsx")),
-  organizer: lazy(() => import("./pages/dashboard/DashboardOrganizer.jsx")),
-  team: lazy(() => import("./pages/dashboard/DashboardTeam.jsx")),
-  parent: lazy(() => import("./pages/dashboard/DashboardParent.jsx")),
-  sponsor: lazy(() => import("./pages/dashboard/DashboardSponsor.jsx")),
-  scout: lazy(() => import("./pages/dashboard/DashboardScout.jsx"))
-};
 
 // Feature Pages
 const FederationDetails = lazy(() => import("./pages/federations/FederationDetails.jsx"));
@@ -42,6 +31,8 @@ const EventDetails = lazy(() => import("./pages/events/EventDetails.jsx"));
 const EventTeams = lazy(() => import("./components/events/EventTeams.jsx"));
 const EventResults = lazy(() => import("./components/events/EventResults.jsx"));
 const SchedulePage = lazy(() => import("./pages/schedules/SchedulePage.jsx"));
+const Dashboard = lazy(() => import("./pages/dashboard/Dashboard.jsx"));
+
 
 export default function App() {
   const { user, isAuthenticated } = useAuth0();
@@ -60,18 +51,14 @@ export default function App() {
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/onboard/:role" element={<Onboard />} />
 
-        {/* Dashboards by Role */}
-        {Object.entries(roleDashboards).map(([role, Component]) => (
-          <Route
-            key={role}
-            path={`/dashboard/${role}`}
-            element={
-              <ProtectedRoute requiredRole={role}>
-                <Component />
-              </ProtectedRoute>
-            }
-          />
-        ))}
+ <Route
+  path="/dashboard/:role"
+  element={
+    <ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>
+  }
+/>
         <Route path="/aboutus" element={<AboutUsPage />} />
         {/* Feature Pages */}
         <Route path="/sports/:sportId" element={<FederationDetails />} />

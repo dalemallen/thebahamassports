@@ -1,19 +1,10 @@
-import {
-  Box,
-  Button,
-  Grid,
-  TextField,
-  Typography,
-  MenuItem,
-  Avatar,
-} from "@mui/material";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import { TextField, Button, Grid } from "@mui/material";
 
-const TeamForm = () => {
+const TeamForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
-    teamName: "",
-    federationId: "",
+    name: "",
+    federation_Id: "",
     location: "",
     ageGroup: "",
     gender: "",
@@ -22,175 +13,82 @@ const TeamForm = () => {
     coverImage: null,
   });
 
-  const [sports, setSports] = useState([]);
-  console.log('sports: ', sports);
-  const [logoPreview, setLogoPreview] = useState(null);
-  const [coverPreview, setCoverPreview] = useState(null);
-
- useEffect(() => {
-    const fetchSportsWithFederations = async () => {
-      try {
-        const res = await axios.get("/api/sports/with-federations");
-        setSports(res.data);
-      } catch (err) {
-        console.error("Failed to load sports with federations", err);
-      }
-    };
-    fetchSportsWithFederations();
-  }, []);
-
-
-
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (files) {
-      const file = files[0];
-      setFormData({ ...formData, [name]: file });
-
-      const previewURL = URL.createObjectURL(file);
-      if (name === "logo") setLogoPreview(previewURL);
-      if (name === "coverImage") setCoverPreview(previewURL);
+      setFormData((prev) => ({ ...prev, [name]: files[0] }));
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
-    // handle form submission
+    onSubmit(formData);
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} p={2}>
-      <Typography variant="h5" mb={2}>
-        Team Onboarding
-      </Typography>
+    <form onSubmit={handleSubmit}>
       <Grid container spacing={2}>
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField
-            name="teamName"
-            label="Team Name"
-            fullWidth
-            value={formData.teamName}
-            onChange={handleChange}
-            required
-          />
-        </Grid>
+        {["name", "federation_Id", "location", "ageGroup", "gender"].map((field) => (
+          <Grid item xs={12} sm={6} key={field}>
+            <TextField
+              label={field.replace(/([A-Z])/g, " $1")}
+              name={field}
+              fullWidth
+              value={formData[field]}
+              onChange={handleChange}
+            />
+          </Grid>
+        ))}
+{formData.coachNames.map((coach, index) => (
+  <TextField
+    key={index}
+    label={`Coach ${index + 1}`}
+    name="coachNames"
+    value={coach}
+    onChange={(e) => {
+      const newCoaches = [...formData.coachNames];
+      newCoaches[index] = e.target.value;
+      setFormData((prev) => ({ ...prev, coachNames: newCoaches }));
+    }}
+    fullWidth
+    sx={{ mb: 2 }}
+  />
+))}
 
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField
-            name="federationId"
-            label="Sport / Federation"
-            select
-            fullWidth
-            value={formData.federationId}
-            onChange={handleChange}
-            required
-          >
-            {sports.map((sport, federation) => (
-                 <MenuItem key={federation.id} value={federation.id}>
-                  {`${sport.name} — ${federation.name}`}    
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
+<Button
+  onClick={() =>
+    setFormData((prev) => ({
+      ...prev,
+      coachNames: [...prev.coachNames, ""],
+    }))
+  }
+>
+  Add Coach
+</Button>
 
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField
-            name="location"
-            label="Location"
-            fullWidth
-            value={formData.location}
-            onChange={handleChange}
-            required
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField
-            name="coachName"
-            label="Coach Name"
-            fullWidth
-            value={formData.coachName}
-            onChange={handleChange}
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField
-            name="ageGroup"
-            label="Age Group"
-            fullWidth
-            value={formData.ageGroup}
-            onChange={handleChange}
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField
-            name="gender"
-            label="Team Gender"
-            select
-            fullWidth
-            value={formData.gender}
-            onChange={handleChange}
-          >
-            <MenuItem value="Male">Male</MenuItem>
-            <MenuItem value="Female">Female</MenuItem>
-            <MenuItem value="Mixed">Mixed</MenuItem>
-          </TextField>
-        </Grid>
-
-        {/* Logo Upload */}
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <Button variant="outlined" component="label" fullWidth>
+        <Grid item xs={12} sm={6}>
+          <Button variant="contained" component="label" fullWidth>
             Upload Logo
-            <input
-              type="file"
-              name="logo"
-              accept="image/*"
-              hidden
-              onChange={handleChange}
-            />
+            <input type="file" name="logo" hidden onChange={handleChange} />
           </Button>
-          {logoPreview && (
-            <Box mt={1}>
-              <Avatar src={logoPreview} alt="Logo Preview" sx={{ width: 80, height: 80 }} />
-            </Box>
-          )}
         </Grid>
 
-        {/* Cover Upload */}
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <Button variant="outlined" component="label" fullWidth>
-            Upload Cover Image (Premium)
-            <input
-              type="file"
-              name="coverImage"
-              accept="image/*"
-              hidden
-              onChange={handleChange}
-            />
+        <Grid item xs={12} sm={6}>
+          <Button variant="contained" component="label" fullWidth>
+            Upload Cover Image
+            <input type="file" name="coverImage" hidden onChange={handleChange} />
           </Button>
-          {coverPreview && (
-            <Box mt={1}>
-              <img
-                src={coverPreview}
-                alt="Cover Preview"
-                style={{ width: "100%", maxHeight: 150, objectFit: "cover" }}
-              />
-            </Box>
-          )}
         </Grid>
 
-        <Grid size={{ xs: 12  }}>
+        <Grid item xs={12}>
           <Button type="submit" variant="contained" fullWidth>
-            Submit Team Info
+            Submit Team
           </Button>
         </Grid>
       </Grid>
-    </Box>
+    </form>
   );
 };
 

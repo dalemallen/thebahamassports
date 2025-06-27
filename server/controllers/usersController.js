@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 // 1. ✅ GET /api/users/:auth0_id
 const getUserByAuth0Id = async (req, res) => {
 	const auth0_id = decodeURIComponent(req.params.auth0_id);
-	console.log("auth0_id: ", auth0_id);
+
 	try {
 		const userRes = await pool.query(
 			`SELECT u.*, r.name as role
@@ -110,33 +110,53 @@ const completeOnboarding = async (req, res) => {
 	}
 };
 
+// const getUserById = async (req, res) => {
+// 	console.log("here");
+// 	try {
+// 		const userResult = await pool.query(
+// 			`SELECT * FROM users WHERE auth0_id = $1`,
+// 			[req.params.id]
+// 		);
+
+// 		if (userResult.rows.length === 0) {
+// 			return res.status(404).json({ message: "User not found" });
+// 		}
+
+// 		const user = userResult.rows[0];
+
+// 		// Fetch role
+// 		const roleResult = await pool.query(
+// 			`SELECT r.name FROM user_roles ur
+// 		 JOIN roles r ON r.id = ur.role_id
+// 		 WHERE ur.user_id = $1`,
+// 			[user.id]
+// 		);
+
+// 		user.role = roleResult.rows[0]?.name || null;
+
+// 		res.json(user);
+// 	} catch (err) {
+// 		console.error("Error fetching user:", err);
+// 		res.status(500).json({ message: "Server error" });
+// 	}
+// };
 const getUserById = async (req, res) => {
+	console.log("req.params.id: ", req.params.id);
 	try {
-		const userResult = await pool.query(
+		const { rows } = await pool.query(
 			`SELECT * FROM users WHERE auth0_id = $1`,
 			[req.params.id]
 		);
 
-		if (userResult.rows.length === 0) {
+		if (rows.length === 0) {
 			return res.status(404).json({ message: "User not found" });
 		}
 
-		const user = userResult.rows[0];
-
-		// Fetch role
-		const roleResult = await pool.query(
-			`SELECT r.name FROM user_roles ur
-		 JOIN roles r ON r.id = ur.role_id
-		 WHERE ur.user_id = $1`,
-			[user.id]
-		);
-
-		user.role = roleResult.rows[0]?.name || null;
-
-		res.json(user);
+		const user = rows[0];
+		return res.json(user); // this will include role if it's in the `users` table
 	} catch (err) {
 		console.error("Error fetching user:", err);
-		res.status(500).json({ message: "Server error" });
+		return res.status(500).json({ message: "Server error" });
 	}
 };
 

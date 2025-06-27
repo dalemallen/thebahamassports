@@ -16,6 +16,7 @@ import leaguesRouter from "./routes/leagues.js";
 import tournamentsRouter from "./routes/tournaments.js";
 import usersRouter from "./routes/users.js";
 import inviteRouter from "./routes/invites.js";
+import announcementsRoutes from "./routes/announcements.js";
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use("/api/leagues", leaguesRouter);
 app.use("/api/tournaments", tournamentsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/invites", inviteRouter);
+app.use("/api/announcements", announcementsRoutes);
 
 // ✅ Example protected route
 // app.get('/api/coach-data', checkJwt, checkRole('coach'), (req, res) => {

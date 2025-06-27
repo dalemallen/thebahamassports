@@ -20,6 +20,8 @@ router.post("/:id/remove-player", teamsController.removePlayerFromTeam);
 router.get("/:id/stats", teamsController.getTeamStats);
 router.post("/:id/announcement", teamsController.createTeamAnnouncement);
 router.get("/:id/announcements", teamsController.getTeamAnnouncements);
+// Add to routes/teamsRoutes.js
+router.get("/:teamId/roster", teamsController.getTeamRoster);
 
 // CSV Exports
 router.get("/:id/export", teamsController.TeamRoster);
@@ -199,5 +201,6 @@ router.get("/:id/tryouts", teamsController.getTryouts);
 router.post("/:id/tryouts", teamsController.createTryout);
 router.patch("/tryouts/:id", teamsController.updateTryout);
 router.delete("/tryouts/:id", teamsController.deleteTryout);
+router.post("/save-draft", teamsController.saveDraft);
 
 export default router;

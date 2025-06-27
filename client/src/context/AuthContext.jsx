@@ -7,60 +7,74 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const { user: auth0User, isAuthenticated, isLoading } = useAuth0();
+  const [user, setUser] = useState(null);
+  const [dbUser, setDbUser] = useState(null);
+  const [role, setRole] = useState(null);
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
-  const [selectedRole, setSelectedRole] = useState(null);
-
   useEffect(() => {
-    if (!isAuthenticated || isLoading || !auth0User) return;
-
     const loadUser = async () => {
+      if (!isAuthenticated || !auth0User) return;
+
       try {
+        // Get existing user from DB
         const res = await axios.get(`/api/users/${auth0User.sub}`);
-        const dbUser = res.data;
+        const userFromDb = res.data;
 
-        setUser(dbUser);
-        setSelectedRole(dbUser.role);
+        // Load team if user is a team-type user
+        let teamData = null;
+        if (userFromDb.role === "team") {
+          const teamRes = await axios.get(`/api/teams/creator/${userFromDb.id}`);
+          teamData = teamRes.data?.[0] || null;
+        }
 
-        if (!dbUser.onboarding_complete) {
-          navigate(`/onboard/${dbUser.role}`);
+        // Update states
+        const fullUser = { ...auth0User, ...userFromDb, team: teamData, team_id: teamData?.id || null };
+        setDbUser(fullUser);
+        setRole(userFromDb.role);
+        setUser(fullUser);
+
+        // Redirect if onboarding is incomplete
+        if (!userFromDb.onboarding_complete) {
+          navigate(`/onboard/${userFromDb.role}`);
         }
       } catch (err) {
+        // Register new user if not found
         if (err.response?.status === 404) {
-          const role = sessionStorage.getItem("pendingRole") || "athlete";
+          const pendingRole = sessionStorage.getItem("pendingRole") || "athlete";
 
           const payload = {
             auth0_id: auth0User.sub,
             email: auth0User.email,
             first_name: auth0User.given_name || "",
             last_name: auth0User.family_name || "",
-            role,
+            role: pendingRole,
           };
 
           const regRes = await axios.post(`/api/users/register-user`, payload);
           const newUser = regRes.data;
 
-          setUser(newUser);
-          setSelectedRole(role);
+          const fullUser = { ...auth0User, ...newUser };
+          setDbUser(fullUser);
+          setRole(pendingRole);
+          setUser(fullUser);
 
           sessionStorage.removeItem("pendingRole");
-          navigate(`/onboard/${role}`);
+          navigate(`/onboard/${pendingRole}`);
         } else {
-          console.error("Error fetching/creating user", err);
+          console.error("Failed to fetch/create user", err);
         }
       }
     };
 
     loadUser();
-  }, [auth0User, isAuthenticated, isLoading]);
+  }, [auth0User, isAuthenticated]);
 
   return (
-    <AuthContext.Provider value={{ user, selectedRole, setSelectedRole }}>
+    <AuthContext.Provider value={{ user, role, setRole, isAuthenticated, isLoading, dbUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// ✅ Custom hook for easier usage
 export const useUser = () => useContext(AuthContext);

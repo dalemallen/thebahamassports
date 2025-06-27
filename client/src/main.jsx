@@ -7,6 +7,8 @@ import { UserProvider } from './context/UserContext';
 import { SportsProvider } from './context/SportsContext';
 import App from './App';
 import AuthGate from './components/common/AuthGate'; // path might vary
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './theme';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Auth0Provider
@@ -24,7 +26,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <UserProvider>
           <SportsProvider>
             <AuthGate>
-              <App />
+              <ThemeProvider theme={theme}>
+                <App />
+              </ThemeProvider>
             </AuthGate>
           </SportsProvider>
         </UserProvider>

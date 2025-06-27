@@ -6,8 +6,9 @@ import DashboardLayout from "./DashboardLayout.jsx";
 
 const LayoutSwitcher = ({ children }) => {
 
-const { user, selectedRole } = useUser();
-  const { isAuthenticated, } = useAuth0();
+const { user, role, isAuthenticated, isLoading } = useUser();
+console.log('role: ', role);
+
   console.log('user: ', user);
 
   if (!isAuthenticated) {
