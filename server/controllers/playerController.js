@@ -3,13 +3,108 @@ import pool from "../db/index.js";
 import handleError from "../utils/errorHandler.js";
 
 // === Core ===
+// server/controllers/playerController.js
+
 const getAllPlayers = async (req, res) => {
 	try {
-		const { limit = 50, offset = 0 } = req.query;
-		const result = await pool.query(
-			"SELECT * FROM users WHERE id IN (SELECT user_id FROM player_profiles) LIMIT $1 OFFSET $2",
-			[limit, offset]
-		);
+		const {
+			sport_id,
+			team_id,
+			federation_id,
+			position,
+			gender,
+			verified,
+			mvp,
+			age_group,
+			search,
+			limit = 50,
+			offset = 0,
+		} = req.query;
+
+		const filters = [];
+		const values = [];
+		let idx = 1;
+
+		// Filter by team (via team_players table)
+		if (team_id) {
+			filters.push(
+				`u.id IN (SELECT user_id FROM team_players WHERE team_id = $${idx++})`
+			);
+			values.push(team_id);
+		}
+
+		// Filter by federation (via athlete_profiles.club_team matching team name)
+		if (federation_id) {
+			filters.push(`
+				ap.club_team IN (
+					SELECT name FROM teams WHERE federation_id = $${idx++}
+				)
+			`);
+			values.push(federation_id);
+		}
+
+		// Filter by sport
+		if (sport_id) {
+			filters.push(`ap.sport_id = $${idx++}`);
+			values.push(sport_id);
+		}
+
+		// Position from player_profiles
+		if (position) {
+			filters.push(`pp.position ILIKE $${idx++}`);
+			values.push(`%${position}%`);
+		}
+
+		// Gender from users
+		if (gender) {
+			filters.push(`u.gender = $${idx++}`);
+			values.push(gender);
+		}
+
+		// Verified / MVP / Age Group from athlete_profiles
+		if (verified) {
+			filters.push(`ap.is_verified = true`);
+		}
+		if (mvp) {
+			filters.push(`ap.is_mvp = true`);
+		}
+		if (age_group) {
+			filters.push(`ap.age_group = $${idx++}`);
+			values.push(age_group);
+		}
+
+		// Search name
+		if (search && search.trim() !== "") {
+			filters.push(`(u.first_name ILIKE $${idx} OR u.last_name ILIKE $${idx})`);
+			values.push(`%${search.trim()}%`);
+			idx++;
+		}
+
+		const whereClause = filters.length ? `WHERE ${filters.join(" AND ")}` : "";
+
+		const query = `
+			SELECT u.id, u.first_name, u.last_name,
+				   pp.photo, pp.position,
+				   ap.age_group, ap.club_team, ap.nationality,
+				   ap.is_verified, ap.is_mvp,
+				   ph.media_url AS highlight_video
+			FROM users u
+			JOIN player_profiles pp ON u.id = pp.user_id
+			LEFT JOIN athlete_profiles ap ON u.id = ap.user_id
+			LEFT JOIN player_highlights ph ON u.id = ph.user_id
+			${whereClause}
+		GROUP BY u.id, u.first_name, u.last_name,
+         pp.photo, pp.position,
+         ap.age_group, ap.club_team, ap.nationality, ap.is_verified, ap.is_mvp,
+         ph.media_url
+			ORDER BY u.last_name ASC
+			LIMIT $${idx++} OFFSET $${idx++}
+		`;
+
+		values.push(limit);
+		values.push(offset);
+
+		const result = await pool.query(query, values);
 		res.json(result.rows);
 	} catch (err) {
 		handleError(err, req, res);

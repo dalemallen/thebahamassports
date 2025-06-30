@@ -12,7 +12,7 @@ export default function HeroBanner() {
         flexDirection: { xs: "column", md: "row" },
         alignItems: "center",
         justifyContent: "space-between",
-        px: { xs: 3, md: 12 },
+        // px: { xs: 3, md: 12 },
         py: { xs: 10, md: 16 },
         backgroundColor: "#fff",
         gap: { xs: 6, md: 10 },

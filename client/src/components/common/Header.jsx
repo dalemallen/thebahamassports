@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import logo from '../../assets/icon.png';
 import {
   AppBar,
   Toolbar,
@@ -149,9 +150,7 @@ const Header = () => {
       <Box>
         <AppBar position="sticky" sx={{ bgcolor: '#fff', color: '#000', boxShadow: 'none' }}>
           <Toolbar>
-            <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
-              The Bahamas
-            </Typography>
+       <img src={logo} alt="The Bahamas Sports" style={{ height: 120, marginBottom: '2rem' }} />
             {isMobile ? (
               <IconButton edge="end" color="inherit" onClick={() => setMobileOpen(true)}>
                 <MenuIcon />

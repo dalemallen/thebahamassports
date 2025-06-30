@@ -23,6 +23,11 @@ import FolderIcon from '@mui/icons-material/Folder';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 
 export default function DashboardAthlete() {
+    const { role, isLoading, dbUser } = useUser();
+
+  if (isLoading || !dbUser) return <div>Loading...</div>; // or a spinner
+
+  if (role !== "athlete") return <div>Unauthorized</div>; // optional
   const theme = useTheme();
 
   const athlete = {

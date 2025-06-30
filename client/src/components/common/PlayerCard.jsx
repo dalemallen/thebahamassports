@@ -1,60 +1,74 @@
 import React from 'react';
-import { Card, CardContent, Typography, Avatar, Box, Skeleton } from '@mui/material';
-import { Link } from 'react-router-dom';
+import {
+  Paper,
+  Avatar,
+  Typography,
+  Box,
+  Chip,
+  Stack,
+} from '@mui/material';
+import { CheckCircle, Star } from '@mui/icons-material';
 
-const PlayerCard = ({ player, loading = false }) => {
-  console.log('player: ', player);
-  if (loading) {
-    return (
-      <Card sx={{ display: 'flex', mb: 2, p: 2, alignItems: 'center' }}>
-        <Skeleton variant="circular" width={56} height={56} sx={{ mr: 2 }} />
-        <Box sx={{ flex: 1 }}>
-          <Skeleton width="60%" height={28} />
-          <Skeleton width="40%" />
-          <Skeleton width="50%" />
-        </Box>
-      </Card>
-    );
-  }
+export default function PlayerCard({ player }) {
+  const {
+    first_name,
+    last_name,
+    position,
+    is_verified,
+    is_mvp,
+    profile_photo_url,
+  } = player;
 
   return (
-    <Card sx={{ display: 'flex', mb: 2, p: 2, alignItems: 'center' }}>
-      <Avatar
-        src={player.profile_picture_url || ''}
-        alt={`${player.first_name} ${player.last_name}`}
-        sx={{ width: 56, height: 56, mr: 2 }}
-      />
-
-      <Box>
-        <Typography variant="h6">
-          <Link to={`/players/${player.user_id}`}>
-            {player.first_name} {player.last_name}
-          </Link>
+    <Paper
+      sx={{
+        p: 2,
+        borderRadius: 2,
+        boxShadow: 1,
+        '&:hover': { boxShadow: 3 },
+        cursor: 'pointer',
+        height: '100%',
+      }}
+    >
+      <Stack direction="column" alignItems="center" spacing={1}>
+        <Avatar
+          src={profile_photo_url}
+          alt={`${first_name} ${last_name}`}
+          sx={{ width: 80, height: 80 }}
+        />
+        <Typography fontWeight="bold" align="center">
+          {first_name} {last_name}
         </Typography>
-
-        {player.sport && (
-          <Typography variant="body2" color="textSecondary">
-            Sport: {player.sport}
+        {position && (
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            align="center"
+          >
+            Position: {position}
           </Typography>
         )}
-
-        {player.position && (
-          <Typography variant="body2" color="textSecondary">
-            Position: {player.position}
-          </Typography>
-        )}
-
-        {player.team_id && player.team_name && (
-          <Typography variant="body2">
-            Team:{' '}
-            <Link to={`/teams/${player.team_id}`}>
-              {player.team_name}
-            </Link>
-          </Typography>
-        )}
-      </Box>
-    </Card>
+        <Stack direction="row" spacing={1} mt={1}>
+          {is_verified && (
+            <Chip
+              icon={<CheckCircle />}
+              label="Verified"
+              size="small"
+              color="primary"
+              variant="outlined"
+            />
+          )}
+          {is_mvp && (
+            <Chip
+              icon={<Star />}
+              label="MVP"
+              size="small"
+              color="secondary"
+              variant="outlined"
+            />
+          )}
+        </Stack>
+      </Stack>
+    </Paper>
   );
-};
-
-export default PlayerCard;
+}

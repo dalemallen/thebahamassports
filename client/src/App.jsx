@@ -25,6 +25,7 @@ const TeamsPage = lazy(() => import("./pages/teams/TeamsPage.jsx"));
 const TeamDetails = lazy(() => import("./pages/teams/TeamDetails.jsx"));
 const TeamPlayers = lazy(() => import("./components/teams/TeamPlayers.jsx"));
 const PlayersList = lazy(() => import("./components/players/PlayersList.jsx"));
+const PlayerDirectory = lazy(() => import("./pages/players/PlayerDirectory.jsx"));
 const PlayerDetails = lazy(() => import("./pages/players/PlayerDetails.jsx"));
 const EventLists = lazy(() => import("./components/events/EventLists.jsx"));
 const EventDetails = lazy(() => import("./pages/events/EventDetails.jsx"));
@@ -70,7 +71,7 @@ export default function App() {
         <Route path="/teams/:teamId" element={<TeamDetails />} />
         <Route path="/teams/:teamId/players" element={<TeamPlayers />} />
         <Route path="/teams/:teamId/player/:playerId" element={<PlayerDetails />} />
-        <Route path="/players" element={<PlayersList />} />
+        <Route path="/players" element={<PlayerDirectory />} />
         <Route path="/players/:playerId" element={<PlayerDetails />} />
         <Route path="/events" element={<EventLists />} />
         <Route path="/events/:eventId" element={<EventDetails />} />
