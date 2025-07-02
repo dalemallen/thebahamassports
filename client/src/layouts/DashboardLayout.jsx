@@ -13,9 +13,10 @@ export default function DashboardLayout({ children }) {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
-    <>   <Header />
-    <Box sx={{ display: 'flex' }}>
+    <>   
     
+    <Box sx={{ display: 'flex' }}>
+   
       {/* Sidebar hidden on mobile */}
       {!isMobile && (
         <Drawer
@@ -31,6 +32,7 @@ export default function DashboardLayout({ children }) {
         </Drawer>
       )}
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+         <Header />
         {children}
       </Box>
     </Box>

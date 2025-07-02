@@ -47,7 +47,7 @@ export default function App() {
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/callback" element={<RedirectHandler />} />
-        <Route path="/redirect" element={<RedirectHandler />} />
+        <Route path="/redirect-handler" element={<RedirectHandler />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/onboard/:role" element={<Onboard />} />
