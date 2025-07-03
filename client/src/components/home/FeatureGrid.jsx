@@ -64,7 +64,7 @@ export default function FeatureGrid() {
 
       <Grid container spacing={4}>
         {features.map((item, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
+          <Grid size={{xs:12, sm:6, md:4}} key={index}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

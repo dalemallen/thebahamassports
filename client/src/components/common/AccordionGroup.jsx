@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Accordion,
   AccordionSummary,
@@ -7,46 +7,81 @@ import {
   List,
   ListItem,
   ListItemText,
-  Divider
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Link as RouterLink } from "react-router-dom";
 
 export default function AccordionGroup({ sections }) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = React.useState(null);
 
-  const handleChange = (panel) => (event, isExpanded) =>
-    setExpanded(isExpanded ? panel : false);
+  const handleChange = (panel) => (_, isExpanded) => {
+    setExpanded(isExpanded ? panel : null);
+  };
 
   return (
     <>
-      {sections.map((section, index) => (
+      {sections.map(({ title, items }, idx) => (
         <Accordion
-          key={index}
-          expanded={expanded === section.title}
-          onChange={handleChange(section.title)}
+          key={idx}
+          expanded={expanded === title}
+          onChange={handleChange(title)}
+          sx={{
+            bgcolor: "#fff",
+            borderRadius: 2,
+            mb: 2,
+            boxShadow: 2,
+            overflow: "hidden",
+            "&:before": { display: "none" },
+          }}
         >
-          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography fontWeight="bold" color="primary">
-              {section.title}
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls={`${title}-content`}
+            id={`${title}-header`}
+            sx={{
+              bgcolor: "#f7f7f7",
+              px: 3,
+              py: 1.5,
+            }}
+          >
+            <Typography
+              variant="subtitle1"
+              fontWeight="bold"
+              color="primary"
+              sx={{ fontSize: 16 }}
+            >
+              {title}
             </Typography>
           </AccordionSummary>
-          <AccordionDetails>
-            <List dense>
-              {section.items.map(({ label, path }, idx) => (
+
+          <AccordionDetails sx={{ p: 0 }}>
+            <List dense disablePadding>
+              {items.map(({ label, path }, i) => (
                 <ListItem
-                  key={idx}
-                  button
+                  key={i}
+                  disableGutters
+                  sx={{
+                    px: 3,
+                    py: 1.2,
+                    transition: "background-color 0.2s",
+                    "&:hover": {
+                      bgcolor: "action.hover",
+                    },
+                  }}
                   component={RouterLink}
                   to={path}
-                  disableGutters
                 >
-                  <ListItemText primary={label} />
+                  <ListItemText
+                    primary={label}
+                    primaryTypographyProps={{
+                      fontSize: 14,
+                      color: "text.primary",
+                    }}
+                  />
                 </ListItem>
               ))}
             </List>
           </AccordionDetails>
-          <Divider />
         </Accordion>
       ))}
     </>

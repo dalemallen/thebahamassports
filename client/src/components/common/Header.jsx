@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import logo from '../../assets/icon.png';
 import {
   AppBar,
   Toolbar,
@@ -9,8 +8,6 @@ import {
   Button,
   Grid,
   Container,
-  Collapse,
-  Divider,
   Drawer,
   List,
   ListItem,
@@ -18,8 +15,7 @@ import {
   useMediaQuery,
   ClickAwayListener,
   Grow,
-  Paper, 
-  Avatar, 
+  Avatar,
   Menu,
   MenuItem
 } from '@mui/material';
@@ -27,9 +23,8 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import MenuIcon from '@mui/icons-material/Menu';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
-import LoginButton from './LoginButton';  
-import LogoutButton from './LogoutButton'
 import { useAuth0 } from '@auth0/auth0-react';
+import logo from '../../assets/icon.png';
 
 const Header = () => {
   const { user, isAuthenticated, loginWithRedirect, logout } = useAuth0();
@@ -37,229 +32,162 @@ const Header = () => {
   const [navItems, setNavItems] = useState([]);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [menuItems, setMenuItems] = useState([]);
-  const [activeLabel, setActiveLabel] = useState('');
   const [mobileOpen, setMobileOpen] = useState(false);
   const isMobile = useMediaQuery('(max-width:900px)');
   const location = useLocation();
   const dropdownRef = useRef(null);
 
-    const handleAvatarClick = (event) => setAnchorEl(event.currentTarget);
-  const handleClose = () => setAnchorEl(null);
-
   useEffect(() => {
     const fetchNavItems = async () => {
       const staticNav = [
-        {
-          label: 'Competition',
-          children: [
-            { label: 'Schedule', path: '/schedule' },
-            { label: 'Tournaments', path: '/tournaments' },
-            { label: 'Leagues', path: '/leagues' },
-            { label: '1-Day Events', path: '/events/one-day' },
-            { label: 'Tryouts', path: '/tryouts' }
-          ]
-        },
-        {
-          label: 'Discover',
-          children: [
-            { label: 'Players', path: '/players' },
-            { label: 'Teams', path: '/teams' },
-            // { label: 'Top Performers', path: '/top-performers' },
-          ]
-        },
+               { label: 'Schedule', path: '/schedule' },
         // {
-        //   label: 'Watch',
+        //   label: 'Competition',
         //   children: [
-        //     { label: 'Highlights', path: '/highlights' },
-        //     { label: 'Interviews', path: '/interviews' },
-        //     { label: 'Training Clips', path: '/training-clips' },
-        //     { label: 'Athlete Spotlights', path: '/spotlights' }
+        //     { label: 'Schedule', path: '/schedule' },
+        //     { label: 'Tournaments', path: '/tournaments' },
+        //     { label: 'Leagues', path: '/leagues' },
+        //     { label: '1-Day Events', path: '/events/one-day' },
+        //     { label: 'Tryouts', path: '/tryouts' }
         //   ]
         // },
         // {
-        //   label: 'Updates',
+        //   label: 'Discover',
         //   children: [
-        //     { label: 'Federation Updates', path: '/updates/federation' },
-        //     { label: 'Athlete Announcements', path: '/updates/athletes' },
-        //     { label: 'Scholarships & Sponsorships', path: '/updates/opportunities' }
+        //     { label: 'Players', path: '/players' },
+        //     { label: 'Teams', path: '/teams' },
         //   ]
         // },
+       { label: 'About Us', path: '/aboutus' },
         // {
-        //   label: 'Sponsors',
+        //   label: 'Info Hub',
         //   children: [
-        //     { label: 'Sponsorships', path: '/sponsors/opportunities' },
-        //     { label: 'Sponsor Accounts', path: '/sponsors/accounts' },
-        //     { label: 'Scholarships', path: '/sponsors/scholarships' }
+        //     { label: 'About Us', path: '/aboutus' },
+        //     { label: 'FAQ', path: '/faq' }
         //   ]
         // },
-        // {
-        //   label: 'Accounts',
-        //   children: [
-        //     { label: 'Athlete', path: '/accounts/athlete' },
-        //     { label: 'Team', path: '/accounts/team' },
-        //     { label: 'Coach', path: '/accounts/coach' },
-        //     { label: 'Parent', path: '/accounts/parent' },
-        //     { label: 'Sponsor', path: '/accounts/sponsor' },
-        //     { label: 'Organization', path: '/accounts/organization' }
-        //   ]
-        // },
-        {
-          label: 'Info Hub',
-          children: [
-            { label: 'About Us', path: '/aboutus' },
-            { label: 'FAQ', path: '/faq' }
-          ]
-        },
         { label: 'Contact', path: '/contact' }
       ];
 
-      let sports = [];
       try {
         const { data } = await axios.get('/api/sports/with-federations');
-
-         sports = data.map(({ sport: { id, name } }) => ({
-     
+        const sports = data.map(({ sport: { id, name } }) => ({
           label: name,
-          path: `/sports/${id}`,
+          path: `/sports/${id}`
         }));
+        setNavItems([{ label: 'Home', path: '/' }, { label: 'Sports', children: sports }, ...staticNav]);
       } catch (err) {
         console.error('Failed to fetch sports:', err);
-        sports = [];
+        setNavItems([{ label: 'Home', path: '/' }, ...staticNav]);
       }
-
-      setNavItems([{ label: 'Home', path: '/' }, { label: 'Sports', children: sports }, ...staticNav]);
     };
 
     fetchNavItems();
   }, []);
 
   const handleDropdown = (item) => {
-    setActiveDropdown((prev) => (prev === item.label ? null : item.label));
-    setMenuItems(item.children);
-    setActiveLabel(item.label);
+    setActiveDropdown(activeDropdown === item.label ? null : item.label);
+    setMenuItems(item.children || []);
   };
 
   const handleClickAway = () => {
     setActiveDropdown(null);
     setMenuItems([]);
-    setActiveLabel('');
   };
+
+  const handleAvatarClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
 
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <Box>
         <AppBar position="sticky" sx={{ bgcolor: '#fff', color: '#000', boxShadow: 'none' }}>
-          <Toolbar>
-       <img src={logo} alt="The Bahamas Sports" style={{ height: 120, marginBottom: '2rem' }} />
+          <Toolbar sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box display="flex" alignItems="center">
+              <img src={logo} alt="The Bahamas Sports" style={{ height: 60 }} />
+            </Box>
+
             {isMobile ? (
               <IconButton edge="end" color="inherit" onClick={() => setMobileOpen(true)}>
                 <MenuIcon />
               </IconButton>
             ) : (
-              navItems.map((item) => (
-                <Box key={item.label}>
-                  {item.children ? (
-                    <Button
-                      onClick={() => handleDropdown(item)}
-                      sx={{
-                        color: activeDropdown === item.label ? 'primary.main' : '#000',
-                        fontWeight: 500,
-                        textTransform: 'none'
-                      }}
-                      endIcon={<ArrowDropDownIcon />}
-                    >
-                      {item.label}
-                    </Button>
-                  ) : (
-                    <Button
-                      href={item.path}
-                      sx={{
-                        color: location.pathname === item.path ? 'primary.main' : '#000',
-                        fontWeight: 500,
-                        textTransform: 'none'
-                      }}
-                    >
-                      {item.label}
-                    </Button>
-                  )}
-                </Box>
-              ))
-            )}
-            {!isMobile && (
-     <>{isAuthenticated ? (
-        <>
-          <Avatar
-            src={user.picture}
-            alt={user.name}
-            onClick={handleAvatarClick}
-            sx={{ cursor: 'pointer', ml: 2 }}
-          />
-          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-            <MenuItem disabled>{user.name}</MenuItem>
-            <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>Logout</MenuItem>
-          </Menu>
-        </>
-      ) : (
-<>
-        <Button
-          variant="contained"
-         onClick={() => {
-    sessionStorage.setItem("pendingRole", "athlete");
-        
-    loginWithRedirect({
-      appState: { role: "athlete" },
-      authorizationParams: {
-        redirect_uri: window.location.origin + "/redirect-handler",
-      },
-    });
-  }}
-          sx={{ ml: 2 }}
-        >
-          Log In / Sign Up
-        </Button>
-          <Button
-  variant="contained"
-  onClick={() => {
-    sessionStorage.setItem("pendingRole", "team");
-        
-    loginWithRedirect({
-      appState: { role: "team" },
-      authorizationParams: {
-        redirect_uri: window.location.origin + "/redirect-handler",
-      },
-    });
-  }}
-  sx={{ ml: 2 }}
->
-team log in / sign up
-</Button>
-<Button
-  variant="contained"
-  onClick={() => {
-    sessionStorage.setItem("pendingRole", "federation");
-    
-    loginWithRedirect({
-      appState: { role: "federation" },
-      authorizationParams: {
-        redirect_uri: window.location.origin + "/redirect-handler",
-      },
-    });
-  }}
->
-  Federation Login / Signup
-</Button>
-</>
-      )}</>
+              <Box display="flex" alignItems="center" gap={1}>
+                {navItems.map((item) => (
+                  <Box key={item.label}>
+                    {item.children ? (
+                      <Button
+                        onClick={() => handleDropdown(item)}
+                        sx={{
+                          color: activeDropdown === item.label ? 'primary.main' : '#000',
+                          fontWeight: 500,
+                          textTransform: 'none'
+                        }}
+                        endIcon={<ArrowDropDownIcon />}
+                      >
+                        {item.label}
+                      </Button>
+                    ) : (
+                      <Button
+                        href={item.path}
+                        sx={{
+                          color: location.pathname === item.path ? 'primary.main' : '#000',
+                          fontWeight: 500,
+                          textTransform: 'none'
+                        }}
+                      >
+                        {item.label}
+                      </Button>
+                    )}
+                  </Box>
+                ))}
+
+                {isAuthenticated ? (
+                  <>
+                    <Avatar
+                      src={user.picture}
+                      alt={user.name}
+                      onClick={handleAvatarClick}
+                      sx={{ cursor: 'pointer', ml: 2 }}
+                    />
+                    <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+                      <MenuItem disabled>{user.name}</MenuItem>
+                      <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>Logout</MenuItem>
+                    </Menu>
+                  </>
+                ) : (
+                  <>
+                    {['athlete', 'team', 'federation'].map((role) => (
+                      <Button
+                        key={role}
+                        variant="contained"
+                        onClick={() => {
+                          sessionStorage.setItem("pendingRole", role);
+                          loginWithRedirect({
+                            appState: { role },
+                            authorizationParams: {
+                              redirect_uri: window.location.origin + "/redirect-handler",
+                            },
+                          });
+                        }}
+                      >
+                        {role.charAt(0).toUpperCase() + role.slice(1)} Sign Up
+                      </Button>
+                    ))}
+                  </>
+                )}
+              </Box>
             )}
           </Toolbar>
         </AppBar>
 
+        {/* Dropdown menu on desktop */}
         <Grow in={Boolean(activeDropdown)} timeout={250} unmountOnExit>
-          <Box sx={{ bgcolor: '#fff', py: 3, pl: 3,  }}>
+          <Box sx={{ bgcolor: '#fff', py: 3 }}>
             <Container>
-              <Grid container spacing={2} columns={5}>
-                {menuItems.map((item, index) => (
-                  <Grid item xs={1} key={index}>
+              <Grid container spacing={2}>
+                {menuItems.map((item, idx) => (
+                  <Grid size={{xs:12, md:6}} md={3} key={idx}>
                     <Button
                       href={item.path}
                       fullWidth
@@ -274,85 +202,60 @@ team log in / sign up
           </Box>
         </Grow>
 
+        {/* Drawer on mobile */}
         <Drawer anchor="right" open={mobileOpen} onClose={() => setMobileOpen(false)}>
-          <List sx={{ width: 250 }}>
-            {navItems.map((item) => (
-              <ListItem
-                button
-                key={item.label}
-                component="a"
-                href={item.path || '#'}
-                onClick={() => setMobileOpen(false)}
-              >
-                <ListItemText primary={item.label} />
-              </ListItem>
-            ))}
-                <>{isAuthenticated ? (
-        <>
-          <Avatar
-            src={user.picture}
-            alt={user.name}
-            onClick={handleAvatarClick}
-            sx={{ cursor: 'pointer', ml: 2 }}
-          />
-          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-            <MenuItem disabled>{user.name}</MenuItem>
-            <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>Logout</MenuItem>
-          </Menu>
-        </>
-      ) : (
-        <>
-        <Button
-          variant="contained"
-         onClick={() => {
-    sessionStorage.setItem("pendingRole", "athlete");
-        
-    loginWithRedirect({
-      appState: { role: "athlete" },
-      authorizationParams: {
-        redirect_uri: window.location.origin + "/redirect-handler",
-      },
-    });
-  }}
-          sx={{ ml: 2 }}
-        >
-          Log In / Sign Up
-        </Button>
-          <Button
-  variant="contained"
-  onClick={() => {
-    sessionStorage.setItem("pendingRole", "team");
-        
-    loginWithRedirect({
-      appState: { role: "team" },
-      authorizationParams: {
-        redirect_uri: window.location.origin + "/redirect-handler",
-      },
-    });
-  }}
-  sx={{ ml: 2 }}
->
-team log in / sign up
-</Button>
-<Button
-  variant="contained"
-  onClick={() => {
-    sessionStorage.setItem("pendingRole", "federation");
-    
-    loginWithRedirect({
-      appState: { role: "federation" },
-      authorizationParams: {
-        redirect_uri: window.location.origin + "/redirect-handler",
-      },
-    });
-  }}
->
-  Federation Login / Signup
-</Button>
-</>
-      )}</>
-       
-          </List>
+          <Box sx={{ width: 260, p: 2 }}>
+            <List>
+              {navItems.map((item) => (
+                <ListItem
+                  button
+                  key={item.label}
+                  component="a"
+                  href={item.path || '#'}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <ListItemText primary={item.label} />
+                </ListItem>
+              ))}
+            </List>
+
+            {isAuthenticated ? (
+              <>
+                <Avatar
+                  src={user.picture}
+                  alt={user.name}
+                  onClick={handleAvatarClick}
+                  sx={{ cursor: 'pointer', my: 2 }}
+                />
+                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+                  <MenuItem disabled>{user.name}</MenuItem>
+                  <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>Logout</MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <>
+                {['athlete', 'team', 'federation'].map((role) => (
+                  <Button
+                    key={role}
+                    fullWidth
+                    variant="contained"
+                    sx={{ mt: 1 }}
+                    onClick={() => {
+                      sessionStorage.setItem("pendingRole", role);
+                      loginWithRedirect({
+                        appState: { role },
+                        authorizationParams: {
+                          redirect_uri: window.location.origin + "/redirect-handler",
+                        },
+                      });
+                    }}
+                  >
+                    {role.charAt(0).toUpperCase() + role.slice(1)} Sign Up
+                  </Button>
+                ))}
+              </>
+            )}
+          </Box>
         </Drawer>
       </Box>
     </ClickAwayListener>

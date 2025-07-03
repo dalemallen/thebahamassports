@@ -36,7 +36,7 @@ export default function PlayerDirectory() {
       ) : (
         <Grid container spacing={2}>
           {players.map((player) => (
-            <Grid item key={player.id} size={{ xs: 12, sm: 6, md: 4 }} >
+            <Grid key={player.id} size={{ xs: 12, sm: 6, md: 4 }} >
           <Link to={`/players/${player.id}`} style={{ textDecoration: 'none' }}>
       <PlayerCard player={player} />
     </Link>

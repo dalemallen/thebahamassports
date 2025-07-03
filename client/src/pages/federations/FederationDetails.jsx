@@ -30,9 +30,11 @@ const FederationDetails = () => {
   const navigate = useNavigate();
   const [sports, setSports] = useState([]);
   const [federation, setFederation] = useState(null);
-  const [topAthletes, setTopAthletes] = useState([]);
+  const [players, setPlayers] = useState([]);
+  console.log('players: ', players);
   const [events, setEvents] = useState([]);
   const [weeklySummary, setWeeklySummary] = useState(null);
+  console.log('weeklySummary: ', weeklySummary);
   const [mediaHighlights, setMediaHighlights] = useState([]);
   const [tab, setTab] = useState(0);
 
@@ -47,15 +49,16 @@ const FederationDetails = () => {
         setFederation(fedData);
 
         if (fedData?.id) {
-          const [topAthletesRes, eventsRes, summaryRes, highlightsRes] = await Promise.all([
-            axios.get(`/api/athletes/top/${sportId}/${fedData.id}`),
-            axios.get(`/api/events/upcoming/${fedData.id}`),
+          const [playersRes,  summaryRes, highlightsRes] = await Promise.all([
+         axios.get(`/api/players/federation/${fedData.id}`),
+
+            // axios.get(`/api/events/upcoming/${fedData.id}`),
             axios.get(`/api/federations/${fedData.id}/weekly-summary`),
             axios.get(`/api/federations/${fedData.id}/media-highlights`),
           ]);
 
-          setTopAthletes(topAthletesRes.data);
-          setEvents(eventsRes.data);
+          setPlayers(playersRes.data);
+          // setEvents(eventsRes.data);
           setWeeklySummary(summaryRes.data);
           setMediaHighlights(highlightsRes.data);
         }
@@ -74,15 +77,7 @@ const FederationDetails = () => {
 
   return (
     <Container disableGutters maxWidth={false}>
-      <Box
-        sx={{
-          height: 280,
-          backgroundImage: `url(${federation.cover_image_url || '/images/sport-banner.jpg'})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          position: 'relative',
-        }}
-      />
+
 
       <FederationHeader
         name={federation.name}
@@ -90,10 +85,11 @@ const FederationDetails = () => {
         sports={sports}
         handleSportChange={handleSportChange}
       />
+       <FederationStats federationId={federation.id} />
 
       <Box sx={{ px: 3, mt: 6 }}>
         <Grid container spacing={3} sx={{ mb: 5 }}>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{xs:12, md:6}}>
             <Card sx={{ borderRadius: 3 }}>
               <CardContent>
                 <Typography variant="h6" color="primary" fontWeight={700}>Join as an Athlete</Typography>
@@ -108,7 +104,7 @@ const FederationDetails = () => {
               </CardActions>
             </Card>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{xs:12, md:6}}>
             <Card sx={{ borderRadius: 3 }}>
               <CardContent>
                 <Typography variant="h6" color="primary" fontWeight={700}>Register Your Team</Typography>
@@ -125,14 +121,14 @@ const FederationDetails = () => {
           </Grid>
         </Grid>
 
-        <FederationStats federationId={federation.id} />
+ 
 
         <Grid container spacing={3} sx={{ my: 5 }}>
-          <Grid item xs={12} md={6}>
+          {/* <Grid size={{xs:12, md:6}}>
             <UpcomingEvents events={events} />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <WeeklySummary summary={weeklySummary} />
+          </Grid> */}
+          <Grid size={{xs:12, md:6}}>
+            {weeklySummary && <WeeklySummary summary={weeklySummary} />}
           </Grid>
         </Grid>
 
@@ -148,13 +144,13 @@ const FederationDetails = () => {
             Top Performers
           </Typography>
           <Grid container spacing={2}>
-            {topAthletes.map((athlete) => (
-              <Grid item xs={12} sm={4} key={athlete.id}>
+            {players.map((player) => (
+              <Grid size={{xs:12, md:4}} key={player.user_idx}>
                 <Card sx={{ borderRadius: 3 }}>
                   <CardContent>
-                    <Typography variant="h6">{athlete.name}</Typography>
+                    <Typography variant="h6">{player.name}</Typography>
                     <Typography variant="body2" color="text.secondary">
-                      🏅 {athlete.stat_summary || 'Top Performer'}
+                      🏅 {player.stat_summary || 'Top Performer'}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -175,7 +171,7 @@ const FederationDetails = () => {
         </Tabs>
 
         {tab === 0 ? (
-          <PlayersGrid players={topAthletes} />
+          <PlayersGrid players={players} />
         ) : (
           <TeamsGrid federationId={federation.id} />
         )}

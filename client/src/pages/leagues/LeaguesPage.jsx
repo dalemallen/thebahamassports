@@ -45,7 +45,7 @@ const LeaguesPage = () => {
       </Box>
 
       <Grid container spacing={2} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={4}>
+        <Grid size={{xs:12, md:4}}>
           <Select
             value={selectedSport}
             onChange={(e) => setSelectedSport(e.target.value)}
@@ -58,7 +58,7 @@ const LeaguesPage = () => {
             ))}
           </Select>
         </Grid>
-        <Grid item xs={12} sm={8}>
+        <Grid size={{xs:12, md:8}}>
           <TextField
             placeholder="Search by title or organizer"
             value={searchQuery}
@@ -70,7 +70,7 @@ const LeaguesPage = () => {
 
       <Grid container spacing={2}>
         {filtered.map(l => (
-          <Grid item xs={12} key={l.id}>
+          <Grid size={{xs:12 }} key={l.id}>
             <Box p={2} border={1} borderRadius={2}>
               <Typography variant="h6">{l.title}</Typography>
               <Typography variant="body2">Organized by: {l.organizer_name}</Typography>

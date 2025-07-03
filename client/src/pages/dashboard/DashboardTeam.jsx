@@ -23,34 +23,34 @@ const TeamDashboard = ({ teamId, team, userId }) => {
       <TeamHeader team={team} editable={true} onUpdateImages={() => {}} />
 
       <Grid container spacing={3} mt={2}>
-        <Grid item xs={12} md={6}>
+        <Grid size={{xs:12, md:6}}>
           <TeamStatsPanel teamId={teamId} />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid size={{xs:12, md:6}}>
           <UpcomingEventsPanel teamId={teamId} />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{xs:12 }}>
           <TeamRoster teamId={teamId} />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{xs:12, md:6}}>
           <RecentMatches teamId={teamId} />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{xs:12, md:6}}>
           <AttendanceTracker teamId={teamId} userId={userId} />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{xs:12, md:6}}>
           <TeamAnnouncements teamId={teamId} userId={userId} />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{xs:12, md:6}}>
           <TeamGallery teamId={teamId} userId={userId} />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{xs:12 }}>
           <DocumentsPanel
             title="Team Documents"
             fetchUrl={`/api/teams/${teamId}/documents`}
@@ -59,11 +59,11 @@ const TeamDashboard = ({ teamId, team, userId }) => {
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{xs:12 }}>
           <TeamDuesTable teamId={teamId} />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{xs:12 }}>
           <InternalNotes teamId={teamId} userId={userId} />
         </Grid>
         {team && <TeamInfoBlock team={team} />}

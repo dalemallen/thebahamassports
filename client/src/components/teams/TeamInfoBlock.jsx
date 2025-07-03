@@ -13,7 +13,7 @@ const TeamInfoBlock = ({ team }) => {
             sx={{ width: 80, height: 80, border: '2px solid #00A3E0' }}
           />
         </Grid>
-        <Grid item xs>
+        <Grid >
           <Typography variant="h5" fontWeight="bold">
             {team.name}
           </Typography>

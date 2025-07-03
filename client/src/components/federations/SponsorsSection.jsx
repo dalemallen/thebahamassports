@@ -6,7 +6,7 @@ const SponsorsSection = () => (
     <Typography variant="h6" sx={{ mb: 2 }}>Sponsors</Typography>
     <Grid container spacing={2}>
       {[1, 2, 3].map((sponsor) => (
-        <Grid item xs={12} sm={4} key={sponsor}>
+        <Grid size={{xs:12, md:4}} key={sponsor}>
           <Card>
             <CardContent>
               <Typography variant="h6">Sponsor {sponsor}</Typography>

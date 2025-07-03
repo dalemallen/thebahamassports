@@ -85,14 +85,14 @@ export default function DashboardAthlete() {
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
       <Grid container spacing={3}>
-        <Grid item size={{ xs: 12 }}>
+        <Grid size={{ xs: 12 }}>
           <Typography variant="h4" gutterBottom>
             Welcome back, {athlete.name} 🇧🇸
           </Typography>
           <Typography variant="subtitle1">Rugby • Last login: 6/23/2025</Typography>
         </Grid>
 
-        <Grid item size={{ xs: 12, md: 3 }}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6">Quick Stats</Typography>
             <Typography>Matches Played: 0</Typography>
@@ -102,7 +102,7 @@ export default function DashboardAthlete() {
           </Paper>
         </Grid>
 
-        <Grid item size={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6">Performance Overview</Typography>
             <BarChart
@@ -114,7 +114,7 @@ export default function DashboardAthlete() {
           </Paper>
         </Grid>
 
-        <Grid item size={{ xs: 12, md: 3 }}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6">Upcoming Events</Typography>
             <List>
@@ -126,7 +126,7 @@ export default function DashboardAthlete() {
           </Paper>
         </Grid>
 
-        <Grid item size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6">Opportunities</Typography>
             <List>
@@ -142,7 +142,7 @@ export default function DashboardAthlete() {
           </Paper>
         </Grid>
 
-        <Grid item size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6">Physical Metrics</Typography>
             <Typography>Height: cm</Typography>
@@ -152,7 +152,7 @@ export default function DashboardAthlete() {
           </Paper>
         </Grid>
 
-        <Grid item size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6">My Teams</Typography>
             <List>
@@ -168,7 +168,7 @@ export default function DashboardAthlete() {
           </Paper>
         </Grid>
 
-        <Grid item size={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6">Federation Status</Typography>
             <Typography>✅ Registered with Bahamas Rugby Union</Typography>
@@ -176,7 +176,7 @@ export default function DashboardAthlete() {
           </Paper>
         </Grid>
 
-        <Grid item size={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6">Documents</Typography>
             <Typography>✅ Medical Form — Submitted</Typography>
@@ -184,7 +184,7 @@ export default function DashboardAthlete() {
           </Paper>
         </Grid>
 
-        <Grid item size={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6">Athlete Bio</Typography>
             <Typography>Nationality: Bahamas</Typography>
@@ -193,7 +193,7 @@ export default function DashboardAthlete() {
           </Paper>
         </Grid>
 
-        <Grid item size={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 2 }}>
             <Typography variant="h6">Pending Actions</Typography>
             <List>

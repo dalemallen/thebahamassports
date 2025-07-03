@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -6,92 +6,128 @@ import {
   Link,
   Container,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Stack,
 } from "@mui/material";
 import AccordionGroup from "./AccordionGroup";
-
-const allSports = [
-  "Basketball", "Football", "Track & Field", "Volleyball", "Baseball", "Softball",
-  "Rugby", "Swimming", "Soccer", "Tennis", "Boxing", "Cycling", "Cricket", "Golf",
-  "Judo", "Karate", "Sailing", "Shooting", "Table Tennis", "Taekwondo", "Triathlon",
-  "Weightlifting", "Wrestling", "Gymnastics"
-];
-
-const desktopLinks = {
-  Sports: allSports,
-  Features: [
-    "Registration & Payment",
-    "Scheduling",
-    "Fundraising",
-    "Website Builder",
-    "Athlete Profiles",
-    "Team & League Management"
-  ],
-  Accounts: ["Athletes", "Teams", "Coaches", "Sponsors", "Scouts"],
-  Events: ["Leagues", "Tournaments", "Interschool"],
-  Company: ["About Us", "Contact Us"]
-};
-
-const mobileSections = [
-  {
-    title: "Sports",
-    items: allSports.map(s => ({ label: s, path: `/sports/${s.toLowerCase().replace(/ /g, "-")}` }))
-  },
-  {
-    title: "Features",
-    items: desktopLinks.Features.map(f => ({ label: f, path: `/features/${f.toLowerCase().replace(/ /g, "-")}` }))
-  },
-  {
-    title: "Accounts",
-    items: desktopLinks.Accounts.map(a => ({ label: a, path: `/accounts/${a.toLowerCase()}` }))
-  },
-  {
-    title: "Events",
-    items: desktopLinks.Events.map(e => ({ label: e, path: `/events/${e.toLowerCase()}` }))
-  },
-  {
-    title: "Company",
-    items: desktopLinks.Company.map(c => ({ label: c, path: `/${c.toLowerCase().replace(/ /g, "-")}` }))
-  }
-];
+import { motion } from "framer-motion";
+import axios from "axios";
 
 export default function Footer() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [sports, setSports] = useState([]);
+  const [sections, setSections] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get("/api/sports/with-federations");
+        const sportsList = data.map(({ sport }) => ({
+          label: sport.name,
+          path: `/sports/${sport.id}`,
+        }));
+
+        const staticLinks = [
+          { label: "Schedule", path: "/schedule" },
+          { label: "About Us", path: "/aboutus" },
+          { label: "Contact", path: "/contact" },
+        ];
+
+        setSections([
+          { title: "Sports", items: sportsList },
+          { title: "Pages", items: staticLinks },
+        ]);
+      } catch (err) {
+        console.error("Failed to fetch footer data:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const containerVariants = {
+    hidden: {},
+    show: {
+      transition: { staggerChildren: 0.1 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
+  };
 
   return (
-    <Box component="footer" sx={{ backgroundColor: "#f4f4f4", pt: 6, pb: 4 }}>
+    <Box sx={{ bgcolor: "#fafafa", pt: 8, pb: 4 }}>
       <Container maxWidth="xl">
+        <Typography
+          variant="h4"
+          align="center"
+          fontWeight={900}
+          sx={{ mb: 6 }}
+        >
+          Explore TheBahamasSports
+        </Typography>
+
         {isMobile ? (
-          <AccordionGroup sections={mobileSections} />
+          <AccordionGroup sections={sections} />
         ) : (
-          <Grid container spacing={4}>
-            {Object.entries(desktopLinks).map(([section, links]) => (
-              <Grid  size={{ xs:6, sm:4, md: section === "Sports" ? 4 : 2 }} key={section}>
-                <Typography variant="subtitle1" color="primary" fontWeight="bold" gutterBottom>
-                  {section}
-                </Typography>
-              <Grid container >
-                {links.map((label, idx) => (
- <Grid  size={{ xs:12, md: section === "Sports" ? 4 : 12 }}  key={idx}>
-                  <Link
-                    href={`/sports/${label.toLowerCase().replace(/ /g, "-")}`}
-                   
-                    underline="hover"
-                    color="textPrimary"
-                    display="block"
-                    sx={{ mb: 0.5 }}
+          <motion.div variants={containerVariants} initial="hidden" animate="show">
+            <Stack spacing={4}>
+              {sections.map((section, index) => (
+                <Box
+                  key={index}
+                  component={motion.div}
+                  variants={itemVariants}
+                  sx={{
+                    px: { xs: 2, md: 6 },
+                    py: 4,
+                    backgroundColor: index % 2 === 0 ? "#fff" : "#f7f7f7",
+                    borderRadius: 4,
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    color="primary"
+                    fontWeight={700}
+                    sx={{ mb: 2 }}
                   >
-                    {label}
-                  </Link>
-                    </Grid>
-                ))}
-        </Grid>
-              </Grid>
-            ))}
-          </Grid>
+                    {section.title}
+                  </Typography>
+
+                  <Grid container spacing={2}>
+                    {section.items.map((item, i) => (
+                      <Grid
+                 size={{xs:12, sm:6, 
+                  md:section.title === "Sports" ? 3 : 4 
+                }}
+               
+                        key={i}
+                      >
+                        <Link
+                          href={item.path}
+                          underline="hover"
+                          color="textPrimary"
+                          sx={{ display: "block", mb: 1, fontWeight: 500 }}
+                        >
+                          {item.label}
+                        </Link>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Box>
+              ))}
+            </Stack>
+          </motion.div>
         )}
-        <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 4 }}>
+
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          align="center"
+          sx={{ mt: 6 }}
+        >
           © {new Date().getFullYear()} TheBahamasSports. All rights reserved.
         </Typography>
       </Container>

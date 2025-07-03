@@ -74,7 +74,7 @@ const ProfileForm = ({ endpoint, initialData = {}, onComplete }) => {
     <Box component="form" onSubmit={handleSubmit} sx={{ p: 2 }}>
       <Typography variant="h6" gutterBottom>Profile Setup</Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        <Grid size={{xs:12, md:6}}>
           <TextField
             fullWidth
             name="first_name"
@@ -83,7 +83,7 @@ const ProfileForm = ({ endpoint, initialData = {}, onComplete }) => {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid size={{xs:12, md:6}}>
           <TextField
             fullWidth
             name="last_name"
@@ -92,7 +92,7 @@ const ProfileForm = ({ endpoint, initialData = {}, onComplete }) => {
             onChange={handleChange}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{xs:12 }}>
           <Button type="submit" variant="contained" disabled={submitting}>
             {submitting ? 'Submitting...' : 'Complete Profile'}
           </Button>

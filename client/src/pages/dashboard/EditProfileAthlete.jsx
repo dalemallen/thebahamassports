@@ -40,7 +40,7 @@ export default function EditProfileAthlete() {
           Edit Profile
         </Typography>
         <Grid container spacing={3}>
-          <Grid item size={{ xs: 12 }} sx={{ textAlign: 'center' }}>
+          <Grid size={{ xs: 12 }} sx={{ textAlign: 'center' }}>
             <Avatar sx={{ width: 80, height: 80, mx: 'auto' }} />
             <IconButton component="label">
               <PhotoCamera />
@@ -48,15 +48,15 @@ export default function EditProfileAthlete() {
             </IconButton>
           </Grid>
 
-          <Grid item size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField fullWidth label="Full Name" name="fullName" value={profile.fullName} onChange={handleChange} />
           </Grid>
 
-          <Grid item size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField fullWidth label="Email" name="email" value={profile.email} onChange={handleChange} />
           </Grid>
 
-          <Grid item size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DatePicker
                 label="Birthdate"
@@ -67,31 +67,31 @@ export default function EditProfileAthlete() {
             </LocalizationProvider>
           </Grid>
 
-          <Grid item size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField fullWidth label="Nationality" name="nationality" value={profile.nationality} onChange={handleChange} />
           </Grid>
 
-          <Grid item size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField fullWidth label="Height (cm)" name="height" value={profile.height} onChange={handleChange} />
           </Grid>
 
-          <Grid item size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField fullWidth label="Weight (kg)" name="weight" value={profile.weight} onChange={handleChange} />
           </Grid>
 
-          <Grid item size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField fullWidth label="Position" name="position" value={profile.position} onChange={handleChange} />
           </Grid>
 
-          <Grid item size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField fullWidth label="Preferred Side" name="preferredSide" value={profile.preferredSide} onChange={handleChange} />
           </Grid>
 
-          <Grid item size={{ xs: 12 }}>
+          <Grid size={{ xs: 12 }}>
             <TextField fullWidth label="Club Team" name="clubTeam" value={profile.clubTeam} onChange={handleChange} />
           </Grid>
 
-          <Grid item size={{ xs: 12 }} sx={{ textAlign: 'right' }}>
+          <Grid size={{ xs: 12 }} sx={{ textAlign: 'right' }}>
             <Button variant="contained" color="primary">
               Save Changes
             </Button>

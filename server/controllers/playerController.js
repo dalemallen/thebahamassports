@@ -122,19 +122,31 @@ const getPlayersByTeam = async (req, res) => {
 		handleError(err, req, res);
 	}
 };
-
 const getPlayersByFederation = async (req, res) => {
+	console.log("get players");
 	try {
 		const result = await pool.query(
-			`SELECT DISTINCT u.id, u.first_name, u.last_name, pp.position, pp.club_team
-       FROM users u
-       JOIN player_profiles pp ON u.id = pp.user_id
-       JOIN teams t ON pp.club_team = t.name
-       WHERE t.federation_id = $1`,
+			`SELECT 
+  u.id AS user_id,
+  u.first_name,
+  u.last_name,
+  u.email,
+  pp.position,
+  t.name AS team_name,
+  t.federation_id
+FROM player_profiles pp
+JOIN users u ON u.id = pp.user_id
+JOIN teams t ON pp.team_id = t.id
+WHERE t.federation_id = $1
+GROUP BY u.id, u.first_name, u.last_name, u.email, pp.position, t.name, t.federation_id;
+`,
 			[req.params.federationId]
 		);
+
 		res.json(result.rows);
+		console.log("result.rows: ", result.rows);
 	} catch (err) {
+		console.error("Error fetching federation players:", err);
 		handleError(err, req, res);
 	}
 };

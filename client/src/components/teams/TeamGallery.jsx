@@ -18,7 +18,7 @@ const TeamGallery = ({ teamId }) => {
         <Typography variant="h6">Team Gallery</Typography>
         <Grid container spacing={2}>
           {media.map((item, i) => (
-            <Grid item xs={6} key={i}>
+            <Grid size={{xs:12 , sm:6}} key={i}>
               <img src={item.url} alt={item.caption} width="100%" style={{ borderRadius: 8 }} />
             </Grid>
           ))}

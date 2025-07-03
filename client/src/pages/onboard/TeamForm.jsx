@@ -31,7 +31,7 @@ const TeamForm = ({ onSubmit }) => {
     <form onSubmit={handleSubmit}>
       <Grid container spacing={2}>
         {["name", "federation_Id", "location", "ageGroup", "gender"].map((field) => (
-          <Grid item xs={12} sm={6} key={field}>
+          <Grid size={{xs:12, md:6}} key={field}>
             <TextField
               label={field.replace(/([A-Z])/g, " $1")}
               name={field}
@@ -68,21 +68,21 @@ const TeamForm = ({ onSubmit }) => {
   Add Coach
 </Button>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{xs:12, md:6}}>
           <Button variant="contained" component="label" fullWidth>
             Upload Logo
             <input type="file" name="logo" hidden onChange={handleChange} />
           </Button>
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{xs:12, md:6}}>
           <Button variant="contained" component="label" fullWidth>
             Upload Cover Image
             <input type="file" name="coverImage" hidden onChange={handleChange} />
           </Button>
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{xs:12 }}>
           <Button type="submit" variant="contained" fullWidth>
             Submit Team
           </Button>

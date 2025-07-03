@@ -60,7 +60,7 @@ const TeamAnnouncements = ({ teamId }) => {
       ) : (
         <Grid container spacing={2}>
           {announcements.map((a) => (
-            <Grid item xs={12} sm={6} md={4} key={a.id}>
+            <Grid size={{xs:12, sm:6, md:4}} key={a.id}>
               <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
                 <CardContent>
                   <Typography variant="subtitle2" color="textSecondary">
