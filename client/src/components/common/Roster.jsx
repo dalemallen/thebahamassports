@@ -7,7 +7,7 @@ export default function Roster({
   title = "Roster",
   showNumbers = true,
   linkToProfile = true,
-  role = "player", // or "coach"
+  role = "athletes", // or "coach"
   emptyMessage = "No roster members found.",
 }) {
   const [filter, setFilter] = useState("");
@@ -39,9 +39,9 @@ export default function Roster({
 
       <Grid container spacing={2}>
         {filteredData.length > 0 ? (
-          filteredData.map((player) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={player.user_id+player.name}>
-              <RosterCard player={player} linkToProfile={linkToProfile} />
+          filteredData.map((athletes) => (
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={athletes.user_id+athletes.name}>
+              <RosterCard athletes={athletes} linkToProfile={linkToProfile} />
             </Grid>
           ))
         ) : (

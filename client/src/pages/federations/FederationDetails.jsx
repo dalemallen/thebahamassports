@@ -16,7 +16,7 @@ import {
   useTheme,
 } from '@mui/material';
 import axios from 'axios';
-import PlayersGrid from '../../components/federations/PlayersGrid';
+import AthletesGrid from '../../components/federations/AthletesGrid';
 import FederationStats from '../../components/federations/FederationStats';
 import TeamsGrid from '../../components/federations/TeamsGrid';
 import FederationHeader from '../../components/federations/FederationHeader';
@@ -30,8 +30,8 @@ const FederationDetails = () => {
   const navigate = useNavigate();
   const [sports, setSports] = useState([]);
   const [federation, setFederation] = useState(null);
-  const [players, setPlayers] = useState([]);
-  console.log('players: ', players);
+  const [athletes, setAthletes] = useState([]);
+  console.log('athletes: ', athletes);
   const [events, setEvents] = useState([]);
   const [weeklySummary, setWeeklySummary] = useState(null);
   console.log('weeklySummary: ', weeklySummary);
@@ -49,15 +49,15 @@ const FederationDetails = () => {
         setFederation(fedData);
 
         if (fedData?.id) {
-          const [playersRes,  summaryRes, highlightsRes] = await Promise.all([
-         axios.get(`/api/players/federation/${fedData.id}`),
+          const [athletesRes,  summaryRes, highlightsRes] = await Promise.all([
+         axios.get(`/api/athletes/federation/${fedData.id}`),
 
             // axios.get(`/api/events/upcoming/${fedData.id}`),
             axios.get(`/api/federations/${fedData.id}/weekly-summary`),
             axios.get(`/api/federations/${fedData.id}/media-highlights`),
           ]);
 
-          setPlayers(playersRes.data);
+          setAthletes(athletesRes.data);
           // setEvents(eventsRes.data);
           setWeeklySummary(summaryRes.data);
           setMediaHighlights(highlightsRes.data);
@@ -144,13 +144,13 @@ const FederationDetails = () => {
             Top Performers
           </Typography>
           <Grid container spacing={2}>
-            {players.map((player) => (
-              <Grid size={{xs:12, md:4}} key={player.user_idx}>
+            {athletes.map((athlete) => (
+              <Grid size={{xs:12, md:4}} key={athlete.user_idx}>
                 <Card sx={{ borderRadius: 3 }}>
                   <CardContent>
-                    <Typography variant="h6">{player.name}</Typography>
+                    <Typography variant="h6">{athlete.name}</Typography>
                     <Typography variant="body2" color="text.secondary">
-                      🏅 {player.stat_summary || 'Top Performer'}
+                      🏅 {athlete.stat_summary || 'Top Performer'}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -166,12 +166,12 @@ const FederationDetails = () => {
           indicatorColor="primary"
           sx={{ mb: 4 }}
         >
-          <Tab label="Players" />
+          <Tab label="Athletes" />
           <Tab label="Teams" />
         </Tabs>
 
         {tab === 0 ? (
-          <PlayersGrid players={players} />
+          <AthletesGrid athletes={athletes} />
         ) : (
           <TeamsGrid federationId={federation.id} />
         )}

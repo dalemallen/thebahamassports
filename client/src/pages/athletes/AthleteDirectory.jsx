@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Grid, Typography, CircularProgress } from '@mui/material';
 import axios from 'axios';
-import FilterBar from '../../components/players/FilterBar';
-import PlayerCard from '../../components/common/PlayerCard';
+import FilterBar from '../../components/athletes/FilterBar';
+import PlayerCard from '../../components/common/AthleteCard';
 
 export default function PlayerDirectory() {
-  const [players, setPlayers] = useState([]);
+  const [athletes, setPlayers] = useState([]);
   const [filters, setFilters] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -15,10 +15,10 @@ export default function PlayerDirectory() {
       setLoading(true);
       try {
         const params = new URLSearchParams(filters).toString();
-        const res = await axios.get(`/api/players?${params}`);
+        const res = await axios.get(`/api/athletes?${params}`);
         setPlayers(res.data);
       } catch (err) {
-        console.error('Error fetching players:', err);
+        console.error('Error fetching athletes:', err);
       } finally {
         setLoading(false);
       }
@@ -35,10 +35,10 @@ export default function PlayerDirectory() {
         <CircularProgress />
       ) : (
         <Grid container spacing={2}>
-          {players.map((player) => (
-            <Grid key={player.id} size={{ xs: 12, sm: 6, md: 4 }} >
-          <Link to={`/players/${player.id}`} style={{ textDecoration: 'none' }}>
-      <PlayerCard player={player} />
+          {athletes.map((athletes) => (
+            <Grid key={athletes.id} size={{ xs: 12, sm: 6, md: 4 }} >
+          <Link to={`/athletes/${athletes.id}`} style={{ textDecoration: 'none' }}>
+      <PlayerCard athletes={athletes} />
     </Link>
             </Grid>
           ))}

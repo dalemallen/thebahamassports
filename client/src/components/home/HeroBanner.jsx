@@ -43,7 +43,7 @@ export default function HeroBanner() {
               maxWidth: 520,
             }}
           >
-            From athlete profiles to event scheduling, TheBahamasSports connects players, teams, and federations under one powerful platform.
+            From athlete profiles to event scheduling, TheBahamasSports connects athletes, teams, and federations under one powerful platform.
           </Typography>
 
           <Stack direction="row" spacing={2} flexWrap="wrap">

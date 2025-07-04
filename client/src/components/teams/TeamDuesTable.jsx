@@ -27,7 +27,7 @@ const TeamDuesTable = ({ teamId }) => {
           <TableBody>
             {dues.length > 0 && dues.map((d, i) => (
               <TableRow key={i}>
-                <TableCell>{d.player}</TableCell>
+                <TableCell>{d.athletes}</TableCell>
                 <TableCell>{d.amount}</TableCell>
                 <TableCell>{d.status}</TableCell>
               </TableRow>

@@ -54,7 +54,7 @@ const Header = () => {
         // {
         //   label: 'Discover',
         //   children: [
-        //     { label: 'Players', path: '/players' },
+        //     { label: 'Athletes', path: '/athletes' },
         //     { label: 'Teams', path: '/teams' },
         //   ]
         // },

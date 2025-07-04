@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { CheckCircle, Star } from '@mui/icons-material';
 
-export default function PlayerCard({ player }) {
+export default function PlayerCard({ athletes }) {
   const {
     first_name,
     last_name,
@@ -17,7 +17,7 @@ export default function PlayerCard({ player }) {
     is_verified,
     is_mvp,
     profile_photo_url,
-  } = player;
+  } = athletes;
 
   return (
     <Paper

@@ -15,8 +15,8 @@ export default function TeamDetails() {
   console.log('teamId: ', teamId);
   const [team, setTeam] = useState(null);
   console.log('team: ', team);
-  const [players, setPlayers] = useState([]);
-  console.log('players: ', players);
+  const [athletes, setPlayers] = useState([]);
+  console.log('athletes: ', athletes);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,13 +24,13 @@ export default function TeamDetails() {
       try {
         const [teamRes, playerRes] = await Promise.all([
           axios.get(`/api/teams/${teamId}`),
-          axios.get(`/api/teams/${teamId}/players`)
+          axios.get(`/api/teams/${teamId}/athletes`)
         ]);
 
         setTeam(teamRes.data);
         setPlayers(playerRes.data);
       } catch (err) {
-        console.error("Failed to load team or players", err);
+        console.error("Failed to load team or athletes", err);
       } finally {
         setLoading(false);
       }
@@ -58,22 +58,22 @@ export default function TeamDetails() {
 
       <Typography variant="h5" gutterBottom>Players</Typography>
 
-      {players.length === 0 ? (
-        <Typography color="text.secondary">No players for this team.</Typography>
+      {athletes.length === 0 ? (
+        <Typography color="text.secondary">No athletes for this team.</Typography>
       ) : (
         // Option 1: Use modular Roster component (your original approach)
         <Roster
-          data={players}
+          data={athletes}
           title="Players"
           showNumbers
           linkToProfile
-          role="player"
-          emptyMessage="No players for this team."
+          role="athletes"
+          emptyMessage="No athletes for this team."
         />
 
         // Option 2: Use PlayerCard (for enhanced styling)
-        // players.map(player => (
-        //   <PlayerCard key={player.id} player={player} />
+        // athletes.map(athletes => (
+        //   <PlayerCard key={athletes.id} athletes={athletes} />
         // ))
       )}
     </Container>

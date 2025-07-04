@@ -83,7 +83,7 @@ const FederationStats = () => {
   };
 
   const interactiveRoutes = {
-    total_athletes: "/players",
+    total_athletes: "/athletes",
     total_teams: "/teams",
     coaches_registered: "/coaches",
     events_hosted: "/events"

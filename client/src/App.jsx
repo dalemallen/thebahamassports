@@ -24,9 +24,9 @@ const TournamentDetails = lazy(() => import("./pages/tournaments/TournamentDetai
 const TeamsPage = lazy(() => import("./pages/teams/TeamsPage.jsx"));
 const TeamDetails = lazy(() => import("./pages/teams/TeamDetails.jsx"));
 const TeamPlayers = lazy(() => import("./components/teams/TeamPlayers.jsx"));
-const PlayersList = lazy(() => import("./components/players/PlayersList.jsx"));
-const PlayerDirectory = lazy(() => import("./pages/players/PlayerDirectory.jsx"));
-const PlayerDetails = lazy(() => import("./pages/players/PlayerDetails.jsx"));
+const AthletesList = lazy(() => import("./components/athletes/AthletesList.jsx"));
+const AthleteDirectory = lazy(() => import("./pages/athletes/AthleteDirectory.jsx"));
+const AthleteDetails = lazy(() => import("./pages/athletes/AthleteDetails.jsx"));
 const EventLists = lazy(() => import("./components/events/EventLists.jsx"));
 const EventDetails = lazy(() => import("./pages/events/EventDetails.jsx"));
 const EventTeams = lazy(() => import("./components/events/EventTeams.jsx"));
@@ -61,6 +61,7 @@ export default function App() {
   }
 />
         <Route path="/aboutus" element={<AboutUsPage />} />
+    
         {/* Feature Pages */}
         <Route path="/sports/:sportId" element={<FederationDetails />} />
         <Route path="/leagues" element={<LeaguesPage />} />
@@ -69,10 +70,10 @@ export default function App() {
         <Route path="/tournaments/:tournamentId" element={<TournamentDetails />} />
         <Route path="/teams" element={<TeamsPage />} />
         <Route path="/teams/:teamId" element={<TeamDetails />} />
-        <Route path="/teams/:teamId/players" element={<TeamPlayers />} />
-        <Route path="/teams/:teamId/player/:playerId" element={<PlayerDetails />} />
-        <Route path="/players" element={<PlayerDirectory />} />
-        <Route path="/players/:playerId" element={<PlayerDetails />} />
+        <Route path="/teams/:teamId/athletes" element={<TeamPlayers />} />
+        <Route path="/teams/:teamId/athlete/:athleteId" element={<AthleteDetails />} />
+        <Route path="/athletes" element={<AthleteDirectory />} />
+        <Route path="/athletes/:athleteId" element={<AthleteDetails />} />
         <Route path="/events" element={<EventLists />} />
         <Route path="/events/:eventId" element={<EventDetails />} />
         <Route path="/events/:eventId/teams" element={<EventTeams />} />

@@ -14,29 +14,29 @@ import axios from "axios";
 import BackButton from "../../components/common/BackButton";
 
 export default function PlayerDetails() {
-  const { playerId } = useParams();
-  console.log('playerId: ', playerId);
-  const [player, setPlayer] = useState(null);
-  console.log('player: ', player);
+  const { athleteId } = useParams();
+  console.log('athleteId: ', athleteId);
+  const [athletes, setPlayer] = useState(null);
+  console.log('athletes: ', athletes);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
   const fetchPlayer = async () => {
     try {
-      const res = await axios.get(`/api/players/${playerId}`);
+      const res = await axios.get(`/api/athletes/${athleteId}`);
       console.log('res: ', res);
       setPlayer(res.data);
     } catch (err) {
-      console.error("Error fetching player:", err);
+      console.error("Error fetching athletes:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  if (playerId) fetchPlayer();
-}, [playerId]);
+  if (athleteId) fetchPlayer();
+}, [athleteId]);
 
-  if (loading || !player) {
+  if (loading || !athletes) {
     return (
       <Container sx={{ p: 4 }}>
         <Skeleton variant="circular" width={120} height={120} />
@@ -61,11 +61,11 @@ export default function PlayerDetails() {
     points,
     club_team,
     achievements,
-  } = player;
+  } = athletes;
 
   return (
     <Container sx={{ p: 4 }}>
-      <BackButton fallback="/players" label="Back to Players" />
+      <BackButton fallback="/athletes" label="Back to Athletes" />
 
       <Box sx={{ textAlign: "center", mb: 4 }}>
         <Avatar

@@ -14,42 +14,42 @@ import { useSport } from '../../context/SportsContext';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
-export default function PlayerList() {
-  const [players, setPlayers] = useState([]);
+export default function AthleteList() {
+  const [athletes, setAthletes] = useState([]);
   const [loading, setLoading] = useState(true);
   const { sport } = useSport();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchPlayers = async () => {
+    const fetchAthletes = async () => {
       try {
-        const response = await axios.get(`/api/players?sport=${sport}`);
-        setPlayers(response.data);
+        const response = await axios.get(`/api/athletes?sport=${sport}`);
+        setAthletes(response.data);
       } catch (err) {
-        console.error('Error fetching players:', err);
+        console.error('Error fetching athletes:', err);
       } finally {
         setLoading(false);
       }
     };
-    fetchPlayers();
+    fetchAthletes();
   }, [sport]);
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Typography variant="h4" gutterBottom>
-        Players
+        Athletes
       </Typography>
 
       <Grid container spacing={3}>
-        {(loading ? Array.from(new Array(6)) : players).map((player, index) => (
-          <Grid key={player?.id || index}  size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+        {(loading ? Array.from(new Array(6)) : athletes).map((athlete, index) => (
+          <Grid key={athlete?.id || index}  size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
               <Card
-                onClick={() => !loading && player?.id && navigate(`/players/${player.id}`)}
+                onClick={() => !loading && athlete?.id && navigate(`/athletes/${athlete.id}`)}
                 sx={{ cursor: loading ? 'default' : 'pointer', p: 2 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -57,10 +57,10 @@ export default function PlayerList() {
                     <Skeleton variant="circular" width={50} height={50} />
                   ) : (
                     <Avatar
-                      src={player.profile_photo_url || undefined}
-                      alt={`${player.first_name} ${player.last_name}`}
+                      src={athlete.profile_photo_url || undefined}
+                      alt={`${athlete.first_name} ${athlete.last_name}`}
                     >
-                      {player.first_name?.[0]}
+                      {athlete.first_name?.[0]}
                     </Avatar>
                   )}
 
@@ -73,16 +73,14 @@ export default function PlayerList() {
                     ) : (
                       <>
                         <Typography variant="h6">
-                          {player.first_name} {player.last_name}
+                          {athlete.first_name} {athlete.last_name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          {Array.isArray(player.position)
-                            ? player.position.join(', ')
-                            : player.position || '—'}
+                          {Array.isArray(athlete.position)
+                            ? athlete.position.join(', ')
+                            : athlete.position || '—'}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {player.club_team || '—'}
-                        </Typography>
+         
                       </>
                     )}
                   </Box>

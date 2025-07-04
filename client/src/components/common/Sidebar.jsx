@@ -18,7 +18,7 @@ export default function Sidebar({ role }) {
   coach: [
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'Team', path: '/teams' },
-    { label: 'Roster', path: '/players' },
+    { label: 'Roster', path: '/athletes' },
     { label: 'Schedule', path: '/schedule' },
     { label: 'Stats', path: '/stats' },
   ],

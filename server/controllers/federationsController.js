@@ -372,7 +372,7 @@ const getFederationAwards = async (req, res) => {
 	}
 };
 
-// Assign award to a player or team
+// Assign award to a athletes or team
 const assignFederationAward = async (req, res) => {
 	const {
 		federation_id,

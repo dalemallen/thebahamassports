@@ -12,7 +12,7 @@ const sections = [
   {
     title: "What We’re Solving",
     image: "/illustration/solving.png",
-    content: `• Outdated or manual registration and reporting processes\n• Lack of centralized data on teams, athletes, and federations\n• Difficulty tracking player progress and stats\n• Missed opportunities for athlete discovery and event promotion`
+    content: `• Outdated or manual registration and reporting processes\n• Lack of centralized data on teams, athletes, and federations\n• Difficulty tracking athletes progress and stats\n• Missed opportunities for athlete discovery and event promotion`
   },
   {
     title: "Who We Serve",

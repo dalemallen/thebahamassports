@@ -5,7 +5,7 @@ import teamsController from "../controllers/teamsController.js";
 
 router.get("/", teamsController.getAllTeams);
 router.get("/:id", teamsController.getTeamById);
-router.get("/:id/players", teamsController.getTeamPlayers);
+router.get("/:id/athletes", teamsController.getTeamPlayers);
 router.post("/", teamsController.createTeam);
 router.post("/join", teamsController.joinTeamByInviteCode);
 
@@ -16,7 +16,7 @@ router.get("/federation/:id", teamsController.getTeamsByFederation);
 router.get("/creator/:userId", teamsController.getTeamsByCreator);
 
 router.get("/:id/invites", teamsController.getTeamInvites);
-router.post("/:id/remove-player", teamsController.removePlayerFromTeam);
+router.post("/:id/remove-athletes", teamsController.removePlayerFromTeam);
 router.get("/:id/stats", teamsController.getTeamStats);
 router.post("/:id/announcement", teamsController.createTeamAnnouncement);
 router.get("/:id/announcements", teamsController.getTeamAnnouncements);
@@ -93,7 +93,7 @@ router.patch(
 );
 
 // Player evaluations
-router.post("/:id/evaluate-player", teamsController.evaluatePlayer);
+router.post("/:id/evaluate-athletes", teamsController.evaluatePlayer);
 
 // Public contact form
 router.post("/:id/contact", teamsController.sendContactEmail);
@@ -127,14 +127,14 @@ router.get("/:id/payments", teamsController.getTeamPayments);
 router.get("/:id/revenue", teamsController.getTeamRevenue);
 
 // Player management
-router.post("/:id/players", teamsController.addPlayerToTeam);
-router.delete("/:id/players/:playerId", teamsController.removePlayerById);
+router.post("/:id/athletes", teamsController.addPlayerToTeam);
+router.delete("/:id/athletes/:playerId", teamsController.removePlayerById);
 router.patch(
-	"/:id/players/:playerId/inactive",
+	"/:id/athletes/:playerId/inactive",
 	teamsController.deactivatePlayer
 );
 router.patch(
-	"/:id/players/:playerId/position",
+	"/:id/athletes/:playerId/position",
 	teamsController.setPlayerPosition
 );
 

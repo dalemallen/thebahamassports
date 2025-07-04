@@ -20,7 +20,7 @@ const AttendanceTracker = ({ teamId }) => {
           <TableBody>
             {attendance.map((row, i) => (
               <TableRow key={i}>
-                <TableCell>{row.player}</TableCell>
+                <TableCell>{row.athletes}</TableCell>
                 <TableCell>{row.attendance_date}</TableCell>
                 <TableCell>{row.status}</TableCell>
               </TableRow>

@@ -145,11 +145,7 @@ const MySportsPage = () => {
       </Typography>
 
       <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
-<<<<<<< HEAD
         <Grid size={{xs:12, md:6}} md={3}>
-=======
-        <Grid item xs={12} sm={6} md={3}>
->>>>>>> 67d9f4762e5acb3b1dc059e5555331ac30c4823a
           <FormControl fullWidth>
             <InputLabel>Filter by Sport</InputLabel>
             <Select defaultValue="All">

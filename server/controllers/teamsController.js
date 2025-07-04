@@ -92,8 +92,8 @@ const getTeamPlayers = async (req, res) => {
 
 		res.json(result.rows);
 	} catch (err) {
-		console.error("Error fetching players for team:", err);
-		res.status(500).json({ error: "Failed to fetch players for team" });
+		console.error("Error fetching athletes for team:", err);
+		res.status(500).json({ error: "Failed to fetch athletes for team" });
 	}
 };
 
@@ -262,7 +262,7 @@ const PlayerPerformance = async (req, res) => {
 const TeamAttendance = async (req, res) => {
 	const result = await pool.query(
 		`
-    SELECT u.first_name || ' ' || u.last_name AS player,
+    SELECT u.first_name || ' ' || u.last_name AS athletes,
            a.attendance_date, a.status
     FROM attendance a
     JOIN users u ON u.id = a.user_id
@@ -276,20 +276,22 @@ const TeamAttendance = async (req, res) => {
 	const grouped = {};
 	const dateSet = new Set();
 
-	rows.forEach(({ player, attendance_date, status }) => {
+	rows.forEach(({ athletes, attendance_date, status }) => {
 		dateSet.add(attendance_date);
-		if (!grouped[player]) grouped[player] = {};
-		grouped[player][attendance_date] = status;
+		if (!grouped[athletes]) grouped[athletes] = {};
+		grouped[athletes][attendance_date] = status;
 	});
 
 	const sortedDates = [...dateSet].sort();
-	const csvData = Object.entries(grouped).map(([player, dates]) => {
-		const row = { player };
+	const csvData = Object.entries(grouped).map(([athletes, dates]) => {
+		const row = { athletes };
 		sortedDates.forEach((date) => (row[date] = dates[date] || "—"));
 		return row;
 	});
 
-	const csv = new Parser({ fields: ["player", ...sortedDates] }).parse(csvData);
+	const csv = new Parser({ fields: ["athletes", ...sortedDates] }).parse(
+		csvData
+	);
 	res.header("Content-Type", "text/csv").attachment("attendance.csv").send(csv);
 };
 
@@ -780,7 +782,7 @@ const deactivateTeam = async (req, res) => {
 const assignCaptain = async (req, res) => {
 	const { player_id } = req.body;
 	try {
-		await pool.query("UPDATE players SET is_captain = true WHERE id = $1", [
+		await pool.query("UPDATE athletes SET is_captain = true WHERE id = $1", [
 			player_id,
 		]);
 		res.json({ message: "Captain assigned" });
@@ -793,7 +795,7 @@ const assignCaptain = async (req, res) => {
 const removeCaptain = async (req, res) => {
 	const { player_id } = req.body;
 	try {
-		await pool.query("UPDATE players SET is_captain = false WHERE id = $1", [
+		await pool.query("UPDATE athletes SET is_captain = false WHERE id = $1", [
 			player_id,
 		]);
 		res.json({ message: "Captain removed" });
@@ -913,7 +915,7 @@ const getTeamsByUser = async (req, res) => {
 const mergeTeams = async (req, res) => {
 	const { source_team_id } = req.body;
 	try {
-		await pool.query("UPDATE players SET team_id = $1 WHERE team_id = $2", [
+		await pool.query("UPDATE athletes SET team_id = $1 WHERE team_id = $2", [
 			req.params.id,
 			source_team_id,
 		]);
@@ -1107,7 +1109,7 @@ const postTeamBulletin = async (req, res) => {
 const deactivatePlayer = async (req, res) => {
 	try {
 		await pool.query(
-			"UPDATE players SET status = $1 WHERE id = $2 AND team_id = $3",
+			"UPDATE athletes SET status = $1 WHERE id = $2 AND team_id = $3",
 			["inactive", req.params.playerId, req.params.id]
 		);
 		res.json({ message: "Player marked inactive" });
@@ -1121,7 +1123,7 @@ const setPlayerPosition = async (req, res) => {
 	const { position } = req.body;
 	try {
 		await pool.query(
-			"UPDATE players SET position = $1 WHERE id = $2 AND team_id = $3",
+			"UPDATE athletes SET position = $1 WHERE id = $2 AND team_id = $3",
 			[position, req.params.playerId, req.params.id]
 		);
 		res.json({ message: "Player position updated" });
