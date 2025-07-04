@@ -39,19 +39,17 @@ export default function Home() {
   }, [isAuthenticated, getIdTokenClaims]);
 
   return (
-    <Box>
+    <Box> 
       <HeroBanner role={role} />
       <Container maxWidth="lg">
         {/* <PartnerCarousel /> */}
         <FeatureGrid />
-        <HowItWorks />
+        {/* <HowItWorks /> */}
         <RoleHighlights role={role} />
       </Container>
- <Box sx={{ backgroundColor: "#00A3E0", color: "#fff", py: 1.5, px: 2 }}>
-  <Container maxWidth="lg">
-    <LiveStatsTicker />
-  </Container>
-</Box>
+
+    {/* <LiveStatsTicker /> */}
+
       <Container maxWidth="lg">
         {/* <UserSpotlight role={role} /> */}
         <StayConnected />

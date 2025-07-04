@@ -139,7 +139,7 @@ const FederationDetails = () => {
           <MediaCarousel highlights={mediaHighlights} />
         </Box>
 
-        <Box sx={{ my: 5 }}>
+        {/* <Box sx={{ my: 5 }}>
           <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }} color="primary">
             Top Performers
           </Typography>
@@ -157,7 +157,7 @@ const FederationDetails = () => {
               </Grid>
             ))}
           </Grid>
-        </Box>
+        </Box> */}
 
         <Tabs
           value={tab}

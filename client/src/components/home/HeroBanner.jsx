@@ -31,7 +31,7 @@ export default function HeroBanner() {
               color: "#000",
             }}
           >
-            The Digital Sports Hub <br /> for The Bahamas
+            The Digital Sports Hub for<br /> The Bahamas
           </Typography>
 
           <Typography

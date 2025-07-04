@@ -14,7 +14,7 @@ import { motion } from "framer-motion";
 const steps = [
   {
     title: "Create Your Free Account",
-    description: "Choose your role — Athlete, Team, Coach, or Federation. Get access instantly.",
+    description: "Choose your role — Athlete, Team or Federation. Get access instantly.",
     icon: <PersonAddAltIcon sx={{ fontSize: 80 }} />,
     bg: "#fefefe",
   },

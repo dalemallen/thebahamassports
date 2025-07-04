@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, Suspense, lazy } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { useUser } from "./context/AuthContext";
 import PageLoader from "./components/PageLoader.jsx";
 import LayoutSwitcher from "./layouts/LayoutSwitcher.jsx";
 import AboutUsPage from "./pages/AboutUsPage.jsx";
@@ -33,12 +34,19 @@ const EventTeams = lazy(() => import("./components/events/EventTeams.jsx"));
 const EventResults = lazy(() => import("./components/events/EventResults.jsx"));
 const SchedulePage = lazy(() => import("./pages/schedules/SchedulePage.jsx"));
 const Dashboard = lazy(() => import("./pages/dashboard/Dashboard.jsx"));
-
+const Contact = lazy(() => import("./pages/contact/Contact.jsx"));
 
 export default function App() {
   const { user, isAuthenticated } = useAuth0();
   const userRole = user?.["https://thebahamassports.com/roles"]?.[0];
   const onboardingComplete = user?.onboarding_complete;
+
+    const { isLoading: auth0Loading } = useAuth0();
+  const { isLoading: userLoading, dbUser } = useUser(); // your AuthContext
+
+  const isLoading = auth0Loading || userLoading;
+
+  if (isLoading) return <PageLoader />;
 
   return (
     <Suspense fallback={<PageLoader />}>
@@ -51,6 +59,7 @@ export default function App() {
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/onboard/:role" element={<Onboard />} />
+         <Route path="/contact" element={<Contact />} />
 
  <Route
   path="/dashboard/:role"

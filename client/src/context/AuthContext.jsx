@@ -21,19 +21,18 @@ export const AuthProvider = ({ children }) => {
         return;
       }
 
+      setUserLoading(true);
+
       try {
-        // 1. Fetch user from DB
-        const res = await axios.get(`/api/users/${auth0User.sub}`);
+        // always ask DB first
+        const res = await axios.get(`/api/users/me/${auth0User.sub}`);
         const userFromDb = res.data;
 
-        // 2. Optionally fetch team info
-        let teamData = null;
-        if (userFromDb.role === "team") {
-          const teamRes = await axios.get(`/api/teams/creator/${userFromDb.id}`);
-          teamData = teamRes.data?.[0] || null;
-        }
+        const teamData =
+          userFromDb.role === "team"
+            ? (await axios.get(`/api/teams/creator/${userFromDb.id}`)).data?.[0] || null
+            : null;
 
-        // 3. Merge user objects
         const fullUser = {
           ...auth0User,
           ...userFromDb,
@@ -43,22 +42,15 @@ export const AuthProvider = ({ children }) => {
 
         setUser(fullUser);
         setDbUser(fullUser);
-        setRole(userFromDb.role);
-        sessionStorage.removeItem("pendingRole");
+        setRole(userFromDb.role); // 📌 only take role from DB
+        sessionStorage.removeItem("pendingRole"); // no longer needed
 
-        // 4. Redirect based on onboarding status
-        const isOnboardingRoute = location.pathname.startsWith("/onboard/");
-        const isDashboardRoute = location.pathname.startsWith("/dashboard/");
-
-        if (!userFromDb.onboarding_complete && !isOnboardingRoute) {
-          navigate(`/onboard/${userFromDb.role}`);
-        } else if (userFromDb.onboarding_complete && isOnboardingRoute) {
-          navigate(`/dashboard/${userFromDb.role}`);
-        }
+        redirectBasedOnOnboarding(userFromDb);
       } catch (err) {
         if (err.response?.status === 404) {
-          // 5. Register new user if not found
+          // user not in DB → register with pendingRole
           const pendingRole = sessionStorage.getItem("pendingRole") || "athlete";
+
           const payload = {
             auth0_id: auth0User.sub,
             email: auth0User.email,
@@ -73,9 +65,10 @@ export const AuthProvider = ({ children }) => {
           const fullUser = { ...auth0User, ...newUser };
           setUser(fullUser);
           setDbUser(fullUser);
-          setRole(pendingRole);
+          setRole(newUser.role); // 📌 newUser.role comes from DB at insert time
           sessionStorage.removeItem("pendingRole");
-          navigate(`/onboard/${pendingRole}`);
+
+          navigate(`/onboard/${newUser.role}`);
         } else {
           console.error("❌ Failed to fetch or register user:", err);
         }
@@ -84,8 +77,18 @@ export const AuthProvider = ({ children }) => {
       }
     };
 
+    const redirectBasedOnOnboarding = (userFromDb) => {
+      const isOnboardingRoute = location.pathname.startsWith("/onboard/");
+      const isDashboardRoute = location.pathname.startsWith("/dashboard/");
+
+      if (!userFromDb.onboarding_complete && !isOnboardingRoute) {
+        navigate(`/onboard/${userFromDb.role}`);
+      } else if (userFromDb.onboarding_complete && isOnboardingRoute) {
+        navigate(`/dashboard/${userFromDb.role}`);
+      }
+    };
+
     if (isAuthenticated && auth0User) {
-      setUserLoading(true);
       loadUser();
     } else {
       setUserLoading(false);
