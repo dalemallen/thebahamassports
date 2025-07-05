@@ -10,6 +10,8 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Button,
+  Stack,
 } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
 import EventIcon from "@mui/icons-material/Event";
@@ -28,29 +30,44 @@ export default function DashboardAthlete() {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [events, setEvents] = useState([]);
   const [opportunities, setOpportunities] = useState([]);
+  const [actions, setActions] = useState([]);
+  console.log('actions: ', actions);
+  const [loadingActions, setLoadingActions] = useState(true);
 
   useEffect(() => {
     if (!dbUser?.id || role !== "athlete") return;
 
     const fetchData = async () => {
       try {
-        const [athleteRes, eventsRes, oppRes] = await Promise.all([
+        const [athleteRes,  actionsRes] = await Promise.all([
           axios.get(`/api/athletes/${dbUser.id}`),
-          axios.get(`/api/events/upcoming`),
-          axios.get(`/api/opportunities`),
+          // axios.get(`/api/events/upcoming`),
+          // axios.get(`/api/opportunities`),
+          axios.get(`/api/users/${dbUser.id}/actions`),
         ]);
         setAthleteProfile(athleteRes.data);
-        setEvents(eventsRes.data || []);
-        setOpportunities(oppRes.data || []);
+        // setEvents(eventsRes.data || []);
+        // setOpportunities(oppRes.data || []);
+        setActions(actionsRes.data || []);
       } catch (err) {
         console.error("Error loading dashboard data:", err);
       } finally {
         setLoadingProfile(false);
+        setLoadingActions(false);
       }
     };
 
     fetchData();
   }, [dbUser, role]);
+
+  const handleActionUpdate = async (actionId, status) => {
+    try {
+      await axios.patch(`/api/users/${dbUser.id}/actions/${actionId}`, { status });
+      setActions(actions.filter((a) => a.id !== actionId)); // remove after completion/dismissal
+    } catch (err) {
+      console.error("Failed to update action:", err);
+    }
+  };
 
   if (isLoading || !dbUser) return <CircularProgress sx={{ mt: 5 }} />;
   if (role !== "athlete") return <Typography>Unauthorized</Typography>;
@@ -193,20 +210,74 @@ export default function DashboardAthlete() {
             <Typography variant="h6" color="primary">
               Pending Actions
             </Typography>
-            <List dense>
-              <ListItem>
-                <ListItemIcon>
-                  <FolderIcon color="secondary" />
-                </ListItemIcon>
-                <ListItemText primary="Complete Emergency Contact Form" />
-              </ListItem>
-              <ListItem>
-                <ListItemIcon>
-                  <FolderIcon color="secondary" />
-                </ListItemIcon>
-                <ListItemText primary="Upload Passport Copy" />
-              </ListItem>
-            </List>
+            {loadingActions ? (
+              <CircularProgress sx={{ mt: 2 }} />
+            ) : actions.length > 0 ? (
+              <List dense>
+                {actions.map((action) => (
+                  <ListItem key={action.id} alignItems="flex-start">
+                    <ListItemIcon>
+                      <FolderIcon color="secondary" />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={
+                        <Typography>
+                          {action.title}{" "}
+                          <Typography
+                            component="span"
+                            color="text.secondary"
+                            fontSize="0.8rem"
+                          >
+                            ({action.priority})
+                          </Typography>
+                        </Typography>
+                      }
+                      secondary={
+                        <>
+                          <Typography
+                            component="span"
+                            variant="body2"
+                            color="text.secondary"
+                          >
+                            {action.description}
+                          </Typography>
+                          <br />
+                          <Typography
+                            component="span"
+                            variant="caption"
+                            color="text.secondary"
+                          >
+                            Due: {action.due_date || "N/A"}
+                          </Typography>
+                        </>
+                      }
+                    />
+                    <Stack direction="column" spacing={1}>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color="success"
+                        onClick={() => handleActionUpdate(action.id, "completed")}
+                      >
+                        Complete
+                      </Button>
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="error"
+                        onClick={() => handleActionUpdate(action.id, "dismissed")}
+                      >
+                        Dismiss
+                      </Button>
+                    </Stack>
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No pending actions.
+              </Typography>
+            )}
           </Paper>
         </Grid>
       </Grid>

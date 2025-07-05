@@ -22,12 +22,19 @@ export default function Sidebar({ role }) {
     { label: 'Schedule', path: '/schedule' },
     { label: 'Stats', path: '/stats' },
   ],
-  federation: [
-    { label: 'Dashboard', path: '/dashboard' },
-    { label: 'Clubs', path: '/clubs' },
-    { label: 'Events', path: '/events' },
-    { label: 'Approvals', path: '/approvals' },
-  ],
+federation: [
+  { label: 'Home', path: '/dashboard/federation' },  
+  { label: 'Registration', path: '/registration' },
+  { label: 'Members', path: '/federation/members' },  
+  { label: 'Events', path: '/federation/events' },  
+  { label: 'Tournaments', path: '/federation/tournaments' },  
+  { label: 'Leagues', path: '/federation/leagues' },  
+  { label: 'Approvals', path: '/federation/approvals' },  
+  { label: 'Clubs', path: '/federation/clubs' },  
+  { label: 'Reports', path: '/federation/reports' },  
+  { label: 'Settings', path: '/federation/settings' }
+],
+
   organizer: [
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'Tournaments', path: '/tournaments' },
@@ -36,7 +43,7 @@ export default function Sidebar({ role }) {
   ],
 };
     const tempRole = 'athlete'; 
-  const navItems = navItemsByRole[tempRole] || [];
+  const navItems = navItemsByRole[role] || [];
 
 
 
